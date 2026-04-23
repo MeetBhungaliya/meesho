@@ -13,6 +13,7 @@ dump.rdb
 .sentryclirc
 docker-compose.override.yml
 yarn-error.log
+yarn.lock
 
 node_modules
 .env
