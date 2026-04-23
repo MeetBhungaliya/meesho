@@ -1,0 +1,33 @@
+node_modules
+build
+coverage
+.vscode
+.DS_STORE
+.env
+.env.*
+tmp
+database/db.*
+dump.rdb
+.VSCodeCounter/*
+# Sentry Auth Token
+.sentryclirc
+docker-compose.override.yml
+yarn-error.log
+
+node_modules
+.env
+
+# Hardhat files
+/cache
+/artifacts
+
+# TypeChain files
+/typechain
+/typechain-types
+
+# solidity-coverage files
+/coverage
+/coverage.json
+
+# Hardhat Ignition default folder for deployments against a local node
+ignition/deployments/chain-31337
