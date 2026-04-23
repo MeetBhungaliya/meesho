@@ -61,6 +61,17 @@ export class SessionManager {
       }),
     })
 
+    console.log(`${MEESHO_ENDPOINTS.login}, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', cookie: 'undefined' },
+      body: ${JSON.stringify({
+        password,
+        device_id: email,
+        instance: email,
+        email,
+      })},
+    }`)
+
     if (res.status !== 200) {
       const body = await res.text().catch(() => 'Unknown error')
       const errorMsg = `Login failed (HTTP ${res.status}): ${body.substring(0, 500)}`
