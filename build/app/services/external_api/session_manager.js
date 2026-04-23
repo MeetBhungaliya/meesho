@@ -27,7 +27,7 @@ export class SessionManager {
         });
         const res = await fetch(MEESHO_ENDPOINTS.login, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', Accept: '*/*' },
+            headers: { 'Content-Type': 'application/json', Accept: '*/*', 'user-agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Mobile Safari/537.36', 'Accept-Encoding': 'gzip, deflate, br' },
             body: JSON.stringify({
                 password,
                 device_id: email,
@@ -63,6 +63,8 @@ export class SessionManager {
                 'identifier': cookies[SESSION_COOKIE_KEYS.identifier],
                 'cookie': cookieString,
                 'Accept': '*/*',
+                'user-agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Mobile Safari/537.36',
+                'Accept-Encoding': 'gzip, deflate, br'
             },
             body: JSON.stringify({ identifier: cookies[SESSION_COOKIE_KEYS.identifier] }),
         });
