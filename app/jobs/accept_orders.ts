@@ -15,7 +15,7 @@ import type {
 import logger from '@adonisjs/core/services/logger'
 import { Job } from '@adonisjs/queue'
 import type { JobOptions } from '@adonisjs/queue/types'
-import NotifyAcceptedOrders from './notify_accepted_orders.ts'
+import NotifyAcceptedOrders from '#jobs/notify_accepted_orders'
 
 export default class AcceptOrders extends Job {
   static options: JobOptions = {

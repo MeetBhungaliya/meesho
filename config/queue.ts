@@ -1,4 +1,5 @@
 import env from '#start/env'
+import app from '@adonisjs/core/services/app'
 import { defineConfig, drivers, exponentialBackoff } from '@adonisjs/queue'
 
 export default defineConfig({
@@ -21,5 +22,5 @@ export default defineConfig({
     backoff: exponentialBackoff(),
   },
 
-  locations: ['./app/jobs/**/*.{ts,js}'],
+  locations: [app.makePath('app/jobs/**/*.{ts,js}')],
 })
