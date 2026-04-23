@@ -38,99 +38,177 @@ export class SessionManager {
   }
 
   static async loginSync(
-    accountId: AccountId,
-    email: string,
-    password: string
-  ): Promise<SessionCookies> {
-    const sessionCacheKey = `${CACHE_PREFIX.session}${accountId}`
-    const supplierCacheKey = `${CACHE_PREFIX.supplier}${accountId}`
+  accountId: AccountId,
+  email: string,
+  password: string
+): Promise<SessionCookies> {
+  const sessionCacheKey = `${CACHE_PREFIX.session}${accountId}`
+  const supplierCacheKey = `${CACHE_PREFIX.supplier}${accountId}`
 
-    await Account.query().where('id', Number(accountId)).update({
-      session_status: SESSION_STATUS.PENDING,
-      session_error: null,
-    })
+  const DEBUG = true
+  const log = (...args: any[]) => DEBUG && console.log('[MEESHO DEBUG]', ...args)
 
-    const res = await fetch(MEESHO_ENDPOINTS.login, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: '*/*', 'user-agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Mobile Safari/537.36', 'Accept-Encoding':'gzip, deflate, br' },
-      body: JSON.stringify({
-        password,
-        device_id: email,
-        instance: email,
-        email,
-      }),
-    })
+  await Account.query().where('id', Number(accountId)).update({
+    session_status: SESSION_STATUS.PENDING,
+    session_error: null,
+  })
 
-    if (res.status !== 200) {
-      const body = await res.text().catch(() => 'Unknown error')
-      const errorMsg = `Login failed (HTTP ${res.status}): ${body.substring(0, 500)}`
+  // -------------------------
+  // 🔹 LOGIN REQUEST
+  // -------------------------
 
-      await Account.query().where('id', Number(accountId)).update({
-        session_status: SESSION_STATUS.FAILED,
-        session_error: errorMsg,
-      })
-
-      throw new SessionError(errorMsg, accountId)
-    }
-
-    const cookies = SessionManager.extractCookies(res.headers)
-
-    if (!cookies[SESSION_COOKIE_KEYS.identifier] || !cookies[SESSION_COOKIE_KEYS.sid]) {
-      const errorMsg = 'Login succeeded but required cookies were not returned'
-
-      await Account.query().where('id', Number(accountId)).update({
-        session_status: SESSION_STATUS.FAILED,
-        session_error: errorMsg,
-      })
-
-      throw new SessionError(errorMsg, accountId)
-    }
-
-    const cookieString = Object.entries(cookies)
-      .map(([key, value]) => `${key}=${value}`)
-      .join('; ')
-
-    const supplierDataRes = await fetch(MEESHO_ENDPOINTS.prefetchSupplyData, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'identifier': cookies[SESSION_COOKIE_KEYS.identifier],
-        'cookie': cookieString,
-        'Accept': '*/*',
-        'user-agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Mobile Safari/537.36',
-        'Accept-Encoding': 'gzip, deflate, br'
-      },
-      body: JSON.stringify({ identifier: cookies[SESSION_COOKIE_KEYS.identifier] }),
-    })
-
-    const supplierData = (await supplierDataRes.json()) as MeeshoSupplierPrefetchResponse
-
-    await cache.setForever({
-      key: supplierCacheKey,
-      value: {
-        id: supplierData.user.id,
-        email: supplierData.user.email,
-        phone: supplierData.user.mobile_number,
-        supplierId: supplierData.supplier.supplier_id,
-        name: supplierData.supplier.name,
-        identifier: supplierData.supplier.identifier,
-      } satisfies SupplierCacheData,
-    })
-
-    await cache.set({
-      key: sessionCacheKey,
-      value: cookies,
-      ttl: '24h',
-    })
-
-    await Account.query().where('id', Number(accountId)).update({
-      session_status: SESSION_STATUS.ACTIVE,
-      session_error: null,
-      last_login_at: DateTime.utc().toISO(),
-    })
-
-    return cookies
+  const payload = {
+    email,
+    password,
+    device_id: email,
+    instance: email,
   }
+
+  log('LOGIN REQUEST BODY:', payload)
+
+  const res = await fetch(MEESHO_ENDPOINTS.login, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: '*/*',
+      'User-Agent':
+        'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Mobile Safari/537.36',
+      // ❌ DO NOT SET Accept-Encoding
+    },
+    body: JSON.stringify(payload),
+  })
+
+  const rawHeaders = Object.fromEntries(res.headers.entries())
+  const rawSetCookie = res.headers.get('set-cookie')
+  const rawBody = await res.text()
+
+  log('LOGIN STATUS:', res.status)
+  log('LOGIN HEADERS:', rawHeaders)
+  log('LOGIN SET-COOKIE:', rawSetCookie)
+  log('LOGIN BODY:', rawBody)
+
+  if (res.status !== 200) {
+    const errorMsg = `Login failed (HTTP ${res.status}): ${rawBody.substring(0, 500)}`
+
+    await Account.query().where('id', Number(accountId)).update({
+      session_status: SESSION_STATUS.FAILED,
+      session_error: errorMsg,
+    })
+
+    throw new SessionError(errorMsg, accountId)
+  }
+
+  // -------------------------
+  // 🔹 COOKIE EXTRACTION
+  // -------------------------
+
+  const cookies = SessionManager.extractCookies(res.headers)
+
+  log('EXTRACTED COOKIES:', cookies)
+
+  if (!cookies[SESSION_COOKIE_KEYS.identifier] || !cookies[SESSION_COOKIE_KEYS.sid]) {
+    const errorMsg = 'Login succeeded but required cookies were not returned'
+
+    log('COOKIE VALIDATION FAILED')
+
+    await Account.query().where('id', Number(accountId)).update({
+      session_status: SESSION_STATUS.FAILED,
+      session_error: errorMsg,
+    })
+
+    throw new SessionError(errorMsg, accountId)
+  }
+
+  const cookieString = Object.entries(cookies)
+    .map(([key, value]) => `${key}=${value}`)
+    .join('; ')
+
+  log('COOKIE STRING:', cookieString)
+
+  // -------------------------
+  // 🔹 SECOND REQUEST (PREFETCH)
+  // -------------------------
+
+  const supplierPayload = {
+    identifier: cookies[SESSION_COOKIE_KEYS.identifier],
+  }
+
+  log('PREFETCH REQUEST BODY:', supplierPayload)
+
+  const supplierDataRes = await fetch(MEESHO_ENDPOINTS.prefetchSupplyData, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      identifier: cookies[SESSION_COOKIE_KEYS.identifier],
+      cookie: cookieString,
+      Accept: '*/*',
+      'User-Agent':
+        'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Mobile Safari/537.36',
+    },
+    body: JSON.stringify(supplierPayload),
+  })
+
+  const supplierRawHeaders = Object.fromEntries(supplierDataRes.headers.entries())
+  const supplierRawBody = await supplierDataRes.text()
+
+  log('PREFETCH STATUS:', supplierDataRes.status)
+  log('PREFETCH HEADERS:', supplierRawHeaders)
+  log('PREFETCH BODY:', supplierRawBody)
+
+  if (supplierDataRes.status !== 200) {
+    const errorMsg = `Prefetch failed (HTTP ${supplierDataRes.status}): ${supplierRawBody.substring(0, 500)}`
+
+    await Account.query().where('id', Number(accountId)).update({
+      session_status: SESSION_STATUS.FAILED,
+      session_error: errorMsg,
+    })
+
+    throw new SessionError(errorMsg, accountId)
+  }
+
+  let supplierData: MeeshoSupplierPrefetchResponse
+
+  try {
+    supplierData = JSON.parse(supplierRawBody)
+  } catch (err) {
+    log('JSON PARSE ERROR:', err)
+    throw new SessionError('Invalid JSON response from supplier API', accountId)
+  }
+
+  log('PARSED SUPPLIER DATA:', supplierData)
+
+  // -------------------------
+  // 🔹 CACHE + SUCCESS
+  // -------------------------
+
+  await cache.setForever({
+    key: supplierCacheKey,
+    value: {
+      id: supplierData.user.id,
+      email: supplierData.user.email,
+      phone: supplierData.user.mobile_number,
+      supplierId: supplierData.supplier.supplier_id,
+      name: supplierData.supplier.name,
+      identifier: supplierData.supplier.identifier,
+    } satisfies SupplierCacheData,
+  })
+
+  await cache.set({
+    key: sessionCacheKey,
+    value: cookies,
+    ttl: '24h',
+  })
+
+  await Account.query().where('id', Number(accountId)).update({
+    session_status: SESSION_STATUS.ACTIVE,
+    session_error: null,
+    last_login_at: DateTime.utc().toISO(),
+  })
+
+  log('LOGIN FLOW SUCCESS ✅')
+
+  return cookies
+}
 
   static async invalidate(accountId: AccountId): Promise<void> {
     await cache.delete({ key: `${CACHE_PREFIX.session}${accountId}` })
