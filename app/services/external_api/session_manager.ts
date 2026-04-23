@@ -52,7 +52,7 @@ export class SessionManager {
 
     const res = await fetch(MEESHO_ENDPOINTS.login, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', cookie: 'undefined' },
+      headers: { 'Content-Type': 'application/json', Accept: '*/*' },
       body: JSON.stringify({
         password,
         device_id: email,
@@ -60,17 +60,6 @@ export class SessionManager {
         email,
       }),
     })
-
-    console.log(`${MEESHO_ENDPOINTS.login}, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', cookie: 'undefined' },
-      body: ${JSON.stringify({
-        password,
-        device_id: email,
-        instance: email,
-        email,
-      })},
-    }`)
 
     if (res.status !== 200) {
       const body = await res.text().catch(() => 'Unknown error')
@@ -107,6 +96,7 @@ export class SessionManager {
         'Content-Type': 'application/json',
         'identifier': cookies[SESSION_COOKIE_KEYS.identifier],
         'cookie': cookieString,
+        'Accept': '*/*',
       },
       body: JSON.stringify({ identifier: cookies[SESSION_COOKIE_KEYS.identifier] }),
     })

@@ -145,6 +145,7 @@ export class MeeshoApiClient {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       'client-type': 'd-web',
+      'Accept': '*/*',
     }
 
     if (!options.skipAuth) {
