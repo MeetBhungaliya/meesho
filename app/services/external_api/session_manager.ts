@@ -52,7 +52,7 @@ export class SessionManager {
 
     const res = await fetch(MEESHO_ENDPOINTS.login, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', cookie: 'undefined' },
       body: JSON.stringify({
         password,
         device_id: email,

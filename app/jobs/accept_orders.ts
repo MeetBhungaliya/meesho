@@ -48,7 +48,7 @@ export default class AcceptOrders extends Job {
 
           if (!orderData.total_count) return
 
-          const groups: MeeshoOrderGroup[] = [orderData.data.subOrders[0]].map((subOrder) => ({
+          const groups: MeeshoOrderGroup[] = orderData.data.subOrders.map((subOrder) => ({
             grouping_key: subOrder.grouping_key,
             sub_order_ids: [subOrder.grouping_key],
             shipment_type: SHIPMENT_TYPE.FORWARD,
