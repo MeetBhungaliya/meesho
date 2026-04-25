@@ -44,10 +44,7 @@ export class SessionManager {
 ): Promise<SessionCookies> {
   const sessionCacheKey = `${CACHE_PREFIX.session}${accountId}`
   const supplierCacheKey = `${CACHE_PREFIX.supplier}${accountId}`
-
-  const DEBUG = true
-  const log = (...args: any[]) => DEBUG && console.log('[MEESHO DEBUG]', ...args)
-
+  
   await Account.query().where('id', Number(accountId)).update({
     session_status: SESSION_STATUS.PENDING,
     session_error: null,
@@ -166,8 +163,6 @@ export class SessionManager {
     session_error: null,
     last_login_at: DateTime.utc().toISO(),
   })
-
-  log('LOGIN FLOW SUCCESS ✅')
 
   return cookies
 }

@@ -1,4 +1,6 @@
 node_modules
+bin
+build
 coverage
 .vscode
 .DS_STORE
