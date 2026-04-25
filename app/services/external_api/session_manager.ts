@@ -53,10 +53,6 @@ export class SessionManager {
     session_error: null,
   })
 
-  // -------------------------
-  // 🔹 LOGIN REQUEST
-  // -------------------------
-
   const payload = {
     email,
     password,
@@ -64,7 +60,6 @@ export class SessionManager {
     instance: email,
   }
 
-  log('LOGIN REQUEST BODY:', payload)
 
   const res = await fetch(MEESHO_ENDPOINTS.login, {
     method: 'POST',
@@ -73,22 +68,13 @@ export class SessionManager {
       Accept: '*/*',
       'User-Agent':
         'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Mobile Safari/537.36',
-      // ❌ DO NOT SET Accept-Encoding
     },
     body: JSON.stringify(payload),
   })
 
-  const rawHeaders = Object.fromEntries(res.headers.entries())
-  const rawSetCookie = res.headers.get('set-cookie')
-  const rawBody = await res.text()
-
-  log('LOGIN STATUS:', res.status)
-  log('LOGIN HEADERS:', rawHeaders)
-  log('LOGIN SET-COOKIE:', rawSetCookie)
-  log('LOGIN BODY:', rawBody)
 
   if (res.status !== 200) {
-    const errorMsg = `Login failed (HTTP ${res.status}): ${rawBody.substring(0, 500)}`
+    const errorMsg = `Login failed (HTTP ${res.status})`
 
     await Account.query().where('id', Number(accountId)).update({
       session_status: SESSION_STATUS.FAILED,
@@ -98,18 +84,13 @@ export class SessionManager {
     throw new SessionError(errorMsg, accountId)
   }
 
-  // -------------------------
-  // 🔹 COOKIE EXTRACTION
-  // -------------------------
-
   const cookies = SessionManager.extractCookies(res.headers)
 
-  log('EXTRACTED COOKIES:', cookies)
 
   if (!cookies[SESSION_COOKIE_KEYS.identifier] || !cookies[SESSION_COOKIE_KEYS.sid]) {
     const errorMsg = 'Login succeeded but required cookies were not returned'
 
-    log('COOKIE VALIDATION FAILED')
+
 
     await Account.query().where('id', Number(accountId)).update({
       session_status: SESSION_STATUS.FAILED,
@@ -123,17 +104,10 @@ export class SessionManager {
     .map(([key, value]) => `${key}=${value}`)
     .join('; ')
 
-  log('COOKIE STRING:', cookieString)
-
-  // -------------------------
-  // 🔹 SECOND REQUEST (PREFETCH)
-  // -------------------------
-
   const supplierPayload = {
     identifier: cookies[SESSION_COOKIE_KEYS.identifier],
   }
 
-  log('PREFETCH REQUEST BODY:', supplierPayload)
 
   const supplierDataRes = await fetch(MEESHO_ENDPOINTS.prefetchSupplyData, {
     method: 'POST',
@@ -148,12 +122,7 @@ export class SessionManager {
     body: JSON.stringify(supplierPayload),
   })
 
-  const supplierRawHeaders = Object.fromEntries(supplierDataRes.headers.entries())
   const supplierRawBody = await supplierDataRes.text()
-
-  log('PREFETCH STATUS:', supplierDataRes.status)
-  log('PREFETCH HEADERS:', supplierRawHeaders)
-  log('PREFETCH BODY:', supplierRawBody)
 
   if (supplierDataRes.status !== 200) {
     const errorMsg = `Prefetch failed (HTTP ${supplierDataRes.status}): ${supplierRawBody.substring(0, 500)}`
@@ -171,15 +140,8 @@ export class SessionManager {
   try {
     supplierData = JSON.parse(supplierRawBody)
   } catch (err) {
-    log('JSON PARSE ERROR:', err)
     throw new SessionError('Invalid JSON response from supplier API', accountId)
   }
-
-  log('PARSED SUPPLIER DATA:', supplierData)
-
-  // -------------------------
-  // 🔹 CACHE + SUCCESS
-  // -------------------------
 
   await cache.setForever({
     key: supplierCacheKey,
