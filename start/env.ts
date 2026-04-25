@@ -18,4 +18,5 @@ export default await Env.create(new URL('../', import.meta.url), {
   QUEUE_DRIVER: Env.schema.enum(['redis', 'database', 'sync'] as const),
 
   TELEGRAM_BOT_TOKEN: Env.schema.string(),
+  TELEGRAM_NOTIFICATION_SOUND: Env.schema.boolean(),
 })

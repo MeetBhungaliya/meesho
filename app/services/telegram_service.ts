@@ -50,7 +50,7 @@ export default class TelegramService {
           chat_id: chatId,
           text,
           parse_mode: options?.parse_mode ?? 'Markdown',
-          disable_notification: options?.disable_notification ?? false,
+          disable_notification: env.get('TELEGRAM_NOTIFICATION_SOUND') ? false : true,
         }),
       })
     } catch (error) {
