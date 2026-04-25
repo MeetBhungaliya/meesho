@@ -20,6 +20,7 @@ interface NotifyAcceptedOrdersPayload {
 
 export default class NotifyAcceptedOrders extends Job<NotifyAcceptedOrdersPayload> {
   async execute(): Promise<void> {
+    logger.info('Starting NotifyAcceptedOrders job')
     const { requestId, accountId } = this.payload
     const telegramService = new TelegramService()
 
@@ -36,6 +37,7 @@ export default class NotifyAcceptedOrders extends Job<NotifyAcceptedOrdersPayloa
     const responseItem = data.data?.[0]
 
     if (!responseItem) {
+      logger.warn({ accountId, requestId }, 'Empty history response')
       return
     }
 
@@ -46,6 +48,7 @@ export default class NotifyAcceptedOrders extends Job<NotifyAcceptedOrdersPayloa
     } = responseItem
 
     if (resRequestId !== requestId) {
+      logger.warn({ accountId, expected: requestId, received: resRequestId }, 'Request ID mismatch')
       return
     }
 
@@ -75,6 +78,8 @@ export default class NotifyAcceptedOrders extends Job<NotifyAcceptedOrdersPayloa
           new AcceptedOrders(accountId, account.userId, processedOrdersCount, new Date())
         )
       }
+
+      logger.info({ accountId, processedOrdersCount }, 'Orders accepted successfully')
       return
     }
 

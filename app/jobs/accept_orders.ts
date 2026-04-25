@@ -6,7 +6,6 @@ import {
   ORDER_LIMITS,
   ORDER_STATUS,
   ORDER_TYPE,
-  POLLING_CONFIG,
   SHIPMENT_TYPE,
 } from '#services/external_api/constants'
 import type {
@@ -19,6 +18,7 @@ import { Job } from '@adonisjs/queue'
 
 export default class AcceptOrders extends Job {
   async execute(): Promise<void> {
+    logger.info('Starting AcceptOrders job')
     const accounts = await Account.query().where('autoAcceptOrders', true)
 
     await Promise.all(
@@ -47,9 +47,8 @@ export default class AcceptOrders extends Job {
             shipment_type: SHIPMENT_TYPE.FORWARD,
           }))
 
-          const { data: acceptResponse } = await client.post<MeeshoAcceptOrdersResponse>(
-            MEESHO_ENDPOINTS.requestPendingOrders,
-            {
+          const { data: acceptResponse } = await client
+            .post<MeeshoAcceptOrdersResponse>(MEESHO_ENDPOINTS.requestPendingOrders, {
               supplier_details: {
                 id: client.supplier.supplierId,
                 identifier: client.supplier.identifier,
@@ -58,15 +57,15 @@ export default class AcceptOrders extends Job {
               requested_status: ORDER_STATUS.ACCEPTED,
               max_transitions: ORDER_LIMITS.MAX_TRANSITIONS,
               groups,
-            }
-          )
+            })
+            .catch((error) => {
+              throw error
+            })
 
           await NotifyAcceptedOrders.dispatch({
             requestId: acceptResponse.request_id,
             accountId: String(account.id),
-          })
-            .in(POLLING_CONFIG.DELAY)
-            .run()
+          }).run()
         } catch (error) {
           logger.error({ accountId: account.id, error }, 'AcceptOrders failed for account')
         }
