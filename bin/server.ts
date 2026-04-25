@@ -10,7 +10,13 @@
 */
 
 await import('reflect-metadata')
+import { readFileSync } from 'fs'
+import { join } from 'path'
 const { Ignitor, prettyPrintError } = await import('@adonisjs/core')
+import { createServer } from 'node:https'
+
+const privateKey = readFileSync(join(import.meta.dirname, '../private.key'), 'utf8')
+const certificate = readFileSync(join(import.meta.dirname, '../cert.pem'), 'utf8')
 
 /**
  * URL to the application root. AdonisJS need it to resolve
@@ -38,7 +44,15 @@ new Ignitor(APP_ROOT, { importer: IMPORTER })
     app.listenIf(app.managedByPm2, 'SIGINT', () => app.terminate())
   })
   .httpServer()
-  .start()
+  .start((handle) => {
+    return createServer(
+      {
+        key: privateKey,
+        cert: certificate,
+      },
+      handle
+    )
+  })
   .catch((error) => {
     process.exitCode = 1
     prettyPrintError(error)
