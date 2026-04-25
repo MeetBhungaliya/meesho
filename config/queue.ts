@@ -13,7 +13,7 @@ export default defineConfig({
   },
 
   worker: {
-    concurrency: 5,
+    concurrency: 3,
     idleDelay: '2s',
   },
 

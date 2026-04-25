@@ -53,7 +53,6 @@ export default class TelegramService {
           disable_notification: options?.disable_notification ?? false,
         }),
       })
-      logger.debug({ chatId }, 'Telegram message sent')
     } catch (error) {
       logger.error({ error, chatId }, 'Failed to send Telegram message')
     }

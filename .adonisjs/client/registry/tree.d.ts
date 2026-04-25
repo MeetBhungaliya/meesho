@@ -14,4 +14,7 @@ export interface ApiDefinition {
   telegramWebhook: {
     webhook: typeof routes['telegram_webhook.webhook']
   }
+  healthChecks: {
+    health: typeof routes['health_checks.health']
+  }
 }

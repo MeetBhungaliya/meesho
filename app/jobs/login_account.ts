@@ -4,7 +4,6 @@ import { SessionManager } from '#services/external_api/session_manager'
 import type { AccountId } from '#services/external_api/types'
 import logger from '@adonisjs/core/services/logger'
 import { Job } from '@adonisjs/queue'
-import type { JobOptions } from '@adonisjs/queue/types'
 
 interface LoginAccountPayload {
   accountId: AccountId
@@ -13,11 +12,6 @@ interface LoginAccountPayload {
 }
 
 export default class LoginAccount extends Job<LoginAccountPayload> {
-  static options: JobOptions = {
-    queue: 'default',
-    maxRetries: 3,
-  }
-
   async execute(): Promise<void> {
     const { accountId, email, password } = this.payload
 

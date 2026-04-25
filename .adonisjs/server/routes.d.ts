@@ -10,6 +10,7 @@ export type ScannedRoutes = {
     'accounts.get_accounts_status': { paramsTuple?: []; params?: {} }
     'accounts.retry_login': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'telegram_webhook.webhook': { paramsTuple?: []; params?: {} }
+    'health_checks.health': { paramsTuple?: []; params?: {} }
   }
   POST: {
     'users.signup': { paramsTuple?: []; params?: {} }
@@ -20,10 +21,12 @@ export type ScannedRoutes = {
   GET: {
     'accounts.get_accounts_status': { paramsTuple?: []; params?: {} }
     'accounts.retry_login': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
+    'health_checks.health': { paramsTuple?: []; params?: {} }
   }
   HEAD: {
     'accounts.get_accounts_status': { paramsTuple?: []; params?: {} }
     'accounts.retry_login': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
+    'health_checks.health': { paramsTuple?: []; params?: {} }
   }
 }
 declare module '@adonisjs/core/types/http' {

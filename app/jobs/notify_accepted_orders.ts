@@ -1,3 +1,4 @@
+import AcceptedOrders from '#events/accepted_orders'
 import Account from '#models/account'
 import TelegramAccount from '#models/telegram_account'
 import { MeeshoApiClient } from '#services/external_api/client'
@@ -7,11 +8,9 @@ import type {
   MeeshoUpdateStatusResponse,
 } from '#services/external_api/types'
 import TelegramService from '#services/telegram_service'
-import AcceptedOrders from '#events/accepted_orders'
 import emitter from '@adonisjs/core/services/emitter'
 import logger from '@adonisjs/core/services/logger'
 import { Job } from '@adonisjs/queue'
-import type { JobOptions } from '@adonisjs/queue/types'
 
 interface NotifyAcceptedOrdersPayload {
   requestId: string
@@ -20,21 +19,9 @@ interface NotifyAcceptedOrdersPayload {
 }
 
 export default class NotifyAcceptedOrders extends Job<NotifyAcceptedOrdersPayload> {
-  private telegramService = new TelegramService()
-
-  static options: JobOptions = {
-    queue: 'default',
-    maxRetries: 3,
-  }
-
   async execute(): Promise<void> {
     const { requestId, accountId } = this.payload
-    const attempt = this.payload.attempt ?? 1
-
-    if (attempt > POLLING_CONFIG.MAX_ATTEMPTS) {
-      logger.warn({ accountId, requestId, attempt }, 'Max polling attempts reached, abandoning')
-      return
-    }
+    const telegramService = new TelegramService()
 
     const client = await MeeshoApiClient.forAccount(accountId)
 
@@ -49,7 +36,6 @@ export default class NotifyAcceptedOrders extends Job<NotifyAcceptedOrdersPayloa
     const responseItem = data.data?.[0]
 
     if (!responseItem) {
-      logger.warn({ accountId, requestId }, 'Empty history response')
       return
     }
 
@@ -60,7 +46,6 @@ export default class NotifyAcceptedOrders extends Job<NotifyAcceptedOrdersPayloa
     } = responseItem
 
     if (resRequestId !== requestId) {
-      logger.warn({ accountId, expected: requestId, received: resRequestId }, 'Request ID mismatch')
       return
     }
 
@@ -76,7 +61,7 @@ export default class NotifyAcceptedOrders extends Job<NotifyAcceptedOrdersPayloa
       await Promise.all(
         telegramAccounts.map((telegramAccount) => {
           const message = `✅ * ${processedOrdersCount} Order Accepted Successfully*\n• *Name:* ${client.supplier.name}`
-          return this.telegramService.sendMessage(telegramAccount.userId, message, {
+          return telegramService.sendMessage(telegramAccount.userId, message, {
             parse_mode: 'Markdown',
             disable_notification: false,
           })
@@ -90,18 +75,13 @@ export default class NotifyAcceptedOrders extends Job<NotifyAcceptedOrdersPayloa
           new AcceptedOrders(accountId, account.userId, processedOrdersCount, new Date())
         )
       }
-
-      logger.info({ accountId, processedOrdersCount }, 'Orders accepted successfully')
       return
     }
 
     await NotifyAcceptedOrders.dispatch({
       requestId,
       accountId,
-      attempt: attempt + 1,
     }).in(POLLING_CONFIG.DELAY)
-
-    logger.info({ accountId, progressPercent, attempt }, 'Re-queued polling job')
   }
 
   async failed(error: Error): Promise<void> {

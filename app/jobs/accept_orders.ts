@@ -1,3 +1,4 @@
+import NotifyAcceptedOrders from '#jobs/notify_accepted_orders'
 import Account from '#models/account'
 import { MeeshoApiClient } from '#services/external_api/client'
 import {
@@ -5,6 +6,7 @@ import {
   ORDER_LIMITS,
   ORDER_STATUS,
   ORDER_TYPE,
+  POLLING_CONFIG,
   SHIPMENT_TYPE,
 } from '#services/external_api/constants'
 import type {
@@ -14,15 +16,8 @@ import type {
 } from '#services/external_api/types'
 import logger from '@adonisjs/core/services/logger'
 import { Job } from '@adonisjs/queue'
-import type { JobOptions } from '@adonisjs/queue/types'
-import NotifyAcceptedOrders from '#jobs/notify_accepted_orders'
 
 export default class AcceptOrders extends Job {
-  static options: JobOptions = {
-    queue: 'default',
-    maxRetries: 3,
-  }
-
   async execute(): Promise<void> {
     const accounts = await Account.query().where('autoAcceptOrders', true)
 
@@ -43,8 +38,6 @@ export default class AcceptOrders extends Job {
               type: ORDER_TYPE.PENDING,
             }
           )
-
-          logger.info({ accountId: account.id }, 'Checking pending orders')
 
           if (!orderData.total_count) return
 
@@ -71,14 +64,14 @@ export default class AcceptOrders extends Job {
           await NotifyAcceptedOrders.dispatch({
             requestId: acceptResponse.request_id,
             accountId: String(account.id),
-          }).run()
+          })
+            .in(POLLING_CONFIG.DELAY)
+            .run()
         } catch (error) {
           logger.error({ accountId: account.id, error }, 'AcceptOrders failed for account')
         }
       })
     )
-
-    logger.info('AcceptOrders batch completed')
   }
 
   async failed(error: Error): Promise<void> {

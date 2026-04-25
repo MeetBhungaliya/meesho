@@ -1,6 +1,6 @@
 import { controllers } from '#generated/controllers'
-import router from '@adonisjs/core/services/router'
 import { middleware } from '#start/kernel'
+import router from '@adonisjs/core/services/router'
 
 router.post('/signup', [controllers.Users, 'signup'])
 router.post('/login', [controllers.Users, 'login'])

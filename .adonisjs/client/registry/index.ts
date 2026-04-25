@@ -42,6 +42,12 @@ const routes = {
     tokens: [{"old":"/telegram/webhook","type":0,"val":"telegram","end":""},{"old":"/telegram/webhook","type":0,"val":"webhook","end":""}],
     types: placeholder as Registry['telegram_webhook.webhook']['types'],
   },
+  'health_checks.health': {
+    methods: ["GET","HEAD"],
+    pattern: '/health',
+    tokens: [{"old":"/health","type":0,"val":"health","end":""}],
+    types: placeholder as Registry['health_checks.health']['types'],
+  },
 } as const satisfies Record<string, AdonisEndpoint>
 
 export { routes }
