@@ -33,11 +33,11 @@ export interface Registry {
   }
   'accounts.create_account': {
     methods: ["POST"]
-    pattern: '/accounts/:accountId'
+    pattern: '/accounts/add-account'
     types: {
       body: ExtractBody<InferInput<(typeof import('#validators/account').createAccountValidator)>>
-      paramsTuple: [ParamValue]
-      params: { accountId: ParamValue }
+      paramsTuple: []
+      params: {}
       query: ExtractQuery<InferInput<(typeof import('#validators/account').createAccountValidator)>>
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/accounts_controller').default['createAccount']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/accounts_controller').default['createAccount']>>> | { status: 422; response: { errors: SimpleError[] } }
@@ -57,14 +57,38 @@ export interface Registry {
   }
   'accounts.retry_login': {
     methods: ["GET","HEAD"]
-    pattern: '/accounts/:accountId/retry-login'
+    pattern: '/accounts/retry-login/:accountId?'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/accounts_controller').default['retryLogin']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/accounts_controller').default['retryLogin']>>>
+    }
+  }
+  'accounts.update_password': {
+    methods: ["PUT"]
+    pattern: '/accounts/update-password/:accountId'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/account').updateAccountPasswordValidator)>>
+      paramsTuple: [ParamValue]
+      params: { accountId: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/account').updateAccountPasswordValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/accounts_controller').default['updatePassword']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/accounts_controller').default['updatePassword']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'accounts.delete_account': {
+    methods: ["DELETE"]
+    pattern: '/accounts/:accountId'
     types: {
       body: {}
       paramsTuple: [ParamValue]
       params: { accountId: ParamValue }
       query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#controllers/accounts_controller').default['retryLogin']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/accounts_controller').default['retryLogin']>>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/accounts_controller').default['deleteAccount']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/accounts_controller').default['deleteAccount']>>>
     }
   }
   'telegram_webhook.webhook': {

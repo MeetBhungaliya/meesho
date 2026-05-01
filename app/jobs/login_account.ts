@@ -27,12 +27,12 @@ export default class LoginAccount extends Job<LoginAccountPayload> {
   async failed(error: Error): Promise<void> {
     const { accountId } = this.payload
 
-    await Account.query()
-      .where('id', Number(accountId))
-      .update({
-        session_status: SESSION_STATUS.FAILED,
-        session_error: `All retries exhausted: ${error.message}`,
-      })
+    const account = await Account.find(Number(accountId))
+    if (account) {
+      account.sessionStatus = SESSION_STATUS.FAILED
+      account.sessionError = `All retries exhausted: ${error.message}`
+      await account.save()
+    }
 
     logger.error({ accountId, error: error.message }, 'LoginAccount permanently failed')
   }

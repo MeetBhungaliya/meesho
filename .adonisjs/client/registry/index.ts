@@ -20,8 +20,8 @@ const routes = {
   },
   'accounts.create_account': {
     methods: ["POST"],
-    pattern: '/accounts/:accountId',
-    tokens: [{"old":"/accounts/:accountId","type":0,"val":"accounts","end":""},{"old":"/accounts/:accountId","type":1,"val":"accountId","end":""}],
+    pattern: '/accounts/add-account',
+    tokens: [{"old":"/accounts/add-account","type":0,"val":"accounts","end":""},{"old":"/accounts/add-account","type":0,"val":"add-account","end":""}],
     types: placeholder as Registry['accounts.create_account']['types'],
   },
   'accounts.get_accounts_status': {
@@ -32,9 +32,21 @@ const routes = {
   },
   'accounts.retry_login': {
     methods: ["GET","HEAD"],
-    pattern: '/accounts/:accountId/retry-login',
-    tokens: [{"old":"/accounts/:accountId/retry-login","type":0,"val":"accounts","end":""},{"old":"/accounts/:accountId/retry-login","type":1,"val":"accountId","end":""},{"old":"/accounts/:accountId/retry-login","type":0,"val":"retry-login","end":""}],
+    pattern: '/accounts/retry-login/:accountId?',
+    tokens: [{"old":"/accounts/retry-login/:accountId?","type":0,"val":"accounts","end":""},{"old":"/accounts/retry-login/:accountId?","type":0,"val":"retry-login","end":""},{"old":"/accounts/retry-login/:accountId?","type":3,"val":"accountId","end":""}],
     types: placeholder as Registry['accounts.retry_login']['types'],
+  },
+  'accounts.update_password': {
+    methods: ["PUT"],
+    pattern: '/accounts/update-password/:accountId',
+    tokens: [{"old":"/accounts/update-password/:accountId","type":0,"val":"accounts","end":""},{"old":"/accounts/update-password/:accountId","type":0,"val":"update-password","end":""},{"old":"/accounts/update-password/:accountId","type":1,"val":"accountId","end":""}],
+    types: placeholder as Registry['accounts.update_password']['types'],
+  },
+  'accounts.delete_account': {
+    methods: ["DELETE"],
+    pattern: '/accounts/:accountId',
+    tokens: [{"old":"/accounts/:accountId","type":0,"val":"accounts","end":""},{"old":"/accounts/:accountId","type":1,"val":"accountId","end":""}],
+    types: placeholder as Registry['accounts.delete_account']['types'],
   },
   'telegram_webhook.webhook': {
     methods: ["POST"],

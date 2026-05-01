@@ -29,10 +29,10 @@ export class SessionManager {
   }
 
   static async login(accountId: AccountId, email: string, password: string): Promise<void> {
-    await Account.query().where('id', Number(accountId)).update({
-      session_status: SESSION_STATUS.PENDING,
-      session_error: null,
-    })
+    const account = await Account.findOrFail(Number(accountId))
+    account.sessionStatus = SESSION_STATUS.PENDING
+    account.sessionError = null
+    await account.save()
 
     await LoginAccount.dispatch({ accountId, email, password })
   }
@@ -45,10 +45,10 @@ export class SessionManager {
     const sessionCacheKey = `${CACHE_PREFIX.session}${accountId}`
     const supplierCacheKey = `${CACHE_PREFIX.supplier}${accountId}`
 
-    await Account.query().where('id', Number(accountId)).update({
-      session_status: SESSION_STATUS.PENDING,
-      session_error: null,
-    })
+    const account = await Account.findOrFail(Number(accountId))
+    account.sessionStatus = SESSION_STATUS.PENDING
+    account.sessionError = null
+    await account.save()
 
     const payload = {
       email,
@@ -57,24 +57,31 @@ export class SessionManager {
       instance: email,
     }
 
-    const res = await fetch(MEESHO_ENDPOINTS.login, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': '*/*',
-        'User-Agent':
-          'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Mobile Safari/537.36',
-      },
-      body: JSON.stringify(payload),
-    })
+    let res: Response
+    try {
+      res = await fetch(MEESHO_ENDPOINTS.login, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': '*/*',
+          'User-Agent':
+            'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Mobile Safari/537.36',
+        },
+        body: JSON.stringify(payload),
+      })
+    } catch (err: any) {
+      account.sessionStatus = SESSION_STATUS.FAILED
+      account.sessionError = `Network error during login: ${err.message}`
+      await account.save()
+      throw new SessionError(account.sessionError, accountId)
+    }
 
     if (res.status !== 200) {
       const errorMsg = `Login failed (HTTP ${res.status})`
 
-      await Account.query().where('id', Number(accountId)).update({
-        session_status: SESSION_STATUS.FAILED,
-        session_error: errorMsg,
-      })
+      account.sessionStatus = SESSION_STATUS.FAILED
+      account.sessionError = errorMsg
+      await account.save()
 
       throw new SessionError(errorMsg, accountId)
     }
@@ -84,10 +91,9 @@ export class SessionManager {
     if (!cookies[SESSION_COOKIE_KEYS.identifier] || !cookies[SESSION_COOKIE_KEYS.sid]) {
       const errorMsg = 'Login succeeded but required cookies were not returned'
 
-      await Account.query().where('id', Number(accountId)).update({
-        session_status: SESSION_STATUS.FAILED,
-        session_error: errorMsg,
-      })
+      account.sessionStatus = SESSION_STATUS.FAILED
+      account.sessionError = errorMsg
+      await account.save()
 
       throw new SessionError(errorMsg, accountId)
     }
@@ -100,28 +106,35 @@ export class SessionManager {
       identifier: cookies[SESSION_COOKIE_KEYS.identifier],
     }
 
-    const supplierDataRes = await fetch(MEESHO_ENDPOINTS.prefetchSupplyData, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'identifier': cookies[SESSION_COOKIE_KEYS.identifier],
-        'cookie': cookieString,
-        'Accept': '*/*',
-        'User-Agent':
-          'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Mobile Safari/537.36',
-      },
-      body: JSON.stringify(supplierPayload),
-    })
+    let supplierDataRes: Response
+    try {
+      supplierDataRes = await fetch(MEESHO_ENDPOINTS.prefetchSupplyData, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'identifier': cookies[SESSION_COOKIE_KEYS.identifier],
+          'cookie': cookieString,
+          'Accept': '*/*',
+          'User-Agent':
+            'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Mobile Safari/537.36',
+        },
+        body: JSON.stringify(supplierPayload),
+      })
+    } catch (err: any) {
+      account.sessionStatus = SESSION_STATUS.FAILED
+      account.sessionError = `Network error during prefetch: ${err.message}`
+      await account.save()
+      throw new SessionError(account.sessionError, accountId)
+    }
 
     const supplierRawBody = await supplierDataRes.text()
 
     if (supplierDataRes.status !== 200) {
       const errorMsg = `Prefetch failed (HTTP ${supplierDataRes.status}): ${supplierRawBody.substring(0, 500)}`
 
-      await Account.query().where('id', Number(accountId)).update({
-        session_status: SESSION_STATUS.FAILED,
-        session_error: errorMsg,
-      })
+      account.sessionStatus = SESSION_STATUS.FAILED
+      account.sessionError = errorMsg
+      await account.save()
 
       throw new SessionError(errorMsg, accountId)
     }
@@ -131,7 +144,11 @@ export class SessionManager {
     try {
       supplierData = JSON.parse(supplierRawBody)
     } catch (err) {
-      throw new SessionError('Invalid JSON response from supplier API', accountId)
+      const errorMsg = 'Invalid JSON response from supplier API'
+      account.sessionStatus = SESSION_STATUS.FAILED
+      account.sessionError = errorMsg
+      await account.save()
+      throw new SessionError(errorMsg, accountId)
     }
 
     await cache.setForever({
@@ -152,11 +169,10 @@ export class SessionManager {
       ttl: '24h',
     })
 
-    await Account.query().where('id', Number(accountId)).update({
-      session_status: SESSION_STATUS.ACTIVE,
-      session_error: null,
-      last_login_at: DateTime.utc().toISO(),
-    })
+    account.sessionStatus = SESSION_STATUS.ACTIVE
+    account.sessionError = null
+    account.lastLoginAt = DateTime.utc()
+    await account.save()
 
     return cookies
   }
@@ -164,9 +180,11 @@ export class SessionManager {
   static async invalidate(accountId: AccountId): Promise<void> {
     await cache.delete({ key: `${CACHE_PREFIX.session}${accountId}` })
 
-    await Account.query().where('id', Number(accountId)).update({
-      session_status: SESSION_STATUS.EXPIRED,
-    })
+    const account = await Account.find(Number(accountId))
+    if (account) {
+      account.sessionStatus = SESSION_STATUS.EXPIRED
+      await account.save()
+    }
   }
 
   static extractCookies(headers: Headers): Record<string, string> {

@@ -10,7 +10,7 @@ export default class TrackAcceptedOrders {
     const accountCountKey = REDIS_KEYS.accountOrders(event.accountId, dateKey)
     const userCountKey = REDIS_KEYS.userOrders(event.userId, dateKey)
 
-    await redis.set(accountCountKey, event.ordersCount)
+    await redis.incrby(accountCountKey, event.ordersCount)
     await redis.incrby(userCountKey, event.ordersCount)
 
     await redis.expire(accountCountKey, REDIS_TTL.ORDER_TRACKING)

@@ -10,6 +10,8 @@ export interface ApiDefinition {
     createAccount: typeof routes['accounts.create_account']
     getAccountsStatus: typeof routes['accounts.get_accounts_status']
     retryLogin: typeof routes['accounts.retry_login']
+    updatePassword: typeof routes['accounts.update_password']
+    deleteAccount: typeof routes['accounts.delete_account']
   }
   telegramWebhook: {
     webhook: typeof routes['telegram_webhook.webhook']

@@ -9,9 +9,11 @@ router
   .group(() => {
     router
       .group(() => {
-        router.post('/:accountId', [controllers.Accounts, 'createAccount'])
+        router.post('/add-account', [controllers.Accounts, 'createAccount'])
         router.get('/status', [controllers.Accounts, 'getAccountsStatus'])
-        router.get('/:accountId/retry-login', [controllers.Accounts, 'retryLogin'])
+        router.get('/retry-login/:accountId?', [controllers.Accounts, 'retryLogin'])
+        router.put('/update-password/:accountId', [controllers.Accounts, 'updatePassword'])
+        router.delete('/:accountId', [controllers.Accounts, 'deleteAccount'])
       })
       .prefix('accounts')
   })

@@ -10,3 +10,9 @@ export const createAccountValidator = vine.create(
     provider: vine.string().maxLength(255).optional(),
   })
 )
+
+export const updateAccountPasswordValidator = vine.create(
+  vine.object({
+    password: password(),
+  })
+)

@@ -1,5 +1,5 @@
 import User from '#models/user'
-import { SessionManager } from '#services/external_api/session_manager'
+
 import { createUserValidator, loginValidator } from '#validators/user'
 import type { HttpContext } from '@adonisjs/core/http'
 
@@ -16,17 +16,9 @@ export default class UsersController {
     const user = await User.verifyCredentials(email, password)
     const token = await User.accessTokens.create(user)
 
-    await user.load((preloader) => preloader.load('accounts'))
-
-    user.accounts.forEach((account) =>
-      SessionManager.login(account.id.toString(), account.email, account.password)
-    )
-
     return response.ok({
       message: 'Login successful.',
-      data: {
-        user,
-      },
+      data: {user},
       token: token.value!.release(),
     })
   }
