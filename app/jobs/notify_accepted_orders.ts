@@ -12,58 +12,106 @@ import emitter from '@adonisjs/core/services/emitter'
 import logger from '@adonisjs/core/services/logger'
 import { Job } from '@adonisjs/queue'
 
-interface NotifyAcceptedOrdersPayload {
-  requestId: string
+interface AccountPayload {
   accountId: string
+  requestId: string
+  totalCount: number
+  supplierName: string
+  isComplete: boolean
+  processedCount?: number
+}
+
+interface NotifyAcceptedOrdersPayload {
+  userId: string
+  accounts: AccountPayload[]
   attempt?: number
 }
 
 export default class NotifyAcceptedOrders extends Job<NotifyAcceptedOrdersPayload> {
   async execute(): Promise<void> {
     logger.info('Starting NotifyAcceptedOrders job')
-    const { requestId, accountId } = this.payload
+    const { userId, accounts } = this.payload
     const telegramService = new TelegramService()
 
-    const client = await MeeshoApiClient.forAccount(accountId)
+    let allComplete = true
 
-    const { data } = await client.post<MeeshoOrderHistoryResponse>(
-      MEESHO_ENDPOINTS.fetchPendingOrdersHistory,
-      {
-        supplier_id: client.supplier.supplierId,
-        identifier: client.supplier.identifier,
-      }
+    await Promise.all(
+      accounts.map(async (acc) => {
+        if (acc.isComplete) return
+
+        try {
+          const client = await MeeshoApiClient.forAccount(acc.accountId)
+
+          const { data } = await client.post<MeeshoOrderHistoryResponse>(
+            MEESHO_ENDPOINTS.fetchPendingOrdersHistory,
+            {
+              supplier_id: client.supplier.supplierId,
+              identifier: client.supplier.identifier,
+            }
+          )
+
+          const responseItem = data.data?.[0]
+
+          if (!responseItem) {
+            logger.warn({ accountId: acc.accountId, requestId: acc.requestId }, 'Empty history response')
+            allComplete = false
+            return
+          }
+
+          const {
+            request_id: resRequestId,
+            progress_percent: progressPercent,
+            processed_orders_count: processedOrdersCount,
+          } = responseItem
+
+          if (resRequestId !== acc.requestId) {
+            logger.warn({ accountId: acc.accountId, expected: acc.requestId, received: resRequestId }, 'Request ID mismatch')
+            allComplete = false
+            return
+          }
+
+          if (progressPercent === POLLING_CONFIG.PROGRESS_COMPLETE) {
+            await client.post<MeeshoUpdateStatusResponse>(MEESHO_ENDPOINTS.updatePendingOrderStatus, {
+              supplier_id: client.supplier.supplierId,
+              identifier: client.supplier.identifier,
+              request_id: acc.requestId,
+              status: POPUP_STATUS.CLOSED,
+            }).catch(error => {
+              logger.error({ error, accountId: acc.accountId }, 'Failed to update order status')
+            })
+
+            const account = await Account.find(Number(acc.accountId))
+            if (account) {
+              await emitter.emit(
+                'order:accepted',
+                new AcceptedOrders(acc.accountId, account.userId, processedOrdersCount, new Date())
+              )
+            }
+
+            acc.isComplete = true
+            acc.processedCount = processedOrdersCount
+          } else {
+            allComplete = false
+          }
+        } catch (error) {
+          logger.error({ accountId: acc.accountId, error }, 'Error processing account history')
+          allComplete = false
+        }
+      })
     )
 
-    const responseItem = data.data?.[0]
-
-    if (!responseItem) {
-      logger.warn({ accountId, requestId }, 'Empty history response')
-      return
-    }
-
-    const {
-      request_id: resRequestId,
-      progress_percent: progressPercent,
-      processed_orders_count: processedOrdersCount,
-    } = responseItem
-
-    if (resRequestId !== requestId) {
-      logger.warn({ accountId, expected: requestId, received: resRequestId }, 'Request ID mismatch')
-      return
-    }
-
-    if (progressPercent === POLLING_CONFIG.PROGRESS_COMPLETE) {
-      await client.post<MeeshoUpdateStatusResponse>(MEESHO_ENDPOINTS.updatePendingOrderStatus, {
-        supplier_id: client.supplier.supplierId,
-        identifier: client.supplier.identifier,
-        request_id: requestId,
-        status: POPUP_STATUS.CLOSED,
-      })
-
+    if (allComplete) {
       const telegramAccounts = await TelegramAccount.query().where('isUpdates', true)
+      
+      let totalCountSum = accounts.reduce((sum, curr) => sum + curr.totalCount, 0)
+      
+      let message = `✅ *${totalCountSum} Orders Accepted Successfully*\n\n`
+      for (const acc of accounts) {
+        message += `• *${acc.supplierName}:* ${acc.totalCount} Orders\n`
+      }
+
       await Promise.all(
         telegramAccounts.map((telegramAccount) => {
-          const message = `✅ * ${processedOrdersCount} Order Accepted Successfully*\n• *Name:* ${client.supplier.name}`
           return telegramService.sendMessage(telegramAccount.userId, message, {
             parse_mode: 'Markdown',
             disable_notification: false,
@@ -71,21 +119,14 @@ export default class NotifyAcceptedOrders extends Job<NotifyAcceptedOrdersPayloa
         })
       )
 
-      const account = await Account.find(Number(accountId))
-      if (account) {
-        await emitter.emit(
-          'order:accepted',
-          new AcceptedOrders(accountId, account.userId, processedOrdersCount, new Date())
-        )
-      }
-
-      logger.info({ accountId, processedOrdersCount }, 'Orders accepted successfully')
+      logger.info({ userId }, 'Orders accepted successfully for all accounts of user')
       return
     }
 
     await NotifyAcceptedOrders.dispatch({
-      requestId,
-      accountId,
+      userId,
+      accounts,
+      attempt: (this.payload.attempt || 0) + 1,
     }).in(POLLING_CONFIG.DELAY)
   }
 

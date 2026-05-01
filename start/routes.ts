@@ -9,6 +9,7 @@ router
   .group(() => {
     router
       .group(() => {
+        router.get('/', [controllers.Accounts, 'getAllAccounts'])
         router.post('/add-account', [controllers.Accounts, 'createAccount'])
         router.get('/status', [controllers.Accounts, 'getAccountsStatus'])
         router.get('/retry-login/:accountId?', [controllers.Accounts, 'retryLogin'])

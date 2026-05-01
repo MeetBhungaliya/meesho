@@ -16,6 +16,16 @@ export default class AccountsController {
     return response.created({ message: 'Account created successfully', data: account })
   }
 
+  async getAllAccounts({ auth, response }: HttpContext) {
+    const user = await auth.authenticate()
+    const accounts = await Account.query().where('user_id', user.id).orderBy('created_at', 'desc')
+
+    return response.ok({
+      message: 'Accounts fetched successfully',
+      data: accounts,
+    })
+  }
+
   async getAccountsStatus({ auth, response }: HttpContext) {
     const user = await auth.authenticate()
     await user.load((preloader) => preloader.load('accounts'))

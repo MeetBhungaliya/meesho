@@ -18,6 +18,12 @@ const routes = {
     tokens: [{"old":"/login","type":0,"val":"login","end":""}],
     types: placeholder as Registry['users.login']['types'],
   },
+  'accounts.get_all_accounts': {
+    methods: ["GET","HEAD"],
+    pattern: '/accounts',
+    tokens: [{"old":"/accounts","type":0,"val":"accounts","end":""}],
+    types: placeholder as Registry['accounts.get_all_accounts']['types'],
+  },
   'accounts.create_account': {
     methods: ["POST"],
     pattern: '/accounts/add-account',

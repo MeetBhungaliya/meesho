@@ -31,6 +31,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/users_controller').default['login']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
+  'accounts.get_all_accounts': {
+    methods: ["GET","HEAD"]
+    pattern: '/accounts'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/accounts_controller').default['getAllAccounts']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/accounts_controller').default['getAllAccounts']>>>
+    }
+  }
   'accounts.create_account': {
     methods: ["POST"]
     pattern: '/accounts/add-account'

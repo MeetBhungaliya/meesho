@@ -6,6 +6,7 @@ export type ScannedRoutes = {
   ALL: {
     'users.signup': { paramsTuple?: []; params?: {} }
     'users.login': { paramsTuple?: []; params?: {} }
+    'accounts.get_all_accounts': { paramsTuple?: []; params?: {} }
     'accounts.create_account': { paramsTuple?: []; params?: {} }
     'accounts.get_accounts_status': { paramsTuple?: []; params?: {} }
     'accounts.retry_login': { paramsTuple?: [ParamValue?]; params?: {'accountId'?: ParamValue} }
@@ -21,11 +22,13 @@ export type ScannedRoutes = {
     'telegram_webhook.webhook': { paramsTuple?: []; params?: {} }
   }
   GET: {
+    'accounts.get_all_accounts': { paramsTuple?: []; params?: {} }
     'accounts.get_accounts_status': { paramsTuple?: []; params?: {} }
     'accounts.retry_login': { paramsTuple?: [ParamValue?]; params?: {'accountId'?: ParamValue} }
     'health_checks.health': { paramsTuple?: []; params?: {} }
   }
   HEAD: {
+    'accounts.get_all_accounts': { paramsTuple?: []; params?: {} }
     'accounts.get_accounts_status': { paramsTuple?: []; params?: {} }
     'accounts.retry_login': { paramsTuple?: [ParamValue?]; params?: {'accountId'?: ParamValue} }
     'health_checks.health': { paramsTuple?: []; params?: {} }

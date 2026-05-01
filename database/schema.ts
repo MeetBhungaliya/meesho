@@ -8,19 +8,7 @@ import { BaseModel, column } from '@adonisjs/lucid/orm'
 import { DateTime } from 'luxon'
 
 export class AccountSchema extends BaseModel {
-  static $columns = [
-    'autoAcceptOrders',
-    'createdAt',
-    'email',
-    'id',
-    'lastLoginAt',
-    'password',
-    'provider',
-    'sessionError',
-    'sessionStatus',
-    'updatedAt',
-    'userId',
-  ] as const
+  static $columns = ['autoAcceptOrders', 'createdAt', 'email', 'id', 'lastLoginAt', 'password', 'provider', 'sessionError', 'sessionStatus', 'updatedAt', 'userId'] as const
   $columns = AccountSchema.$columns
   @column()
   declare autoAcceptOrders: boolean
@@ -47,18 +35,7 @@ export class AccountSchema extends BaseModel {
 }
 
 export class AuthAccessTokenSchema extends BaseModel {
-  static $columns = [
-    'abilities',
-    'createdAt',
-    'expiresAt',
-    'hash',
-    'id',
-    'lastUsedAt',
-    'name',
-    'tokenableId',
-    'type',
-    'updatedAt',
-  ] as const
+  static $columns = ['abilities', 'createdAt', 'expiresAt', 'hash', 'id', 'lastUsedAt', 'name', 'tokenableId', 'type', 'updatedAt'] as const
   $columns = AuthAccessTokenSchema.$columns
   @column()
   declare abilities: string
