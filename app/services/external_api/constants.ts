@@ -66,7 +66,6 @@ export const POLLING_CONFIG = {
 
 export const REDIS_KEYS = {
   accountOrders: (accountId: string, date: string) => `orders:accepted:${accountId}:${date}`,
-  userOrders: (userId: number, date: string) => `orders:accepted:user:${userId}:${date}`,
 } as const
 
 export const REDIS_TTL = {

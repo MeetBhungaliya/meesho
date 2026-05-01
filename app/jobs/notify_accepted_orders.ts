@@ -1,8 +1,9 @@
 import AcceptedOrders from '#events/accepted_orders'
+import { events } from '#generated/events'
 import Account from '#models/account'
 import TelegramAccount from '#models/telegram_account'
 import { MeeshoApiClient } from '#services/external_api/client'
-import { MEESHO_ENDPOINTS, POLLING_CONFIG, POPUP_STATUS } from '#services/external_api/constants'
+import { MEESHO_ENDPOINTS, POLLING_CONFIG, POPUP_STATUS, REDIS_KEYS } from '#services/external_api/constants'
 import type {
   MeeshoOrderHistoryResponse,
   MeeshoUpdateStatusResponse,
@@ -11,6 +12,8 @@ import TelegramService from '#services/telegram_service'
 import emitter from '@adonisjs/core/services/emitter'
 import logger from '@adonisjs/core/services/logger'
 import { Job } from '@adonisjs/queue'
+import redis from '@adonisjs/redis/services/main'
+import { DateTime } from 'luxon'
 
 interface AccountPayload {
   accountId: string
@@ -83,7 +86,7 @@ export default class NotifyAcceptedOrders extends Job<NotifyAcceptedOrdersPayloa
             const account = await Account.find(Number(acc.accountId))
             if (account) {
               await emitter.emit(
-                'order:accepted',
+                events.AcceptedOrders,
                 new AcceptedOrders(acc.accountId, account.userId, processedOrdersCount, new Date())
               )
             }
@@ -103,12 +106,18 @@ export default class NotifyAcceptedOrders extends Job<NotifyAcceptedOrdersPayloa
     if (allComplete) {
       const telegramAccounts = await TelegramAccount.query().where('isUpdates', true)
       
-      let totalCountSum = accounts.reduce((sum, curr) => sum + curr.totalCount, 0)
+      const dateKey = DateTime.now().toFormat('yyyy-MM-dd')
+      let totalCountSum = 0
+      let detailsMessage = ''
       
-      let message = `✅ *${totalCountSum} Orders Accepted Successfully*\n\n`
       for (const acc of accounts) {
-        message += `• *${acc.supplierName}:* ${acc.totalCount} Orders\n`
+        const accountCountKey = REDIS_KEYS.accountOrders(acc.accountId, dateKey)
+        const dailyTotal = Number(await redis.get(accountCountKey)) || 0
+        totalCountSum += dailyTotal
+        detailsMessage += `• *${acc.supplierName}:* ${dailyTotal} Orders\n`
       }
+      
+      let message = `✅ *${totalCountSum} Orders Accepted Successfully*\n\n${detailsMessage}`
 
       await Promise.all(
         telegramAccounts.map((telegramAccount) => {

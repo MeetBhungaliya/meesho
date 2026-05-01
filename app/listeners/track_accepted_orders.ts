@@ -8,12 +8,9 @@ export default class TrackAcceptedOrders {
     const dateKey = DateTime.fromJSDate(event.acceptedAt).toFormat('yyyy-MM-dd')
 
     const accountCountKey = REDIS_KEYS.accountOrders(event.accountId, dateKey)
-    const userCountKey = REDIS_KEYS.userOrders(event.userId, dateKey)
 
     await redis.incrby(accountCountKey, event.ordersCount)
-    await redis.incrby(userCountKey, event.ordersCount)
 
     await redis.expire(accountCountKey, REDIS_TTL.ORDER_TRACKING)
-    await redis.expire(userCountKey, REDIS_TTL.ORDER_TRACKING)
   }
 }
