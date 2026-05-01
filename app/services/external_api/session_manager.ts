@@ -1,12 +1,13 @@
 import LoginAccount from '#jobs/login_account'
 import Account from '#models/account'
+import { MeeshoApiClient } from '#services/external_api/client'
 import {
   CACHE_PREFIX,
   MEESHO_ENDPOINTS,
   SESSION_COOKIE_KEYS,
-  SESSION_STATUS,
+  SESSION_STATUS
 } from '#services/external_api/constants'
-import { SessionError } from '#services/external_api/errors'
+import { ApiError, SessionError } from '#services/external_api/errors'
 import type {
   AccountId,
   MeeshoSupplierPrefetchResponse,
@@ -57,36 +58,23 @@ export class SessionManager {
       instance: email,
     }
 
-    let res: Response
+    const client = MeeshoApiClient.createForLogin(accountId)
+
+    let loginRes
     try {
-      res = await fetch(MEESHO_ENDPOINTS.login, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': '*/*',
-          'User-Agent':
-            'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Mobile Safari/537.36',
-        },
-        body: JSON.stringify(payload),
-      })
+      loginRes = await client.post(MEESHO_ENDPOINTS.login, payload, { skipAuth: true })
     } catch (err: any) {
-      account.sessionStatus = SESSION_STATUS.FAILED
-      account.sessionError = `Network error during login: ${err.message}`
-      await account.save()
-      throw new SessionError(account.sessionError, accountId)
-    }
-
-    if (res.status !== 200) {
-      const errorMsg = `Login failed (HTTP ${res.status})`
-
+      const errorMsg = err instanceof ApiError 
+        ? `Login failed (HTTP ${err.status}): ${err.message}` 
+        : `Network error during login: ${err.message}`
+        
       account.sessionStatus = SESSION_STATUS.FAILED
       account.sessionError = errorMsg
       await account.save()
-
       throw new SessionError(errorMsg, accountId)
     }
 
-    const cookies = SessionManager.extractCookies(res.headers)
+    const cookies = SessionManager.extractCookies(loginRes.headers)
 
     if (!cookies[SESSION_COOKIE_KEYS.identifier] || !cookies[SESSION_COOKIE_KEYS.sid]) {
       const errorMsg = 'Login succeeded but required cookies were not returned'
@@ -106,50 +94,31 @@ export class SessionManager {
       identifier: cookies[SESSION_COOKIE_KEYS.identifier],
     }
 
-    let supplierDataRes: Response
+    let supplierDataRes
     try {
-      supplierDataRes = await fetch(MEESHO_ENDPOINTS.prefetchSupplyData, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'identifier': cookies[SESSION_COOKIE_KEYS.identifier],
-          'cookie': cookieString,
-          'Accept': '*/*',
-          'User-Agent':
-            'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Mobile Safari/537.36',
-        },
-        body: JSON.stringify(supplierPayload),
-      })
+      supplierDataRes = await client.post<MeeshoSupplierPrefetchResponse>(
+        MEESHO_ENDPOINTS.prefetchSupplyData, 
+        supplierPayload, 
+        { 
+          skipAuth: true,
+          headers: {
+            'identifier': cookies[SESSION_COOKIE_KEYS.identifier],
+            'cookie': cookieString,
+          }
+        }
+      )
     } catch (err: any) {
-      account.sessionStatus = SESSION_STATUS.FAILED
-      account.sessionError = `Network error during prefetch: ${err.message}`
-      await account.save()
-      throw new SessionError(account.sessionError, accountId)
-    }
-
-    const supplierRawBody = await supplierDataRes.text()
-
-    if (supplierDataRes.status !== 200) {
-      const errorMsg = `Prefetch failed (HTTP ${supplierDataRes.status}): ${supplierRawBody.substring(0, 500)}`
-
-      account.sessionStatus = SESSION_STATUS.FAILED
-      account.sessionError = errorMsg
-      await account.save()
-
-      throw new SessionError(errorMsg, accountId)
-    }
-
-    let supplierData: MeeshoSupplierPrefetchResponse
-
-    try {
-      supplierData = JSON.parse(supplierRawBody)
-    } catch (err) {
-      const errorMsg = 'Invalid JSON response from supplier API'
+      const errorMsg = err instanceof ApiError 
+        ? `Prefetch failed (HTTP ${err.status}): ${err.message}` 
+        : `Network error during prefetch: ${err.message}`
+        
       account.sessionStatus = SESSION_STATUS.FAILED
       account.sessionError = errorMsg
       await account.save()
       throw new SessionError(errorMsg, accountId)
     }
+
+    let supplierData: MeeshoSupplierPrefetchResponse = supplierDataRes.data
 
     await cache.setForever({
       key: supplierCacheKey,

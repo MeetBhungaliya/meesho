@@ -13,12 +13,12 @@ export default defineConfig({
   },
 
   worker: {
-    concurrency: 3,
-    idleDelay: '2s',
+    concurrency: 1,
+    idleDelay: '5s',
   },
 
   retry: {
-    maxRetries: 3,
+    maxRetries: 2,
     backoff: exponentialBackoff(),
   },
 

@@ -2,6 +2,7 @@ import { ApiError, SessionError } from '#services/external_api/errors'
 import { SessionManager } from '#services/external_api/session_manager'
 import type { SessionCookies } from '#services/external_api/session_manager'
 import type { ApiResponse, RequestOptions, SupplierCacheData } from '#services/external_api/types'
+import { API_HEADERS } from '#services/external_api/constants'
 import Account from '#models/account'
 
 const DEFAULT_RETRIES = 2
@@ -9,17 +10,21 @@ const BACKOFF_BASE_MS = 500
 
 export class MeeshoApiClient {
   private accountId: string
-  private sessionCookies: SessionCookies
-  private supplierData: SupplierCacheData
+  private sessionCookies?: SessionCookies
+  private supplierData?: SupplierCacheData
 
   private constructor(
     accountId: string,
-    sessionCookies: SessionCookies,
-    supplierData: SupplierCacheData
+    sessionCookies?: SessionCookies,
+    supplierData?: SupplierCacheData
   ) {
     this.accountId = accountId
     this.sessionCookies = sessionCookies
     this.supplierData = supplierData
+  }
+
+  static createForLogin(accountId: string): MeeshoApiClient {
+    return new MeeshoApiClient(accountId)
   }
 
   static async forAccount(accountId: string): Promise<MeeshoApiClient> {
@@ -44,6 +49,9 @@ export class MeeshoApiClient {
   }
 
   get supplier(): SupplierCacheData {
+    if (!this.supplierData) {
+      throw new Error('Supplier data is not available in login context')
+    }
     return this.supplierData
   }
 
@@ -83,7 +91,15 @@ export class MeeshoApiClient {
             )
           }
 
-          const data = (await retryRes.json()) as T
+          const rawText = await retryRes.text()
+          let data = {} as T
+          if (rawText) {
+            try {
+              data = JSON.parse(rawText)
+            } catch {
+              data = rawText as unknown as T
+            }
+          }
           return { data, status: retryRes.status, headers: retryRes.headers }
         }
 
@@ -102,7 +118,15 @@ export class MeeshoApiClient {
           )
         }
 
-        const data = (await res.json()) as T
+        const rawText = await res.text()
+        let data = {} as T
+        if (rawText) {
+          try {
+            data = JSON.parse(rawText)
+          } catch {
+            data = rawText as unknown as T
+          }
+        }
         return { data, status: res.status, headers: res.headers }
       } catch (error) {
         if (error instanceof ApiError || error instanceof SessionError) {
@@ -142,15 +166,9 @@ export class MeeshoApiClient {
   }
 
   private buildHeaders(options: RequestOptions): Record<string, string> {
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-      'client-type': 'd-web',
-      'Accept': '*/*',
-      'User-Agent':
-        'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Mobile Safari/537.36',
-    }
+    const headers: Record<string, string> = { ...API_HEADERS }
 
-    if (!options.skipAuth) {
+    if (!options.skipAuth && this.supplierData && this.sessionCookies) {
       headers['identifier'] = this.supplierData.identifier
       headers['cookie'] = formatCookieString(this.sessionCookies)
     }
