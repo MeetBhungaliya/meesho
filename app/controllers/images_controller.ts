@@ -1,8 +1,7 @@
-import transmit from '@adonisjs/transmit/services/main'
 import ProcessImageShippingPrices from '#jobs/process_image_shipping_prices'
 import { globals } from '#libs/globals'
 import ShippingPrice from '#models/shipping_price'
-import { uploadImagesValidator, uploadImagesParamsValidator, getImagesValidator } from '#validators/image'
+import { getImagesValidator, uploadImagesParamsValidator, uploadImagesValidator } from '#validators/image'
 import { HttpContext } from '@adonisjs/core/http'
 
 export default class ImagesController {
