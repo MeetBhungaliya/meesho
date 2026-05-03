@@ -18,38 +18,11 @@ export default class AccountsController {
 
   async getAllAccounts({ auth, response }: HttpContext) {
     const user = await auth.authenticate()
-    const accounts = await Account.query().where('user_id', user.id).orderBy('created_at', 'desc')
+    const accounts = await Account.query().where('user_id', user.id).orderBy('id', 'asc')
 
     return response.ok({
       message: 'Accounts fetched successfully',
       data: accounts,
-    })
-  }
-
-  async getAccountsStatus({ auth, response }: HttpContext) {
-    const user = await auth.authenticate()
-    await user.load((preloader) => preloader.load('accounts'))
-
-    const accountStatuses = user.accounts.map((account) => ({
-      id: account.id,
-      email: account.email,
-      provider: account.provider,
-      sessionStatus: account.sessionStatus,
-      sessionError: account.sessionError,
-      lastLoginAt: account.lastLoginAt,
-    }))
-
-    const summary = {
-      total: accountStatuses.length,
-      active: accountStatuses.filter((a) => a.sessionStatus === SESSION_STATUS.ACTIVE).length,
-      pending: accountStatuses.filter((a) => a.sessionStatus === SESSION_STATUS.PENDING).length,
-      failed: accountStatuses.filter((a) => a.sessionStatus === SESSION_STATUS.FAILED).length,
-      expired: accountStatuses.filter((a) => a.sessionStatus === SESSION_STATUS.EXPIRED).length,
-    }
-
-    return response.ok({
-      message: 'Account session statuses',
-      data: { accounts: accountStatuses, summary },
     })
   }
 
@@ -61,10 +34,6 @@ export default class AccountsController {
         .where('id', params.accountId)
         .where('user_id', user.id)
         .firstOrFail()
-
-      if (account.sessionStatus === SESSION_STATUS.ACTIVE) {
-        return response.ok({ message: 'Session is already active', data: account })
-      }
 
       await SessionManager.login(account.id.toString(), account.email, account.password)
 

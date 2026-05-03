@@ -16,7 +16,6 @@ router
       .group(() => {
         router.get('/', [controllers.Accounts, 'getAllAccounts'])
         router.post('/add-account', [controllers.Accounts, 'createAccount'])
-        router.get('/status', [controllers.Accounts, 'getAccountsStatus'])
         router.get('/retry-login/:accountId?', [controllers.Accounts, 'retryLogin'])
         router.put('/update-password/:accountId', [controllers.Accounts, 'updatePassword'])
         router.delete('/:accountId', [controllers.Accounts, 'deleteAccount'])
