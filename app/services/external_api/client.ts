@@ -63,7 +63,7 @@ export class MeeshoApiClient {
         const res = await fetch(url, {
           method: options.method || 'POST',
           headers: this.buildHeaders(options),
-          body: options.body ? JSON.stringify(options.body) : undefined,
+          body: options.body instanceof FormData ? options.body : options.body ? JSON.stringify(options.body) : undefined,
         })
 
         if (res.status === 401) {
@@ -78,7 +78,7 @@ export class MeeshoApiClient {
           const retryRes = await fetch(url, {
             method: options.method || 'POST',
             headers: this.buildHeaders(options),
-            body: options.body ? JSON.stringify(options.body) : undefined,
+            body: options.body instanceof FormData ? options.body : options.body ? JSON.stringify(options.body) : undefined,
           })
 
           if (!retryRes.ok) {
@@ -152,7 +152,7 @@ export class MeeshoApiClient {
 
   async post<T = unknown>(
     url: string,
-    body: Record<string, unknown>,
+    body: Record<string, unknown> | FormData,
     options: Omit<RequestOptions, 'method' | 'body'> = {}
   ): Promise<ApiResponse<T>> {
     return this.request<T>(url, { ...options, method: 'POST', body })
@@ -173,7 +173,13 @@ export class MeeshoApiClient {
       headers['cookie'] = formatCookieString(this.sessionCookies)
     }
 
-    return { ...headers, ...(options.headers || {}) }
+    const finalHeaders = { ...headers, ...(options.headers || {}) }
+
+    if (options.body instanceof FormData) {
+      delete finalHeaders['Content-Type']
+    }
+
+    return finalHeaders
   }
 
   private async refreshSession(): Promise<boolean> {

@@ -32,7 +32,6 @@ interface NotifyAcceptedOrdersPayload {
 
 export default class NotifyAcceptedOrders extends Job<NotifyAcceptedOrdersPayload> {
   async execute(): Promise<void> {
-    logger.info('Starting NotifyAcceptedOrders job')
     const { userId, accounts } = this.payload
     const telegramService = new TelegramService()
 
@@ -107,17 +106,14 @@ export default class NotifyAcceptedOrders extends Job<NotifyAcceptedOrdersPayloa
       const telegramAccounts = await TelegramAccount.query().where('isUpdates', true)
       
       const dateKey = DateTime.now().toFormat('yyyy-MM-dd')
-      let totalCountSum = 0
-      let detailsMessage = ''
+      let message = ''
       
       for (const acc of accounts) {
         const accountCountKey = REDIS_KEYS.accountOrders(acc.accountId, dateKey)
         const dailyTotal = Number(await redis.get(accountCountKey)) || 0
-        totalCountSum += dailyTotal
-        detailsMessage += `• *${acc.supplierName}:* ${dailyTotal} Orders\n`
+        message += `• *${acc.supplierName}:* ${dailyTotal} Orders\n`
       }
       
-      let message = `✅ *${totalCountSum} Orders Accepted Successfully*\n\n${detailsMessage}`
 
       await Promise.all(
         telegramAccounts.map((telegramAccount) => {

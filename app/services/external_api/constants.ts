@@ -34,6 +34,8 @@ export const MEESHO_ENDPOINTS = {
   requestPendingOrders: `${MEESHO_BASE_URL}/api/fulfillment/orders/reqPendingOrders`,
   fetchPendingOrdersHistory: `${MEESHO_BASE_URL}/api/fulfillment/orders/fetchPendingOrdersHistory`,
   updatePendingOrderStatus: `${MEESHO_BASE_URL}/api/fulfillment/orders/updatePendingOrderStatus`,
+  uploadSingleCatalogImages: `${MEESHO_BASE_URL}/api/cataloging/singleCatalogUpload/uploadSingleCatalogImages`,
+  fetchDuplicatePid: `${MEESHO_BASE_URL}/api/cataloging/priceRecommendation/fetchDuplicatePid`,
 } as const
 
 export const ORDER_STATUS = {

@@ -59,6 +59,25 @@ export class AuthAccessTokenSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
+export class ShippingPriceSchema extends BaseModel {
+  static $columns = ['accountId', 'createdAt', 'id', 'imagePath', 'prices', 'subSubCategoryId', 'updatedAt'] as const
+  $columns = ShippingPriceSchema.$columns
+  @column()
+  declare accountId: number
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare imagePath: string
+  @column()
+  declare prices: number | null
+  @column()
+  declare subSubCategoryId: number
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
 export class TelegramAccountSchema extends BaseModel {
   static $columns = ['createdAt', 'id', 'isUpdates', 'updatedAt', 'userId'] as const
   $columns = TelegramAccountSchema.$columns

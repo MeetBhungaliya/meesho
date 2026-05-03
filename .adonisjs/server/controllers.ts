@@ -6,6 +6,7 @@
 export const controllers = {
   Accounts: () => import('#controllers/accounts_controller'),
   HealthChecks: () => import('#controllers/health_checks_controller'),
+  Images: () => import('#controllers/images_controller'),
   TelegramWebhook: () => import('#controllers/telegram_webhook_controller'),
   Users: () => import('#controllers/users_controller'),
 }

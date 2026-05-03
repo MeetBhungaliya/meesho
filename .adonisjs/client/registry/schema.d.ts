@@ -7,6 +7,42 @@ import type { InferInput, SimpleError } from '@vinejs/vine/types'
 export type ParamValue = string | number | bigint | boolean
 
 export interface Registry {
+  'event_stream': {
+    methods: ["GET","HEAD"]
+    pattern: '/__transmit/events'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'subscribe': {
+    methods: ["POST"]
+    pattern: '/__transmit/subscribe'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'unsubscribe': {
+    methods: ["POST"]
+    pattern: '/__transmit/unsubscribe'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
   'users.signup': {
     methods: ["POST"]
     pattern: '/signup'
@@ -101,6 +137,30 @@ export interface Registry {
       query: {}
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/accounts_controller').default['deleteAccount']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/accounts_controller').default['deleteAccount']>>>
+    }
+  }
+  'images.upload': {
+    methods: ["POST"]
+    pattern: '/uploads/:accountId'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/image').uploadImagesParamsValidator)>|InferInput<(typeof import('#validators/image').uploadImagesValidator)>>
+      paramsTuple: [ParamValue]
+      params: { accountId: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/image').uploadImagesParamsValidator)>|InferInput<(typeof import('#validators/image').uploadImagesValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/images_controller').default['upload']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/images_controller').default['upload']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'images.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/images'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/image').getImagesValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/images_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/images_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
   'telegram_webhook.webhook': {

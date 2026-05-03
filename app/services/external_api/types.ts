@@ -16,7 +16,7 @@ export interface SupplierCacheData {
 
 export interface RequestOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE'
-  body?: Record<string, unknown>
+  body?: Record<string, unknown> | FormData
   headers?: Record<string, string>
   retries?: number
   skipAuth?: boolean

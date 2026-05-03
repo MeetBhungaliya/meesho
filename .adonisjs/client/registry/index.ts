@@ -6,6 +6,24 @@ import type { ApiDefinition } from './tree.d.ts'
 const placeholder: any = {}
 
 const routes = {
+  'event_stream': {
+    methods: ["GET","HEAD"],
+    pattern: '/__transmit/events',
+    tokens: [{"old":"/__transmit/events","type":0,"val":"__transmit","end":""},{"old":"/__transmit/events","type":0,"val":"events","end":""}],
+    types: placeholder as Registry['event_stream']['types'],
+  },
+  'subscribe': {
+    methods: ["POST"],
+    pattern: '/__transmit/subscribe',
+    tokens: [{"old":"/__transmit/subscribe","type":0,"val":"__transmit","end":""},{"old":"/__transmit/subscribe","type":0,"val":"subscribe","end":""}],
+    types: placeholder as Registry['subscribe']['types'],
+  },
+  'unsubscribe': {
+    methods: ["POST"],
+    pattern: '/__transmit/unsubscribe',
+    tokens: [{"old":"/__transmit/unsubscribe","type":0,"val":"__transmit","end":""},{"old":"/__transmit/unsubscribe","type":0,"val":"unsubscribe","end":""}],
+    types: placeholder as Registry['unsubscribe']['types'],
+  },
   'users.signup': {
     methods: ["POST"],
     pattern: '/signup',
@@ -53,6 +71,18 @@ const routes = {
     pattern: '/accounts/:accountId',
     tokens: [{"old":"/accounts/:accountId","type":0,"val":"accounts","end":""},{"old":"/accounts/:accountId","type":1,"val":"accountId","end":""}],
     types: placeholder as Registry['accounts.delete_account']['types'],
+  },
+  'images.upload': {
+    methods: ["POST"],
+    pattern: '/uploads/:accountId',
+    tokens: [{"old":"/uploads/:accountId","type":0,"val":"uploads","end":""},{"old":"/uploads/:accountId","type":1,"val":"accountId","end":""}],
+    types: placeholder as Registry['images.upload']['types'],
+  },
+  'images.index': {
+    methods: ["GET","HEAD"],
+    pattern: '/images',
+    tokens: [{"old":"/images","type":0,"val":"images","end":""}],
+    types: placeholder as Registry['images.index']['types'],
   },
   'telegram_webhook.webhook': {
     methods: ["POST"],

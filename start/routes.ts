@@ -1,6 +1,11 @@
+import transmit from '@adonisjs/transmit/services/main'
 import { controllers } from '#generated/controllers'
 import { middleware } from '#start/kernel'
 import router from '@adonisjs/core/services/router'
+
+transmit.registerRoutes((route) => {
+  route.middleware(middleware.auth())
+})
 
 router.post('/signup', [controllers.Users, 'signup'])
 router.post('/login', [controllers.Users, 'login'])
@@ -17,6 +22,9 @@ router
         router.delete('/:accountId', [controllers.Accounts, 'deleteAccount'])
       })
       .prefix('accounts')
+
+    router.post('/uploads/:accountId', [controllers.Images, 'upload'])
+    router.get('/images', [controllers.Images, 'index'])
   })
   .use(middleware.auth())
 
