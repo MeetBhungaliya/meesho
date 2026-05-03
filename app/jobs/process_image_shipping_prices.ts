@@ -53,10 +53,10 @@ export default class ProcessImageShippingPrices extends Job<ProcessImageShipping
         const uploadRes = await client.post<{ image: string }>(
           MEESHO_ENDPOINTS.uploadSingleCatalogImages,
           formData
-        )
+        ).catch(err=> console.error(err))
 
 
-        const imageUrl = uploadRes.data?.image
+        const imageUrl = uploadRes?.data?.image
         if (!imageUrl) {
           throw new Error('Image URL not returned from upload API')
         }
