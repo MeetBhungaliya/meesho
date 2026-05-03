@@ -26,10 +26,11 @@ export const uploadImagesValidator = vine.create(
 export const getImagesValidator = vine.create(
   vine.object({
     page: vine.number().min(1).optional(),
-    limit: vine.number().min(1).max(100).optional(),
+    limit: vine.number().min(1).max(1000).optional(),
     accountId: vine.number().optional(),
     subSubCategoryId: vine.number().optional(),
     hasPrice: vine.boolean().optional(),
+    prices: vine.number().optional(),
     sortBy: vine.enum(['createdAt', 'prices', 'updatedAt']).optional(),
     sortOrder: vine.enum(['asc', 'desc']).optional()
   })

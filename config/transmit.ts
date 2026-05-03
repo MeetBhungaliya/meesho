@@ -3,7 +3,7 @@ import { defineConfig } from '@adonisjs/transmit'
 import { redis } from '@adonisjs/transmit/transports'
 
 export default defineConfig({
-  pingInterval: '30s',
+  pingInterval: false,
   transport: {
     driver: redis({
       host: env.get('REDIS_HOST'),

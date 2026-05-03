@@ -1,3 +1,6 @@
+/** Meesho returns this non-standard status code when the supplier session has expired. */
+export const MEESHO_SESSION_EXPIRED_STATUS = 463
+
 export const SESSION_COOKIE_KEYS = {
   identifier: 'current_az_identifier',
   sid: 'connect.sid',

@@ -2,7 +2,7 @@ import { ApiError, SessionError } from '#services/external_api/errors'
 import { SessionManager } from '#services/external_api/session_manager'
 import type { SessionCookies } from '#services/external_api/session_manager'
 import type { ApiResponse, RequestOptions, SupplierCacheData } from '#services/external_api/types'
-import { API_HEADERS } from '#services/external_api/constants'
+import { API_HEADERS, MEESHO_SESSION_EXPIRED_STATUS, SESSION_STATUS } from '#services/external_api/constants'
 import Account from '#models/account'
 
 const DEFAULT_RETRIES = 2
@@ -66,11 +66,17 @@ export class MeeshoApiClient {
           body: options.body instanceof FormData ? options.body : options.body ? JSON.stringify(options.body) : undefined,
         })
 
-        if (res.status === 401) {
+        if (res.status === 401 || res.status === MEESHO_SESSION_EXPIRED_STATUS) {
+          // 401 = standard unauthorised; 463 = Meesho's custom session-expired code.
+          // In both cases: mark account as expired in DB, clear cache, then re-login.
+          if (res.status === MEESHO_SESSION_EXPIRED_STATUS) {
+            await this.markSessionExpiredInDb()
+          }
+
           const refreshed = await this.refreshSession()
           if (!refreshed) {
             throw new SessionError(
-              `Re-login failed for account ${this.accountId} after 401`,
+              `Re-login failed for account ${this.accountId} after ${res.status}`,
               this.accountId
             )
           }
@@ -180,6 +186,23 @@ export class MeeshoApiClient {
     }
 
     return finalHeaders
+  }
+
+  /**
+   * Marks the account's session as EXPIRED in the database without touching the cache.
+   * Called specifically for Meesho's 463 response before the re-login attempt.
+   */
+  private async markSessionExpiredInDb(): Promise<void> {
+    try {
+      const account = await Account.find(Number(this.accountId))
+      if (account) {
+        account.sessionStatus = SESSION_STATUS.EXPIRED
+        account.sessionError = 'Session expired (Meesho returned 463)'
+        await account.save()
+      }
+    } catch {
+      // Non-fatal: log nothing, let refreshSession handle the rest
+    }
   }
 
   private async refreshSession(): Promise<boolean> {

@@ -32,10 +32,18 @@ export default class ImagesController {
       }
     }
 
+    if (payload.prices !== undefined) {
+      query.where('prices', payload.prices)
+    }
+
     const sortBy = payload.sortBy || 'createdAt'
     const sortOrder = payload.sortOrder || 'desc'
 
-    query.orderBy(sortBy, sortOrder)
+    if (sortBy === 'prices') {
+      query.orderByRaw(`prices ${sortOrder} NULLS LAST`)
+    } else {
+      query.orderBy(sortBy, sortOrder)
+    }
 
     const images = await query.paginate(page, limit)
 
@@ -66,7 +74,7 @@ export default class ImagesController {
     const userId = auth.user!.id
 
     const savedFiles: { path: string; clientName: string }[] = []
-    const shippingPricesPayload = []
+    let delayMultiplier = 0
 
     for (const image of imagesArr) {
       const filePath = globals.getShippingImagePath(userId, image.clientName)
@@ -78,39 +86,33 @@ export default class ImagesController {
           clientName: image.clientName,
         })
         
-        shippingPricesPayload.push({
+        const shippingPrice = await ShippingPrice.create({
           accountId: Number(accountId),
           subSubCategoryId: Number(sub_sub_category_id),
           imagePath: filePath,
         })
+
+        const jobPayload = {
+          accountId,
+          userId,
+          sub_sub_category_id: Number(sub_sub_category_id),
+          file: {
+            path: filePath,
+            clientName: image.clientName,
+            shippingPriceId: shippingPrice.id,
+          },
+        }
+
+        await ProcessImageShippingPrices.dispatch(jobPayload).in(delayMultiplier * 2000)
+        delayMultiplier++
       }
     }
     
-    if (shippingPricesPayload.length > 0) {
-      const data = await ShippingPrice.createMany(shippingPricesPayload)
-
-      const jobs = savedFiles.map((file, index) => ({
-        accountId,
-        userId,
-        sub_sub_category_id: Number(sub_sub_category_id),
-        file: {
-          path: file.path,
-          clientName: file.clientName,
-          shippingPriceId: data[index].id,
-        },
-      }))
-
-      await ProcessImageShippingPrices.dispatchMany(jobs)
-
-
-    
-      return { message: 'Upload received, process started in background. Watch your stream for updates.', data }
+    if (savedFiles.length > 0) {
+      return { message: 'Upload received, process started in background. Watch your stream for updates.' }
     }
 
-
     return { message: 'No images were uploaded' }
-    
-
 
   }
 }
