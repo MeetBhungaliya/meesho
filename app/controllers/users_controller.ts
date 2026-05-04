@@ -18,7 +18,7 @@ export default class UsersController {
 
     return response.ok({
       message: 'Login successful.',
-      data: {user},
+      data: { user },
       token: token.value!.release(),
     })
   }

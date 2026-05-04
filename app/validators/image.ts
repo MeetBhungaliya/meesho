@@ -8,8 +8,8 @@ export const uploadImagesParamsValidator = vine.create(
 
 export const uploadImagesValidator = vine.create(
   vine.object({
-    sub_sub_category_id: vine.number(),
-
+    subSubCategoryId: vine.number(),
+    batchName: vine.string().trim().optional(),
     images: vine.union([
       vine.union.if(
         (value) => !Array.isArray(value),
@@ -26,12 +26,43 @@ export const uploadImagesValidator = vine.create(
 export const getImagesValidator = vine.create(
   vine.object({
     page: vine.number().min(1).optional(),
-    limit: vine.number().min(1).max(1000).optional(),
-    accountId: vine.number().optional(),
+    limit: vine.number().min(1).max(100).optional(),
+    ids: vine.array(vine.number()).optional(),
+    batchName: vine.string().trim().optional(),
     subSubCategoryId: vine.number().optional(),
+    isProcessed: vine.boolean().optional(),
     hasPrice: vine.boolean().optional(),
-    prices: vine.number().optional(),
-    sortBy: vine.enum(['createdAt', 'prices', 'updatedAt']).optional(),
-    sortOrder: vine.enum(['asc', 'desc']).optional()
+    price: vine.number().optional(),
+    priceMin: vine.number().min(0).optional(),
+    priceMax: vine.number().min(0).optional(),
+    priceGt: vine.number().min(0).optional(),
+    priceLt: vine.number().min(0).optional(),
+    sortBy: vine.enum(['createdAt', 'price', 'updatedAt']).optional(),
+    sortOrder: vine.enum(['asc', 'desc']).optional(),
+  })
+)
+
+export const retryImagesValidator = vine.create(
+  vine.object({
+    ids: vine.array(vine.number()).optional(),
+    batchName: vine.string().trim().optional(),
+    subSubCategoryId: vine.number().optional(),
+    isProcessed: vine.boolean().optional(),
+    hasPrice: vine.boolean().optional(),
+  })
+)
+
+export const deleteImagesValidator = vine.create(
+  vine.object({
+    ids: vine.array(vine.number()).optional(),
+    batchName: vine.string().trim().optional(),
+    subSubCategoryId: vine.number().optional(),
+    isProcessed: vine.boolean().optional(),
+    hasPrice: vine.boolean().optional(),
+    price: vine.number().optional(),
+    priceMin: vine.number().min(0).optional(),
+    priceMax: vine.number().min(0).optional(),
+    priceGt: vine.number().min(0).optional(),
+    priceLt: vine.number().min(0).optional(),
   })
 )

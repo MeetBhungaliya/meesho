@@ -48,12 +48,6 @@ const routes = {
     tokens: [{"old":"/accounts/add-account","type":0,"val":"accounts","end":""},{"old":"/accounts/add-account","type":0,"val":"add-account","end":""}],
     types: placeholder as Registry['accounts.create_account']['types'],
   },
-  'accounts.get_accounts_status': {
-    methods: ["GET","HEAD"],
-    pattern: '/accounts/status',
-    tokens: [{"old":"/accounts/status","type":0,"val":"accounts","end":""},{"old":"/accounts/status","type":0,"val":"status","end":""}],
-    types: placeholder as Registry['accounts.get_accounts_status']['types'],
-  },
   'accounts.retry_login': {
     methods: ["GET","HEAD"],
     pattern: '/accounts/retry-login/:accountId?',
@@ -72,17 +66,29 @@ const routes = {
     tokens: [{"old":"/accounts/:accountId","type":0,"val":"accounts","end":""},{"old":"/accounts/:accountId","type":1,"val":"accountId","end":""}],
     types: placeholder as Registry['accounts.delete_account']['types'],
   },
-  'images.upload': {
-    methods: ["POST"],
-    pattern: '/uploads/:accountId',
-    tokens: [{"old":"/uploads/:accountId","type":0,"val":"uploads","end":""},{"old":"/uploads/:accountId","type":1,"val":"accountId","end":""}],
-    types: placeholder as Registry['images.upload']['types'],
-  },
   'images.index': {
     methods: ["GET","HEAD"],
-    pattern: '/images',
-    tokens: [{"old":"/images","type":0,"val":"images","end":""}],
+    pattern: '/images/:accountId',
+    tokens: [{"old":"/images/:accountId","type":0,"val":"images","end":""},{"old":"/images/:accountId","type":1,"val":"accountId","end":""}],
     types: placeholder as Registry['images.index']['types'],
+  },
+  'images.upload': {
+    methods: ["POST"],
+    pattern: '/images/:accountId/uploads',
+    tokens: [{"old":"/images/:accountId/uploads","type":0,"val":"images","end":""},{"old":"/images/:accountId/uploads","type":1,"val":"accountId","end":""},{"old":"/images/:accountId/uploads","type":0,"val":"uploads","end":""}],
+    types: placeholder as Registry['images.upload']['types'],
+  },
+  'images.retry': {
+    methods: ["POST"],
+    pattern: '/images/:accountId/retry',
+    tokens: [{"old":"/images/:accountId/retry","type":0,"val":"images","end":""},{"old":"/images/:accountId/retry","type":1,"val":"accountId","end":""},{"old":"/images/:accountId/retry","type":0,"val":"retry","end":""}],
+    types: placeholder as Registry['images.retry']['types'],
+  },
+  'images.destroy': {
+    methods: ["DELETE"],
+    pattern: '/images/:accountId',
+    tokens: [{"old":"/images/:accountId","type":0,"val":"images","end":""},{"old":"/images/:accountId","type":1,"val":"accountId","end":""}],
+    types: placeholder as Registry['images.destroy']['types'],
   },
   'telegram_webhook.webhook': {
     methods: ["POST"],

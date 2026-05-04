@@ -11,29 +11,28 @@ export type ScannedRoutes = {
     'users.login': { paramsTuple?: []; params?: {} }
     'accounts.get_all_accounts': { paramsTuple?: []; params?: {} }
     'accounts.create_account': { paramsTuple?: []; params?: {} }
-    'accounts.get_accounts_status': { paramsTuple?: []; params?: {} }
     'accounts.retry_login': { paramsTuple?: [ParamValue?]; params?: {'accountId'?: ParamValue} }
     'accounts.update_password': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'accounts.delete_account': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
+    'images.index': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'images.upload': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
-    'images.index': { paramsTuple?: []; params?: {} }
+    'images.retry': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
+    'images.destroy': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'telegram_webhook.webhook': { paramsTuple?: []; params?: {} }
     'health_checks.health': { paramsTuple?: []; params?: {} }
   }
   GET: {
     'event_stream': { paramsTuple?: []; params?: {} }
     'accounts.get_all_accounts': { paramsTuple?: []; params?: {} }
-    'accounts.get_accounts_status': { paramsTuple?: []; params?: {} }
     'accounts.retry_login': { paramsTuple?: [ParamValue?]; params?: {'accountId'?: ParamValue} }
-    'images.index': { paramsTuple?: []; params?: {} }
+    'images.index': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'health_checks.health': { paramsTuple?: []; params?: {} }
   }
   HEAD: {
     'event_stream': { paramsTuple?: []; params?: {} }
     'accounts.get_all_accounts': { paramsTuple?: []; params?: {} }
-    'accounts.get_accounts_status': { paramsTuple?: []; params?: {} }
     'accounts.retry_login': { paramsTuple?: [ParamValue?]; params?: {'accountId'?: ParamValue} }
-    'images.index': { paramsTuple?: []; params?: {} }
+    'images.index': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'health_checks.health': { paramsTuple?: []; params?: {} }
   }
   POST: {
@@ -43,6 +42,7 @@ export type ScannedRoutes = {
     'users.login': { paramsTuple?: []; params?: {} }
     'accounts.create_account': { paramsTuple?: []; params?: {} }
     'images.upload': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
+    'images.retry': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'telegram_webhook.webhook': { paramsTuple?: []; params?: {} }
   }
   PUT: {
@@ -50,6 +50,7 @@ export type ScannedRoutes = {
   }
   DELETE: {
     'accounts.delete_account': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
+    'images.destroy': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
   }
 }
 declare module '@adonisjs/core/types/http' {

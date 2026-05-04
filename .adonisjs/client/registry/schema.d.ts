@@ -91,18 +91,6 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/accounts_controller').default['createAccount']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
-  'accounts.get_accounts_status': {
-    methods: ["GET","HEAD"]
-    pattern: '/accounts/status'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#controllers/accounts_controller').default['getAccountsStatus']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/accounts_controller').default['getAccountsStatus']>>>
-    }
-  }
   'accounts.retry_login': {
     methods: ["GET","HEAD"]
     pattern: '/accounts/retry-login/:accountId?'
@@ -139,9 +127,21 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/accounts_controller').default['deleteAccount']>>>
     }
   }
+  'images.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/images/:accountId'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { accountId: ParamValue }
+      query: ExtractQueryForGet<InferInput<(typeof import('#validators/image').uploadImagesParamsValidator)>|InferInput<(typeof import('#validators/image').getImagesValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/images_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/images_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
   'images.upload': {
     methods: ["POST"]
-    pattern: '/uploads/:accountId'
+    pattern: '/images/:accountId/uploads'
     types: {
       body: ExtractBody<InferInput<(typeof import('#validators/image').uploadImagesParamsValidator)>|InferInput<(typeof import('#validators/image').uploadImagesValidator)>>
       paramsTuple: [ParamValue]
@@ -151,16 +151,28 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/images_controller').default['upload']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
-  'images.index': {
-    methods: ["GET","HEAD"]
-    pattern: '/images'
+  'images.retry': {
+    methods: ["POST"]
+    pattern: '/images/:accountId/retry'
     types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: ExtractQueryForGet<InferInput<(typeof import('#validators/image').getImagesValidator)>>
-      response: ExtractResponse<Awaited<ReturnType<import('#controllers/images_controller').default['index']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/images_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
+      body: ExtractBody<InferInput<(typeof import('#validators/image').uploadImagesParamsValidator)>|InferInput<(typeof import('#validators/image').retryImagesValidator)>>
+      paramsTuple: [ParamValue]
+      params: { accountId: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/image').uploadImagesParamsValidator)>|InferInput<(typeof import('#validators/image').retryImagesValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/images_controller').default['retry']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/images_controller').default['retry']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'images.destroy': {
+    methods: ["DELETE"]
+    pattern: '/images/:accountId'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/image').uploadImagesParamsValidator)>|InferInput<(typeof import('#validators/image').deleteImagesValidator)>>
+      paramsTuple: [ParamValue]
+      params: { accountId: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/image').uploadImagesParamsValidator)>|InferInput<(typeof import('#validators/image').deleteImagesValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/images_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/images_controller').default['destroy']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
   'telegram_webhook.webhook': {

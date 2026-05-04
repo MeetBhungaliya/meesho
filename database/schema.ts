@@ -8,7 +8,19 @@ import { BaseModel, column } from '@adonisjs/lucid/orm'
 import { DateTime } from 'luxon'
 
 export class AccountSchema extends BaseModel {
-  static $columns = ['autoAcceptOrders', 'createdAt', 'email', 'id', 'lastLoginAt', 'password', 'provider', 'sessionError', 'sessionStatus', 'updatedAt', 'userId'] as const
+  static $columns = [
+    'autoAcceptOrders',
+    'createdAt',
+    'email',
+    'id',
+    'lastLoginAt',
+    'password',
+    'provider',
+    'sessionError',
+    'sessionStatus',
+    'updatedAt',
+    'userId',
+  ] as const
   $columns = AccountSchema.$columns
   @column()
   declare autoAcceptOrders: boolean
@@ -35,7 +47,18 @@ export class AccountSchema extends BaseModel {
 }
 
 export class AuthAccessTokenSchema extends BaseModel {
-  static $columns = ['abilities', 'createdAt', 'expiresAt', 'hash', 'id', 'lastUsedAt', 'name', 'tokenableId', 'type', 'updatedAt'] as const
+  static $columns = [
+    'abilities',
+    'createdAt',
+    'expiresAt',
+    'hash',
+    'id',
+    'lastUsedAt',
+    'name',
+    'tokenableId',
+    'type',
+    'updatedAt',
+  ] as const
   $columns = AuthAccessTokenSchema.$columns
   @column()
   declare abilities: string
@@ -60,18 +83,38 @@ export class AuthAccessTokenSchema extends BaseModel {
 }
 
 export class ShippingPriceSchema extends BaseModel {
-  static $columns = ['accountId', 'createdAt', 'id', 'imagePath', 'prices', 'subSubCategoryId', 'updatedAt'] as const
+  static $columns = [
+    'accountId',
+    'batchName',
+    'createdAt',
+    'errorMessage',
+    'id',
+    'imagePath',
+    'isProcessed',
+    'meeshoImageUrl',
+    'price',
+    'subSubCategoryId',
+    'updatedAt',
+  ] as const
   $columns = ShippingPriceSchema.$columns
   @column()
   declare accountId: number
+  @column()
+  declare batchName: string | null
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime | null
+  @column()
+  declare errorMessage: string | null
   @column({ isPrimary: true })
   declare id: number
   @column()
   declare imagePath: string
   @column()
-  declare prices: number | null
+  declare isProcessed: boolean
+  @column()
+  declare meeshoImageUrl: string | null
+  @column()
+  declare price: number | null
   @column()
   declare subSubCategoryId: number
   @column.dateTime({ autoCreate: true, autoUpdate: true })

@@ -24,7 +24,6 @@ const dbConfig = defineConfig({
 
       debug: app.inDev,
     },
-
   },
 })
 

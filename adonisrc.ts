@@ -59,7 +59,7 @@ export default defineConfig({
     () => import('@adonisjs/queue/queue_provider'),
     () => import('@adonisjs/cache/cache_provider'),
     () => import('@adonisjs/transmit/transmit_provider'),
-    () => import('@adonisjs/drive/drive_provider')
+    () => import('@adonisjs/drive/drive_provider'),
   ],
 
   /*
@@ -79,7 +79,7 @@ export default defineConfig({
       environment: ['web'],
     },
     () => import('#start/events'),
-    () => import('#start/transmit')
+    () => import('#start/transmit'),
   ],
 
   /*

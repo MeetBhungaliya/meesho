@@ -2,7 +2,11 @@ import { ApiError, SessionError } from '#services/external_api/errors'
 import { SessionManager } from '#services/external_api/session_manager'
 import type { SessionCookies } from '#services/external_api/session_manager'
 import type { ApiResponse, RequestOptions, SupplierCacheData } from '#services/external_api/types'
-import { API_HEADERS, MEESHO_SESSION_EXPIRED_STATUS, SESSION_STATUS } from '#services/external_api/constants'
+import {
+  API_HEADERS,
+  MEESHO_SESSION_EXPIRED_STATUS,
+  SESSION_STATUS,
+} from '#services/external_api/constants'
 import Account from '#models/account'
 
 const DEFAULT_RETRIES = 2
@@ -63,7 +67,12 @@ export class MeeshoApiClient {
         const res = await fetch(url, {
           method: options.method || 'POST',
           headers: this.buildHeaders(options),
-          body: options.body instanceof FormData ? options.body : options.body ? JSON.stringify(options.body) : undefined,
+          body:
+            options.body instanceof FormData
+              ? options.body
+              : options.body
+                ? JSON.stringify(options.body)
+                : undefined,
         })
 
         if (res.status === 401 || res.status === MEESHO_SESSION_EXPIRED_STATUS) {
@@ -84,7 +93,12 @@ export class MeeshoApiClient {
           const retryRes = await fetch(url, {
             method: options.method || 'POST',
             headers: this.buildHeaders(options),
-            body: options.body instanceof FormData ? options.body : options.body ? JSON.stringify(options.body) : undefined,
+            body:
+              options.body instanceof FormData
+                ? options.body
+                : options.body
+                  ? JSON.stringify(options.body)
+                  : undefined,
           })
 
           if (!retryRes.ok) {

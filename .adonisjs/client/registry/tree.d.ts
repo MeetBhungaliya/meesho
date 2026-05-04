@@ -12,14 +12,15 @@ export interface ApiDefinition {
   accounts: {
     getAllAccounts: typeof routes['accounts.get_all_accounts']
     createAccount: typeof routes['accounts.create_account']
-    getAccountsStatus: typeof routes['accounts.get_accounts_status']
     retryLogin: typeof routes['accounts.retry_login']
     updatePassword: typeof routes['accounts.update_password']
     deleteAccount: typeof routes['accounts.delete_account']
   }
   images: {
-    upload: typeof routes['images.upload']
     index: typeof routes['images.index']
+    upload: typeof routes['images.upload']
+    retry: typeof routes['images.retry']
+    destroy: typeof routes['images.destroy']
   }
   telegramWebhook: {
     webhook: typeof routes['telegram_webhook.webhook']

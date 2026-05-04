@@ -5,7 +5,7 @@ import {
   CACHE_PREFIX,
   MEESHO_ENDPOINTS,
   SESSION_COOKIE_KEYS,
-  SESSION_STATUS
+  SESSION_STATUS,
 } from '#services/external_api/constants'
 import { ApiError, SessionError } from '#services/external_api/errors'
 import type {
@@ -64,10 +64,11 @@ export class SessionManager {
     try {
       loginRes = await client.post(MEESHO_ENDPOINTS.login, payload, { skipAuth: true })
     } catch (err: any) {
-      const errorMsg = err instanceof ApiError 
-        ? `Login failed (HTTP ${err.status}): ${err.message}` 
-        : `Network error during login: ${err.message}`
-        
+      const errorMsg =
+        err instanceof ApiError
+          ? `Login failed (HTTP ${err.status}): ${err.message}`
+          : `Network error during login: ${err.message}`
+
       account.sessionStatus = SESSION_STATUS.FAILED
       account.sessionError = errorMsg
       await account.save()
@@ -97,21 +98,22 @@ export class SessionManager {
     let supplierDataRes
     try {
       supplierDataRes = await client.post<MeeshoSupplierPrefetchResponse>(
-        MEESHO_ENDPOINTS.prefetchSupplyData, 
-        supplierPayload, 
-        { 
+        MEESHO_ENDPOINTS.prefetchSupplyData,
+        supplierPayload,
+        {
           skipAuth: true,
           headers: {
-            'identifier': cookies[SESSION_COOKIE_KEYS.identifier],
-            'cookie': cookieString,
-          }
+            identifier: cookies[SESSION_COOKIE_KEYS.identifier],
+            cookie: cookieString,
+          },
         }
       )
     } catch (err: any) {
-      const errorMsg = err instanceof ApiError 
-        ? `Prefetch failed (HTTP ${err.status}): ${err.message}` 
-        : `Network error during prefetch: ${err.message}`
-        
+      const errorMsg =
+        err instanceof ApiError
+          ? `Prefetch failed (HTTP ${err.status}): ${err.message}`
+          : `Network error during prefetch: ${err.message}`
+
       account.sessionStatus = SESSION_STATUS.FAILED
       account.sessionError = errorMsg
       await account.save()

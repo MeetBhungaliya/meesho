@@ -22,8 +22,14 @@ router
       })
       .prefix('accounts')
 
-    router.post('/uploads/:accountId', [controllers.Images, 'upload'])
-    router.get('/images', [controllers.Images, 'index'])
+    router
+      .group(() => {
+        router.get('/', [controllers.Images, 'index'])
+        router.post('/uploads', [controllers.Images, 'upload'])
+        router.post('/retry', [controllers.Images, 'retry'])
+        router.delete('/', [controllers.Images, 'destroy'])
+      })
+      .prefix('images/:accountId')
   })
   .use(middleware.auth())
 

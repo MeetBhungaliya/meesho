@@ -19,7 +19,19 @@ export default class ShippingPrice extends BaseModel {
   declare imagePath: string
 
   @column()
-  declare prices: number | null
+  declare batchName: string | null
+
+  @column()
+  declare meeshoImageUrl: string | null
+
+  @column()
+  declare price: number | null
+
+  @column()
+  declare isProcessed: boolean
+
+  @column()
+  declare errorMessage: string | null
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
