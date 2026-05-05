@@ -18,7 +18,6 @@ import { Job } from '@adonisjs/queue'
 
 export default class AcceptOrders extends Job {
   async execute(): Promise<void> {
-    logger.info('Starting AcceptOrders job')
     const accounts = await Account.query().where('autoAcceptOrders', true)
 
     const userAccountsMap = new Map<number, Account[]>()

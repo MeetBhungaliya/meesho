@@ -135,8 +135,6 @@ export default class NotifyAcceptedOrders extends Job<NotifyAcceptedOrdersPayloa
           })
         })
       )
-
-      logger.info({ userId }, 'Orders accepted successfully for all accounts of user')
       return
     }
 

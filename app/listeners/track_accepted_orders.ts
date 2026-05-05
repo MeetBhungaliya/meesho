@@ -5,7 +5,9 @@ import { DateTime } from 'luxon'
 
 export default class TrackAcceptedOrders {
   async handle(event: AcceptedOrders): Promise<void> {
-    const dateKey = DateTime.fromJSDate(event.acceptedAt).toFormat('yyyy-MM-dd')
+    const dateKey = DateTime.fromJSDate(event.acceptedAt)
+      .setZone('Asia/Kolkata')
+      .toFormat('yyyy-MM-dd')
 
     const accountCountKey = REDIS_KEYS.accountOrders(event.accountId, dateKey)
 
