@@ -1,0 +1,65 @@
+name: Deploy to Production Server
+
+on:
+  push:
+    branches:
+      - main # Change this if your production branch is different
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Specify the Node.js version you are using
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Application
+        run: npm run build
+
+      - name: Prune Dev Dependencies
+        # Only keep production dependencies in node_modules to save space and transfer time
+        run: npm ci --omit="dev"
+
+      - name: Zip Files for Deployment
+        # We only zip what is strictly necessary for PM2 to run the app
+        # This keeps the transfer light and fast for the free tier server.
+        run: zip -r deploy.zip build/ node_modules/ package.json ecosystem.config.cjs
+
+      - name: Copy files via SCP to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          source: "deploy.zip"
+          target: ${{ secrets.DEPLOY_PATH }}
+
+      - name: Execute remote deployment commands via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd ${{ secrets.DEPLOY_PATH }}
+            # Unzip the new files and overwrite existing ones
+            unzip -o deploy.zip
+            
+            # Remove the zip file to save space
+            rm deploy.zip
+            
+            # Restart the PM2 application
+            # If the app isn't started yet, this might fail, so we can use pm2 startOrRestart
+            pm2 startOrRestart ecosystem.config.cjs --env production
+            
+            # Save PM2 process list so it restarts on system reboot
+            pm2 save
