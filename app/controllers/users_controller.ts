@@ -4,6 +4,7 @@ import { createUserValidator, loginValidator } from '#validators/user'
 import type { HttpContext } from '@adonisjs/core/http'
 import crypto from 'node:crypto'
 import { DateTime } from 'luxon'
+import app from '@adonisjs/core/services/app'
 
 export default class UsersController {
   private formatUser(user: User) {
@@ -48,15 +49,15 @@ export default class UsersController {
     // Set Cookies
     response.cookie('access_token', token.value!.release(), {
       httpOnly: true,
-      secure: false, // Set to false for easy local development HTTP testing
-      sameSite: 'lax',
+      secure: app.inProduction,
+      sameSite: app.inProduction ? 'none' : 'lax',
       maxAge: 15 * 60, // 15 mins
     })
 
     response.cookie('refresh_token', refreshTokenString, {
       httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
+      secure: app.inProduction,
+      sameSite: app.inProduction ? 'none' : 'lax',
       maxAge: 7 * 24 * 60 * 60, // 7 days
     })
 
@@ -104,15 +105,15 @@ export default class UsersController {
     // Set new cookies
     response.cookie('access_token', newAccessToken.value!.release(), {
       httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
+      secure: app.inProduction,
+      sameSite: app.inProduction ? 'none' : 'lax',
       maxAge: 15 * 60,
     })
 
     response.cookie('refresh_token', newRefreshTokenString, {
       httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
+      secure: app.inProduction,
+      sameSite: app.inProduction ? 'none' : 'lax',
       maxAge: 7 * 24 * 60 * 60,
     })
 
@@ -132,9 +133,17 @@ export default class UsersController {
       }
     }
 
-    // Clear cookies
-    response.clearCookie('access_token')
-    response.clearCookie('refresh_token')
+    // Clear cookies (Must match exact sameSite and secure settings)
+    response.clearCookie('access_token', {
+      httpOnly: true,
+      secure: app.inProduction,
+      sameSite: app.inProduction ? 'none' : 'lax',
+    })
+    response.clearCookie('refresh_token', {
+      httpOnly: true,
+      secure: app.inProduction,
+      sameSite: app.inProduction ? 'none' : 'lax',
+    })
 
     return response.ok({ message: 'Logged out successfully.' })
   }
