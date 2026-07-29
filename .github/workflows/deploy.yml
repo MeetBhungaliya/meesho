@@ -67,6 +67,9 @@ jobs:
             # Cleanup
             rm deploy.zip
 
+            # Copy environment file into build
+            cp .env build/.env
+
             # Restart application
             
             export NVM_DIR="$HOME/.nvm"
