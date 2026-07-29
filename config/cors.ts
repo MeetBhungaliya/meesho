@@ -1,6 +1,8 @@
 import app from '@adonisjs/core/services/app'
 import { defineConfig } from '@adonisjs/cors'
 
+const allowedOrigins = ['https://ecom-fe-seven-lime.vercel.app']
+
 /**
  * Configuration options to tweak the CORS policy. The following
  * options are documented on the official documentation website.
@@ -18,7 +20,12 @@ const corsConfig = defineConfig({
    * In production, keep an explicit allowlist (empty by default, so no
    * cross-origin browser access is allowed until configured).
    */
-  origin: app.inDev ? true : [],
+
+  origin: (origin) => {
+    if (app.inDev) return true
+    if (!origin) return true
+    return allowedOrigins.includes(origin) || /^http:\/\/localhost:\d+$/.test(origin)
+  },
 
   /**
    * HTTP methods accepted for cross-origin requests.

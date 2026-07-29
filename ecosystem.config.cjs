@@ -2,6 +2,7 @@ module.exports = {
   apps: [
     {
       name: 'adonis-web-server',
+      cwd: '/var/www/meesho',
       script: 'build/bin/server.js',
       interpreter: 'node',
       instances: 1,
@@ -16,6 +17,7 @@ module.exports = {
     },
     {
       name: 'adonis-queue-worker',
+      cwd: '/var/www/meesho',
       script: 'build/ace.js',
       interpreter: 'node',
       args: 'queue:work --concurrency=3',
