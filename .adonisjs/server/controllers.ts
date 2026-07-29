@@ -5,6 +5,7 @@
 
 export const controllers = {
   Accounts: () => import('#controllers/accounts_controller'),
+  FlexiGrowthOffers: () => import('#controllers/flexi_growth_offers_controller'),
   HealthChecks: () => import('#controllers/health_checks_controller'),
   Images: () => import('#controllers/images_controller'),
   TelegramWebhook: () => import('#controllers/telegram_webhook_controller'),

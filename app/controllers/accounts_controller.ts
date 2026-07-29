@@ -20,9 +20,19 @@ export default class AccountsController {
     const user = await auth.authenticate()
     const accounts = await Account.query().where('user_id', user.id).orderBy('id', 'asc')
 
+    const data = await Promise.all(
+      accounts.map(async (account) => {
+        const supplierData = await SessionManager.getSupplierData(account.id.toString())
+        return {
+          ...account.serialize(),
+          supplierData,
+        }
+      })
+    )
+
     return response.ok({
       message: 'Accounts fetched successfully',
-      data: accounts,
+      data,
     })
   }
 

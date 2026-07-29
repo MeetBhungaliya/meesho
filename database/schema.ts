@@ -8,19 +8,7 @@ import { BaseModel, column } from '@adonisjs/lucid/orm'
 import { DateTime } from 'luxon'
 
 export class AccountSchema extends BaseModel {
-  static $columns = [
-    'autoAcceptOrders',
-    'createdAt',
-    'email',
-    'id',
-    'lastLoginAt',
-    'password',
-    'provider',
-    'sessionError',
-    'sessionStatus',
-    'updatedAt',
-    'userId',
-  ] as const
+  static $columns = ['autoAcceptOrders', 'createdAt', 'email', 'id', 'lastLoginAt', 'password', 'provider', 'sessionError', 'sessionStatus', 'updatedAt', 'userId'] as const
   $columns = AccountSchema.$columns
   @column()
   declare autoAcceptOrders: boolean
@@ -47,18 +35,7 @@ export class AccountSchema extends BaseModel {
 }
 
 export class AuthAccessTokenSchema extends BaseModel {
-  static $columns = [
-    'abilities',
-    'createdAt',
-    'expiresAt',
-    'hash',
-    'id',
-    'lastUsedAt',
-    'name',
-    'tokenableId',
-    'type',
-    'updatedAt',
-  ] as const
+  static $columns = ['abilities', 'createdAt', 'expiresAt', 'hash', 'id', 'lastUsedAt', 'name', 'tokenableId', 'type', 'updatedAt'] as const
   $columns = AuthAccessTokenSchema.$columns
   @column()
   declare abilities: string
@@ -82,20 +59,25 @@ export class AuthAccessTokenSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
+export class RefreshTokenSchema extends BaseModel {
+  static $columns = ['createdAt', 'expiresAt', 'id', 'token', 'updatedAt', 'userId'] as const
+  $columns = RefreshTokenSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column.dateTime()
+  declare expiresAt: DateTime
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare token: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare userId: number
+}
+
 export class ShippingPriceSchema extends BaseModel {
-  static $columns = [
-    'accountId',
-    'batchName',
-    'createdAt',
-    'errorMessage',
-    'id',
-    'imagePath',
-    'isProcessed',
-    'meeshoImageUrl',
-    'price',
-    'subSubCategoryId',
-    'updatedAt',
-  ] as const
+  static $columns = ['accountId', 'batchName', 'createdAt', 'errorMessage', 'id', 'imagePath', 'isProcessed', 'meeshoImageUrl', 'price', 'subSubCategoryId', 'updatedAt'] as const
   $columns = ShippingPriceSchema.$columns
   @column()
   declare accountId: number

@@ -1,3 +1,3 @@
-import AcceptOrders from '#jobs/accept_orders'
+// import AcceptOrders from '#jobs/accept_orders'
 
-await AcceptOrders.schedule({}).every('30m').run()
+// await AcceptOrders.schedule({}).every('30m').run()

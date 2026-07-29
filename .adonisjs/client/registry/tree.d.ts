@@ -8,6 +8,9 @@ export interface ApiDefinition {
   users: {
     signup: typeof routes['users.signup']
     login: typeof routes['users.login']
+    refresh: typeof routes['users.refresh']
+    logout: typeof routes['users.logout']
+    me: typeof routes['users.me']
   }
   accounts: {
     getAllAccounts: typeof routes['accounts.get_all_accounts']
@@ -15,6 +18,10 @@ export interface ApiDefinition {
     retryLogin: typeof routes['accounts.retry_login']
     updatePassword: typeof routes['accounts.update_password']
     deleteAccount: typeof routes['accounts.delete_account']
+  }
+  flexiGrowthOffers: {
+    submit: typeof routes['flexi_growth_offers.submit']
+    retry: typeof routes['flexi_growth_offers.retry']
   }
   images: {
     index: typeof routes['images.index']

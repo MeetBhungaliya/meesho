@@ -67,6 +67,42 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/users_controller').default['login']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
+  'users.refresh': {
+    methods: ["POST"]
+    pattern: '/refresh'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/users_controller').default['refresh']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/users_controller').default['refresh']>>>
+    }
+  }
+  'users.logout': {
+    methods: ["POST"]
+    pattern: '/logout'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/users_controller').default['logout']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/users_controller').default['logout']>>>
+    }
+  }
+  'users.me': {
+    methods: ["GET","HEAD"]
+    pattern: '/me'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/users_controller').default['me']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/users_controller').default['me']>>>
+    }
+  }
   'accounts.get_all_accounts': {
     methods: ["GET","HEAD"]
     pattern: '/accounts'
@@ -125,6 +161,30 @@ export interface Registry {
       query: {}
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/accounts_controller').default['deleteAccount']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/accounts_controller').default['deleteAccount']>>>
+    }
+  }
+  'flexi_growth_offers.submit': {
+    methods: ["POST"]
+    pattern: '/accounts/flexi-growth-offer'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/flexi_growth_offers_controller').default['submit']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/flexi_growth_offers_controller').default['submit']>>>
+    }
+  }
+  'flexi_growth_offers.retry': {
+    methods: ["POST"]
+    pattern: '/accounts/flexi-growth-offer/retry'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/flexi_growth_offers_controller').default['retry']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/flexi_growth_offers_controller').default['retry']>>>
     }
   }
   'images.index': {

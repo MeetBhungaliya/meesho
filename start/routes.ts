@@ -9,6 +9,9 @@ transmit.registerRoutes((route) => {
 
 router.post('/signup', [controllers.Users, 'signup'])
 router.post('/login', [controllers.Users, 'login'])
+router.post('/refresh', [controllers.Users, 'refresh'])
+router.post('/logout', [controllers.Users, 'logout'])
+router.get('/me', [controllers.Users, 'me']).use(middleware.auth())
 
 router
   .group(() => {
@@ -19,6 +22,8 @@ router
         router.get('/retry-login/:accountId?', [controllers.Accounts, 'retryLogin'])
         router.put('/update-password/:accountId', [controllers.Accounts, 'updatePassword'])
         router.delete('/:accountId', [controllers.Accounts, 'deleteAccount'])
+        router.post('/flexi-growth-offer', [controllers.FlexiGrowthOffers, 'submit'])
+        router.post('/flexi-growth-offer/retry', [controllers.FlexiGrowthOffers, 'retry'])
       })
       .prefix('accounts')
 

@@ -9,11 +9,16 @@ export type ScannedRoutes = {
     'unsubscribe': { paramsTuple?: []; params?: {} }
     'users.signup': { paramsTuple?: []; params?: {} }
     'users.login': { paramsTuple?: []; params?: {} }
+    'users.refresh': { paramsTuple?: []; params?: {} }
+    'users.logout': { paramsTuple?: []; params?: {} }
+    'users.me': { paramsTuple?: []; params?: {} }
     'accounts.get_all_accounts': { paramsTuple?: []; params?: {} }
     'accounts.create_account': { paramsTuple?: []; params?: {} }
     'accounts.retry_login': { paramsTuple?: [ParamValue?]; params?: {'accountId'?: ParamValue} }
     'accounts.update_password': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'accounts.delete_account': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
+    'flexi_growth_offers.submit': { paramsTuple?: []; params?: {} }
+    'flexi_growth_offers.retry': { paramsTuple?: []; params?: {} }
     'images.index': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'images.upload': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'images.retry': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
@@ -23,6 +28,7 @@ export type ScannedRoutes = {
   }
   GET: {
     'event_stream': { paramsTuple?: []; params?: {} }
+    'users.me': { paramsTuple?: []; params?: {} }
     'accounts.get_all_accounts': { paramsTuple?: []; params?: {} }
     'accounts.retry_login': { paramsTuple?: [ParamValue?]; params?: {'accountId'?: ParamValue} }
     'images.index': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
@@ -30,6 +36,7 @@ export type ScannedRoutes = {
   }
   HEAD: {
     'event_stream': { paramsTuple?: []; params?: {} }
+    'users.me': { paramsTuple?: []; params?: {} }
     'accounts.get_all_accounts': { paramsTuple?: []; params?: {} }
     'accounts.retry_login': { paramsTuple?: [ParamValue?]; params?: {'accountId'?: ParamValue} }
     'images.index': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
@@ -40,7 +47,11 @@ export type ScannedRoutes = {
     'unsubscribe': { paramsTuple?: []; params?: {} }
     'users.signup': { paramsTuple?: []; params?: {} }
     'users.login': { paramsTuple?: []; params?: {} }
+    'users.refresh': { paramsTuple?: []; params?: {} }
+    'users.logout': { paramsTuple?: []; params?: {} }
     'accounts.create_account': { paramsTuple?: []; params?: {} }
+    'flexi_growth_offers.submit': { paramsTuple?: []; params?: {} }
+    'flexi_growth_offers.retry': { paramsTuple?: []; params?: {} }
     'images.upload': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'images.retry': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'telegram_webhook.webhook': { paramsTuple?: []; params?: {} }

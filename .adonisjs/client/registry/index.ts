@@ -36,6 +36,24 @@ const routes = {
     tokens: [{"old":"/login","type":0,"val":"login","end":""}],
     types: placeholder as Registry['users.login']['types'],
   },
+  'users.refresh': {
+    methods: ["POST"],
+    pattern: '/refresh',
+    tokens: [{"old":"/refresh","type":0,"val":"refresh","end":""}],
+    types: placeholder as Registry['users.refresh']['types'],
+  },
+  'users.logout': {
+    methods: ["POST"],
+    pattern: '/logout',
+    tokens: [{"old":"/logout","type":0,"val":"logout","end":""}],
+    types: placeholder as Registry['users.logout']['types'],
+  },
+  'users.me': {
+    methods: ["GET","HEAD"],
+    pattern: '/me',
+    tokens: [{"old":"/me","type":0,"val":"me","end":""}],
+    types: placeholder as Registry['users.me']['types'],
+  },
   'accounts.get_all_accounts': {
     methods: ["GET","HEAD"],
     pattern: '/accounts',
@@ -65,6 +83,18 @@ const routes = {
     pattern: '/accounts/:accountId',
     tokens: [{"old":"/accounts/:accountId","type":0,"val":"accounts","end":""},{"old":"/accounts/:accountId","type":1,"val":"accountId","end":""}],
     types: placeholder as Registry['accounts.delete_account']['types'],
+  },
+  'flexi_growth_offers.submit': {
+    methods: ["POST"],
+    pattern: '/accounts/flexi-growth-offer',
+    tokens: [{"old":"/accounts/flexi-growth-offer","type":0,"val":"accounts","end":""},{"old":"/accounts/flexi-growth-offer","type":0,"val":"flexi-growth-offer","end":""}],
+    types: placeholder as Registry['flexi_growth_offers.submit']['types'],
+  },
+  'flexi_growth_offers.retry': {
+    methods: ["POST"],
+    pattern: '/accounts/flexi-growth-offer/retry',
+    tokens: [{"old":"/accounts/flexi-growth-offer/retry","type":0,"val":"accounts","end":""},{"old":"/accounts/flexi-growth-offer/retry","type":0,"val":"flexi-growth-offer","end":""},{"old":"/accounts/flexi-growth-offer/retry","type":0,"val":"retry","end":""}],
+    types: placeholder as Registry['flexi_growth_offers.retry']['types'],
   },
   'images.index': {
     methods: ["GET","HEAD"],

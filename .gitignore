@@ -12,7 +12,6 @@ dump.rdb
 # Sentry Auth Token
 .sentryclirc
 docker-compose.override.yml
-package-lock.json
 yarn-error.log
 yarn.lock
 
