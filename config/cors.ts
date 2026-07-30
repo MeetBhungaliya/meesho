@@ -1,7 +1,11 @@
 import app from '@adonisjs/core/services/app'
 import { defineConfig } from '@adonisjs/cors'
 
-const allowedOrigins = ['https://ecom-fe-seven-lime.vercel.app']
+const allowedOrigins = [
+  'https://ecom-fe-seven-lime.vercel.app',
+  'capacitor://localhost', // iOS Capacitor WebView
+  'http://localhost', // Android Capacitor WebView
+]
 
 /**
  * Configuration options to tweak the CORS policy. The following

@@ -46,8 +46,10 @@ export default class UsersController {
       expiresAt: DateTime.now().plus({ days: 7 })
     })
 
-    // Set Cookies
-    response.cookie('access_token', token.value!.release(), {
+    const accessTokenValue = token.value!.release()
+
+    // Set Cookies (still useful for same-origin web clients)
+    response.cookie('access_token', accessTokenValue, {
       httpOnly: true,
       secure: app.inProduction,
       sameSite: app.inProduction ? 'none' : 'lax',
@@ -61,14 +63,20 @@ export default class UsersController {
       maxAge: 7 * 24 * 60 * 60, // 7 days
     })
 
+    // Return tokens in body for Safari/Capacitor (cross-origin cookie issues)
     return response.ok({
       message: 'Login successful.',
-      data: { user: this.formatUser(user) },
+      data: {
+        user: this.formatUser(user),
+        accessToken: accessTokenValue,
+        refreshToken: refreshTokenString,
+      },
     })
   }
 
   async refresh({ request, response }: HttpContext) {
-    const refreshTokenString = request.cookie('refresh_token')
+    // Accept refresh token from cookie (web) or request body (Safari/Capacitor)
+    const refreshTokenString = request.cookie('refresh_token') || request.input('refreshToken')
 
     if (!refreshTokenString) {
       return response.unauthorized({ message: 'Refresh token missing' })
@@ -102,8 +110,10 @@ export default class UsersController {
       expiresAt: DateTime.now().plus({ days: 7 })
     })
 
-    // Set new cookies
-    response.cookie('access_token', newAccessToken.value!.release(), {
+    const accessTokenValue = newAccessToken.value!.release()
+
+    // Set new cookies (still useful for same-origin web clients)
+    response.cookie('access_token', accessTokenValue, {
       httpOnly: true,
       secure: app.inProduction,
       sameSite: app.inProduction ? 'none' : 'lax',
@@ -117,9 +127,14 @@ export default class UsersController {
       maxAge: 7 * 24 * 60 * 60,
     })
 
+    // Return tokens in body for Safari/Capacitor (cross-origin cookie issues)
     return response.ok({
       message: 'Token refreshed successfully.',
-      data: { user: this.formatUser(user) },
+      data: {
+        user: this.formatUser(user),
+        accessToken: accessTokenValue,
+        refreshToken: newRefreshTokenString,
+      },
     })
   }
 
