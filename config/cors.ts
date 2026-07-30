@@ -4,6 +4,7 @@ import { defineConfig } from '@adonisjs/cors'
 const allowedOrigins = [
   'https://ecom-fe-seven-lime.vercel.app',
   'capacitor://localhost', // iOS Capacitor WebView
+  'https://localhost', // Android Capacitor WebView
   'http://localhost', // Android Capacitor WebView
 ]
 
