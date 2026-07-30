@@ -19,6 +19,7 @@ export type ScannedRoutes = {
     'accounts.delete_account': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'flexi_growth_offers.submit': { paramsTuple?: []; params?: {} }
     'flexi_growth_offers.retry': { paramsTuple?: []; params?: {} }
+    'return_otps.fetch': { paramsTuple?: []; params?: {} }
     'images.index': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'images.upload': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'images.retry': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
@@ -52,6 +53,7 @@ export type ScannedRoutes = {
     'accounts.create_account': { paramsTuple?: []; params?: {} }
     'flexi_growth_offers.submit': { paramsTuple?: []; params?: {} }
     'flexi_growth_offers.retry': { paramsTuple?: []; params?: {} }
+    'return_otps.fetch': { paramsTuple?: []; params?: {} }
     'images.upload': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'images.retry': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'telegram_webhook.webhook': { paramsTuple?: []; params?: {} }

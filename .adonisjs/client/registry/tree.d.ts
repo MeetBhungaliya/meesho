@@ -23,6 +23,9 @@ export interface ApiDefinition {
     submit: typeof routes['flexi_growth_offers.submit']
     retry: typeof routes['flexi_growth_offers.retry']
   }
+  returnOtps: {
+    fetch: typeof routes['return_otps.fetch']
+  }
   images: {
     index: typeof routes['images.index']
     upload: typeof routes['images.upload']

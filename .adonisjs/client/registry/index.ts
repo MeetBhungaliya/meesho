@@ -96,6 +96,12 @@ const routes = {
     tokens: [{"old":"/accounts/flexi-growth-offer/retry","type":0,"val":"accounts","end":""},{"old":"/accounts/flexi-growth-offer/retry","type":0,"val":"flexi-growth-offer","end":""},{"old":"/accounts/flexi-growth-offer/retry","type":0,"val":"retry","end":""}],
     types: placeholder as Registry['flexi_growth_offers.retry']['types'],
   },
+  'return_otps.fetch': {
+    methods: ["POST"],
+    pattern: '/accounts/return-otps',
+    tokens: [{"old":"/accounts/return-otps","type":0,"val":"accounts","end":""},{"old":"/accounts/return-otps","type":0,"val":"return-otps","end":""}],
+    types: placeholder as Registry['return_otps.fetch']['types'],
+  },
   'images.index': {
     methods: ["GET","HEAD"],
     pattern: '/images/:accountId',

@@ -187,6 +187,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/flexi_growth_offers_controller').default['retry']>>>
     }
   }
+  'return_otps.fetch': {
+    methods: ["POST"]
+    pattern: '/accounts/return-otps'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/return_otps_controller').default['fetch']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/return_otps_controller').default['fetch']>>>
+    }
+  }
   'images.index': {
     methods: ["GET","HEAD"]
     pattern: '/images/:accountId'

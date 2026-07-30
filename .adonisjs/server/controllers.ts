@@ -8,6 +8,7 @@ export const controllers = {
   FlexiGrowthOffers: () => import('#controllers/flexi_growth_offers_controller'),
   HealthChecks: () => import('#controllers/health_checks_controller'),
   Images: () => import('#controllers/images_controller'),
+  ReturnOtps: () => import('#controllers/return_otps_controller'),
   TelegramWebhook: () => import('#controllers/telegram_webhook_controller'),
   Users: () => import('#controllers/users_controller'),
 }

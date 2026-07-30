@@ -1,5 +1,6 @@
 import transmit from '@adonisjs/transmit/services/main'
 import { controllers } from '#generated/controllers'
+const ReturnOtpsController = () => import('#controllers/return_otps_controller')
 import { middleware } from '#start/kernel'
 import router from '@adonisjs/core/services/router'
 
@@ -24,6 +25,7 @@ router
         router.delete('/:accountId', [controllers.Accounts, 'deleteAccount'])
         router.post('/flexi-growth-offer', [controllers.FlexiGrowthOffers, 'submit'])
         router.post('/flexi-growth-offer/retry', [controllers.FlexiGrowthOffers, 'retry'])
+        router.post('/return-otps', [ReturnOtpsController, 'fetch'])
       })
       .prefix('accounts')
 
