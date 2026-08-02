@@ -46,6 +46,5 @@ router.use([
  * the routes or the routes group.
  */
 export const middleware = router.named({
-  mcp: () => import('#middleware/mcp_middleware'),
   auth: () => import('#middleware/auth_middleware'),
 })

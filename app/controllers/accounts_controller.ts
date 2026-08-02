@@ -1,7 +1,7 @@
 import Account from '#models/account'
 import { SESSION_STATUS } from '#services/external_api/constants'
 import { SessionManager } from '#services/external_api/session_manager'
-import { createAccountValidator, updateAccountPasswordValidator } from '#validators/account'
+import { createAccountValidator, updateAccountPasswordValidator, updateAccountValidator } from '#validators/account'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class AccountsController {
@@ -89,8 +89,47 @@ export default class AccountsController {
     account.password = payload.password
     await account.save()
 
+    SessionManager.login(account.id.toString(), account.email, account.password).catch(() => {})
+
     return response.ok({
       message: 'Account password updated successfully',
+      data: account,
+    })
+  }
+
+  async updateAccount({ auth, params, request, response }: HttpContext) {
+    const user = await auth.authenticate()
+    const payload = await request.validateUsing(updateAccountValidator)
+
+    const account = await Account.query()
+      .where('id', params.accountId)
+      .where('user_id', user.id)
+      .firstOrFail()
+
+    let credentialsChanged = false
+    if (payload.email && payload.email !== account.email) {
+      account.email = payload.email
+      credentialsChanged = true
+    }
+    if (payload.password) {
+      account.password = payload.password
+      credentialsChanged = true
+    }
+    if (payload.autoAcceptOrders !== undefined) {
+      account.autoAcceptOrders = payload.autoAcceptOrders
+    }
+
+    await account.save()
+
+    await SessionManager.broadcastAccountState(account)
+
+    if (credentialsChanged) {
+      SessionManager.login(account.id.toString(), account.email, account.password).catch(() => {})
+    }
+
+    return response.ok({
+      message: 'Account updated successfully',
+      data: account,
     })
   }
 

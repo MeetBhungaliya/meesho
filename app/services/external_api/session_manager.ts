@@ -8,6 +8,7 @@ import {
   SESSION_STATUS,
 } from '#services/external_api/constants'
 import { ApiError, SessionError } from '#services/external_api/errors'
+import transmit from '@adonisjs/transmit/services/main'
 import type {
   AccountId,
   MeeshoSupplierPrefetchResponse,
@@ -21,6 +22,18 @@ export interface SessionCookies {
 }
 
 export class SessionManager {
+  static async broadcastAccountState(account: Account): Promise<void> {
+    try {
+      const supplierData = await SessionManager.getSupplierData(account.id.toString())
+      transmit.broadcast(`accounts/${account.userId}`, {
+        type: 'account_updated',
+        account: {
+          ...account.serialize(),
+          supplierData: supplierData ? (supplierData as Record<string, any>) : null,
+        },
+      })
+    } catch (_) {}
+  }
   static async getSession(accountId: AccountId): Promise<SessionCookies | null> {
     return cache.get({ key: `${CACHE_PREFIX.session}${accountId}` })
   }
@@ -34,6 +47,8 @@ export class SessionManager {
     account.sessionStatus = SESSION_STATUS.PENDING
     account.sessionError = null
     await account.save()
+
+    await SessionManager.broadcastAccountState(account)
 
     await LoginAccount.dispatch({ accountId, email, password })
   }
@@ -144,6 +159,8 @@ export class SessionManager {
     account.sessionError = null
     account.lastLoginAt = DateTime.utc()
     await account.save()
+
+    await SessionManager.broadcastAccountState(account)
 
     return cookies
   }

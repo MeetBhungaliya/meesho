@@ -22,6 +22,7 @@ export interface ApiDefinition {
     createAccount: typeof routes['accounts.create_account']
     retryLogin: typeof routes['accounts.retry_login']
     updatePassword: typeof routes['accounts.update_password']
+    updateAccount: typeof routes['accounts.update_account']
     deleteAccount: typeof routes['accounts.delete_account']
   }
   flexiGrowthOffers: {

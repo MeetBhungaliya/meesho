@@ -163,6 +163,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/accounts_controller').default['updatePassword']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
+  'accounts.update_account': {
+    methods: ["PUT"]
+    pattern: '/accounts/:accountId'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/account').updateAccountValidator)>>
+      paramsTuple: [ParamValue]
+      params: { accountId: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/account').updateAccountValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/accounts_controller').default['updateAccount']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/accounts_controller').default['updateAccount']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
   'accounts.delete_account': {
     methods: ["DELETE"]
     pattern: '/accounts/:accountId'

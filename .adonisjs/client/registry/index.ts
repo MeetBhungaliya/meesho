@@ -84,6 +84,12 @@ const routes = {
     tokens: [{"old":"/accounts/update-password/:accountId","type":0,"val":"accounts","end":""},{"old":"/accounts/update-password/:accountId","type":0,"val":"update-password","end":""},{"old":"/accounts/update-password/:accountId","type":1,"val":"accountId","end":""}],
     types: placeholder as Registry['accounts.update_password']['types'],
   },
+  'accounts.update_account': {
+    methods: ["PUT"],
+    pattern: '/accounts/:accountId',
+    tokens: [{"old":"/accounts/:accountId","type":0,"val":"accounts","end":""},{"old":"/accounts/:accountId","type":1,"val":"accountId","end":""}],
+    types: placeholder as Registry['accounts.update_account']['types'],
+  },
   'accounts.delete_account': {
     methods: ["DELETE"],
     pattern: '/accounts/:accountId',

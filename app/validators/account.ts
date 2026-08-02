@@ -16,3 +16,12 @@ export const updateAccountPasswordValidator = vine.create(
     password: password(),
   })
 )
+
+export const updateAccountValidator = vine.create(
+  vine.object({
+    email: email().optional(),
+    password: password().optional(),
+    autoAcceptOrders: vine.boolean().optional(),
+  })
+)
+

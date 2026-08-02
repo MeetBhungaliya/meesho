@@ -25,6 +25,7 @@ router
         router.post('/add-account', [controllers.Accounts, 'createAccount'])
         router.get('/retry-login/:accountId?', [controllers.Accounts, 'retryLogin'])
         router.put('/update-password/:accountId', [controllers.Accounts, 'updatePassword'])
+        router.put('/:accountId', [controllers.Accounts, 'updateAccount'])
         router.delete('/:accountId', [controllers.Accounts, 'deleteAccount'])
         router.post('/flexi-growth-offer', [controllers.FlexiGrowthOffers, 'submit'])
         router.post('/flexi-growth-offer/retry', [controllers.FlexiGrowthOffers, 'retry'])

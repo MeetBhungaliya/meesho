@@ -17,6 +17,7 @@ export type ScannedRoutes = {
     'accounts.create_account': { paramsTuple?: []; params?: {} }
     'accounts.retry_login': { paramsTuple?: [ParamValue?]; params?: {'accountId'?: ParamValue} }
     'accounts.update_password': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
+    'accounts.update_account': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'accounts.delete_account': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'flexi_growth_offers.submit': { paramsTuple?: []; params?: {} }
     'flexi_growth_offers.retry': { paramsTuple?: []; params?: {} }
@@ -81,6 +82,7 @@ export type ScannedRoutes = {
   }
   PUT: {
     'accounts.update_password': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
+    'accounts.update_account': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'products.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   DELETE: {
