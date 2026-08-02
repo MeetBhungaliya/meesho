@@ -7,6 +7,7 @@ import { column, hasMany } from '@adonisjs/lucid/orm'
 import type { HasMany } from '@adonisjs/lucid/types/relations'
 import { DateTime } from 'luxon'
 import Account from '#models/account'
+import Product from '#models/product'
 
 export default class User extends compose(
   UserSchema,
@@ -32,4 +33,7 @@ export default class User extends compose(
 
   @hasMany(() => Account)
   declare accounts: HasMany<typeof Account>
+
+  @hasMany(() => Product)
+  declare products: HasMany<typeof Product>
 }

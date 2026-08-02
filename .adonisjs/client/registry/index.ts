@@ -6,6 +6,12 @@ import type { ApiDefinition } from './tree.d.ts'
 const placeholder: any = {}
 
 const routes = {
+  'drive.fs.serve': {
+    methods: ["GET","HEAD"],
+    pattern: '/uploads/*',
+    tokens: [{"old":"/uploads/*","type":0,"val":"uploads","end":""},{"old":"/uploads/*","type":2,"val":"*","end":""}],
+    types: placeholder as Registry['drive.fs.serve']['types'],
+  },
   'event_stream': {
     methods: ["GET","HEAD"],
     pattern: '/__transmit/events',
@@ -125,6 +131,54 @@ const routes = {
     pattern: '/images/:accountId',
     tokens: [{"old":"/images/:accountId","type":0,"val":"images","end":""},{"old":"/images/:accountId","type":1,"val":"accountId","end":""}],
     types: placeholder as Registry['images.destroy']['types'],
+  },
+  'products.analytics': {
+    methods: ["GET","HEAD"],
+    pattern: '/inventory/products/analytics',
+    tokens: [{"old":"/inventory/products/analytics","type":0,"val":"inventory","end":""},{"old":"/inventory/products/analytics","type":0,"val":"products","end":""},{"old":"/inventory/products/analytics","type":0,"val":"analytics","end":""}],
+    types: placeholder as Registry['products.analytics']['types'],
+  },
+  'products.categories': {
+    methods: ["GET","HEAD"],
+    pattern: '/inventory/products/categories',
+    tokens: [{"old":"/inventory/products/categories","type":0,"val":"inventory","end":""},{"old":"/inventory/products/categories","type":0,"val":"products","end":""},{"old":"/inventory/products/categories","type":0,"val":"categories","end":""}],
+    types: placeholder as Registry['products.categories']['types'],
+  },
+  'products.index': {
+    methods: ["GET","HEAD"],
+    pattern: '/inventory/products',
+    tokens: [{"old":"/inventory/products","type":0,"val":"inventory","end":""},{"old":"/inventory/products","type":0,"val":"products","end":""}],
+    types: placeholder as Registry['products.index']['types'],
+  },
+  'products.store': {
+    methods: ["POST"],
+    pattern: '/inventory/products',
+    tokens: [{"old":"/inventory/products","type":0,"val":"inventory","end":""},{"old":"/inventory/products","type":0,"val":"products","end":""}],
+    types: placeholder as Registry['products.store']['types'],
+  },
+  'products.show': {
+    methods: ["GET","HEAD"],
+    pattern: '/inventory/products/:id',
+    tokens: [{"old":"/inventory/products/:id","type":0,"val":"inventory","end":""},{"old":"/inventory/products/:id","type":0,"val":"products","end":""},{"old":"/inventory/products/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['products.show']['types'],
+  },
+  'products.update': {
+    methods: ["PUT"],
+    pattern: '/inventory/products/:id',
+    tokens: [{"old":"/inventory/products/:id","type":0,"val":"inventory","end":""},{"old":"/inventory/products/:id","type":0,"val":"products","end":""},{"old":"/inventory/products/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['products.update']['types'],
+  },
+  'products.destroy': {
+    methods: ["DELETE"],
+    pattern: '/inventory/products/:id',
+    tokens: [{"old":"/inventory/products/:id","type":0,"val":"inventory","end":""},{"old":"/inventory/products/:id","type":0,"val":"products","end":""},{"old":"/inventory/products/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['products.destroy']['types'],
+  },
+  'products.adjust_stock': {
+    methods: ["POST"],
+    pattern: '/inventory/products/:id/adjust-stock',
+    tokens: [{"old":"/inventory/products/:id/adjust-stock","type":0,"val":"inventory","end":""},{"old":"/inventory/products/:id/adjust-stock","type":0,"val":"products","end":""},{"old":"/inventory/products/:id/adjust-stock","type":1,"val":"id","end":""},{"old":"/inventory/products/:id/adjust-stock","type":0,"val":"adjust-stock","end":""}],
+    types: placeholder as Registry['products.adjust_stock']['types'],
   },
   'telegram_webhook.webhook': {
     methods: ["POST"],

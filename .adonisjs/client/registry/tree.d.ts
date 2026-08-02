@@ -2,6 +2,11 @@
 import type { routes } from './index.ts'
 
 export interface ApiDefinition {
+  drive: {
+    fs: {
+      serve: typeof routes['drive.fs.serve']
+    }
+  }
   eventStream: typeof routes['event_stream']
   subscribe: typeof routes['subscribe']
   unsubscribe: typeof routes['unsubscribe']
@@ -31,6 +36,16 @@ export interface ApiDefinition {
     upload: typeof routes['images.upload']
     retry: typeof routes['images.retry']
     destroy: typeof routes['images.destroy']
+  }
+  products: {
+    analytics: typeof routes['products.analytics']
+    categories: typeof routes['products.categories']
+    index: typeof routes['products.index']
+    store: typeof routes['products.store']
+    show: typeof routes['products.show']
+    update: typeof routes['products.update']
+    destroy: typeof routes['products.destroy']
+    adjustStock: typeof routes['products.adjust_stock']
   }
   telegramWebhook: {
     webhook: typeof routes['telegram_webhook.webhook']

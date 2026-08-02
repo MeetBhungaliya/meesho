@@ -30,6 +30,7 @@ export default defineConfig({
     () => import('@adonisjs/session/commands'),
     () => import('@adonisjs/queue/commands'),
     () => import('@adonisjs/cache/commands'),
+    () => import('@jrmc/adonis-mcp/commands')
   ],
 
   /*
@@ -60,6 +61,8 @@ export default defineConfig({
     () => import('@adonisjs/cache/cache_provider'),
     () => import('@adonisjs/transmit/transmit_provider'),
     () => import('@adonisjs/drive/drive_provider'),
+    () => import('@jrmc/adonis-mcp/mcp_provider'),
+    () => import('@jrmc/adonis-mcp/vinejs_provider')
   ],
 
   /*

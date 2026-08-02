@@ -18,6 +18,12 @@ const driveConfig = defineConfig({
       bucket: env.get('S3_BUCKET'),
       visibility: 'public',
     }),
+    fs: services.fs({
+      location: './uploads',
+      visibility: 'public',
+      serveFiles: true,
+      routeBasePath: '/uploads',
+    }),
   },
 })
 

@@ -4,6 +4,7 @@ type ParamValue = string | number | bigint | boolean
 
 export type ScannedRoutes = {
   ALL: {
+    'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
     'event_stream': { paramsTuple?: []; params?: {} }
     'subscribe': { paramsTuple?: []; params?: {} }
     'unsubscribe': { paramsTuple?: []; params?: {} }
@@ -24,23 +25,41 @@ export type ScannedRoutes = {
     'images.upload': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'images.retry': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'images.destroy': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
+    'products.analytics': { paramsTuple?: []; params?: {} }
+    'products.categories': { paramsTuple?: []; params?: {} }
+    'products.index': { paramsTuple?: []; params?: {} }
+    'products.store': { paramsTuple?: []; params?: {} }
+    'products.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'products.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'products.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'products.adjust_stock': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'telegram_webhook.webhook': { paramsTuple?: []; params?: {} }
     'health_checks.health': { paramsTuple?: []; params?: {} }
   }
   GET: {
+    'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
     'event_stream': { paramsTuple?: []; params?: {} }
     'users.me': { paramsTuple?: []; params?: {} }
     'accounts.get_all_accounts': { paramsTuple?: []; params?: {} }
     'accounts.retry_login': { paramsTuple?: [ParamValue?]; params?: {'accountId'?: ParamValue} }
     'images.index': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
+    'products.analytics': { paramsTuple?: []; params?: {} }
+    'products.categories': { paramsTuple?: []; params?: {} }
+    'products.index': { paramsTuple?: []; params?: {} }
+    'products.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'health_checks.health': { paramsTuple?: []; params?: {} }
   }
   HEAD: {
+    'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
     'event_stream': { paramsTuple?: []; params?: {} }
     'users.me': { paramsTuple?: []; params?: {} }
     'accounts.get_all_accounts': { paramsTuple?: []; params?: {} }
     'accounts.retry_login': { paramsTuple?: [ParamValue?]; params?: {'accountId'?: ParamValue} }
     'images.index': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
+    'products.analytics': { paramsTuple?: []; params?: {} }
+    'products.categories': { paramsTuple?: []; params?: {} }
+    'products.index': { paramsTuple?: []; params?: {} }
+    'products.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'health_checks.health': { paramsTuple?: []; params?: {} }
   }
   POST: {
@@ -56,14 +75,18 @@ export type ScannedRoutes = {
     'return_otps.fetch': { paramsTuple?: []; params?: {} }
     'images.upload': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'images.retry': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
+    'products.store': { paramsTuple?: []; params?: {} }
+    'products.adjust_stock': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'telegram_webhook.webhook': { paramsTuple?: []; params?: {} }
   }
   PUT: {
     'accounts.update_password': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
+    'products.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   DELETE: {
     'accounts.delete_account': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'images.destroy': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
+    'products.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
 }
 declare module '@adonisjs/core/types/http' {

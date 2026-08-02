@@ -59,6 +59,33 @@ export class AuthAccessTokenSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
+export class ProductSchema extends BaseModel {
+  static $columns = ['createdAt', 'currentStock', 'id', 'imagePath', 'isActive', 'minimumStock', 'name', 'note', 'price', 'updatedAt', 'userId'] as const
+  $columns = ProductSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare currentStock: number
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare imagePath: string | null
+  @column()
+  declare isActive: boolean
+  @column()
+  declare minimumStock: number
+  @column()
+  declare name: string
+  @column()
+  declare note: string | null
+  @column()
+  declare price: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare userId: number
+}
+
 export class RefreshTokenSchema extends BaseModel {
   static $columns = ['createdAt', 'expiresAt', 'id', 'token', 'updatedAt', 'userId'] as const
   $columns = RefreshTokenSchema.$columns
@@ -101,6 +128,27 @@ export class ShippingPriceSchema extends BaseModel {
   declare subSubCategoryId: number
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
+}
+
+export class StockTransactionSchema extends BaseModel {
+  static $columns = ['changeAmount', 'createdAt', 'id', 'note', 'productId', 'stockAfter', 'type', 'userId'] as const
+  $columns = StockTransactionSchema.$columns
+  @column()
+  declare changeAmount: number
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare note: string | null
+  @column()
+  declare productId: number
+  @column()
+  declare stockAfter: number
+  @column()
+  declare type: string
+  @column()
+  declare userId: number
 }
 
 export class TelegramAccountSchema extends BaseModel {

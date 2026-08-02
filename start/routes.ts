@@ -1,11 +1,14 @@
 import transmit from '@adonisjs/transmit/services/main'
 import { controllers } from '#generated/controllers'
 const ReturnOtpsController = () => import('#controllers/return_otps_controller')
+const ProductsController = () => import('#controllers/products_controller')
 import { middleware } from '#start/kernel'
 import router from '@adonisjs/core/services/router'
 
 transmit.registerRoutes((route) => {
-  route.middleware(middleware.auth())
+  if (route.getPattern().includes('subscribe') || route.getPattern().includes('unsubscribe')) {
+    route.middleware(middleware.auth())
+  }
 })
 
 router.post('/signup', [controllers.Users, 'signup'])
@@ -37,6 +40,21 @@ router
         router.delete('/', [controllers.Images, 'destroy'])
       })
       .prefix('images/:accountId')
+
+    // Inventory / Products
+    router
+      .group(() => {
+        router.get('/analytics', [ProductsController, 'analytics'])
+
+        router.get('/categories', [ProductsController, 'categories'])
+        router.get('/', [ProductsController, 'index'])
+        router.post('/', [ProductsController, 'store'])
+        router.get('/:id', [ProductsController, 'show'])
+        router.put('/:id', [ProductsController, 'update'])
+        router.delete('/:id', [ProductsController, 'destroy'])
+        router.post('/:id/adjust-stock', [ProductsController, 'adjustStock'])
+      })
+      .prefix('inventory/products')
   })
   .use(middleware.auth())
 

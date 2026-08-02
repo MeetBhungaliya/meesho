@@ -9,3 +9,13 @@ transmit.authorize<{ userId: string; accountId: string }>(
     return user.id === +userId && account?.userId === user.id
   }
 )
+
+// Inventory real-time updates channel
+transmit.authorize<{ userId: string }>(
+  'inventory/:userId',
+  async (ctx, { userId }) => {
+    const user = await ctx.auth.authenticate()
+    return user.id === +userId
+  }
+)
+
