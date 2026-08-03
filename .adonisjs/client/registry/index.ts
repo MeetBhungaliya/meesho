@@ -66,6 +66,12 @@ const routes = {
     tokens: [{"old":"/accounts","type":0,"val":"accounts","end":""}],
     types: placeholder as Registry['accounts.get_all_accounts']['types'],
   },
+  'dashboard.get_stats': {
+    methods: ["GET","HEAD"],
+    pattern: '/accounts/dashboard/stats',
+    tokens: [{"old":"/accounts/dashboard/stats","type":0,"val":"accounts","end":""},{"old":"/accounts/dashboard/stats","type":0,"val":"dashboard","end":""},{"old":"/accounts/dashboard/stats","type":0,"val":"stats","end":""}],
+    types: placeholder as Registry['dashboard.get_stats']['types'],
+  },
   'accounts.create_account': {
     methods: ["POST"],
     pattern: '/accounts/add-account',

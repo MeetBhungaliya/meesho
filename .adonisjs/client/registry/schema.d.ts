@@ -127,6 +127,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/accounts_controller').default['getAllAccounts']>>>
     }
   }
+  'dashboard.get_stats': {
+    methods: ["GET","HEAD"]
+    pattern: '/accounts/dashboard/stats'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/dashboard_controller').default['getStats']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/dashboard_controller').default['getStats']>>>
+    }
+  }
   'accounts.create_account': {
     methods: ["POST"]
     pattern: '/accounts/add-account'

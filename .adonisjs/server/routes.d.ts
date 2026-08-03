@@ -14,6 +14,7 @@ export type ScannedRoutes = {
     'users.logout': { paramsTuple?: []; params?: {} }
     'users.me': { paramsTuple?: []; params?: {} }
     'accounts.get_all_accounts': { paramsTuple?: []; params?: {} }
+    'dashboard.get_stats': { paramsTuple?: []; params?: {} }
     'accounts.create_account': { paramsTuple?: []; params?: {} }
     'accounts.retry_login': { paramsTuple?: [ParamValue?]; params?: {'accountId'?: ParamValue} }
     'accounts.update_password': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
@@ -47,6 +48,7 @@ export type ScannedRoutes = {
     'event_stream': { paramsTuple?: []; params?: {} }
     'users.me': { paramsTuple?: []; params?: {} }
     'accounts.get_all_accounts': { paramsTuple?: []; params?: {} }
+    'dashboard.get_stats': { paramsTuple?: []; params?: {} }
     'accounts.retry_login': { paramsTuple?: [ParamValue?]; params?: {'accountId'?: ParamValue} }
     'images.index': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'products.analytics': { paramsTuple?: []; params?: {} }
@@ -61,6 +63,7 @@ export type ScannedRoutes = {
     'event_stream': { paramsTuple?: []; params?: {} }
     'users.me': { paramsTuple?: []; params?: {} }
     'accounts.get_all_accounts': { paramsTuple?: []; params?: {} }
+    'dashboard.get_stats': { paramsTuple?: []; params?: {} }
     'accounts.retry_login': { paramsTuple?: [ParamValue?]; params?: {'accountId'?: ParamValue} }
     'images.index': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'products.analytics': { paramsTuple?: []; params?: {} }

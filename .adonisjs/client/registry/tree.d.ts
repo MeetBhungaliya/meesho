@@ -25,6 +25,9 @@ export interface ApiDefinition {
     updateAccount: typeof routes['accounts.update_account']
     deleteAccount: typeof routes['accounts.delete_account']
   }
+  dashboard: {
+    getStats: typeof routes['dashboard.get_stats']
+  }
   flexiGrowthOffers: {
     submit: typeof routes['flexi_growth_offers.submit']
     retry: typeof routes['flexi_growth_offers.retry']

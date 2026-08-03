@@ -14,4 +14,5 @@ export const controllers = {
   ReturnOtps: () => import('#controllers/return_otps_controller'),
   TelegramWebhook: () => import('#controllers/telegram_webhook_controller'),
   Users: () => import('#controllers/users_controller'),
+  Dashboard: () => import('#controllers/dashboard_controller'),
 }
