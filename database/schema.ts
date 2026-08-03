@@ -34,6 +34,25 @@ export class AccountSchema extends BaseModel {
   declare userId: number
 }
 
+export class AdAccountConfigSchema extends BaseModel {
+  static $columns = ['accountId', 'apiUrl', 'createdAt', 'dynamicFields', 'id', 'payload', 'updatedAt'] as const
+  $columns = AdAccountConfigSchema.$columns
+  @column()
+  declare accountId: number
+  @column()
+  declare apiUrl: string
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare dynamicFields: any
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare payload: any
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
 export class AuthAccessTokenSchema extends BaseModel {
   static $columns = ['abilities', 'createdAt', 'expiresAt', 'hash', 'id', 'lastUsedAt', 'name', 'tokenableId', 'type', 'updatedAt'] as const
   $columns = AuthAccessTokenSchema.$columns

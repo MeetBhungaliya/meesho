@@ -108,6 +108,18 @@ const routes = {
     tokens: [{"old":"/accounts/flexi-growth-offer/retry","type":0,"val":"accounts","end":""},{"old":"/accounts/flexi-growth-offer/retry","type":0,"val":"flexi-growth-offer","end":""},{"old":"/accounts/flexi-growth-offer/retry","type":0,"val":"retry","end":""}],
     types: placeholder as Registry['flexi_growth_offers.retry']['types'],
   },
+  'advertisements.submit': {
+    methods: ["POST"],
+    pattern: '/accounts/advertisement',
+    tokens: [{"old":"/accounts/advertisement","type":0,"val":"accounts","end":""},{"old":"/accounts/advertisement","type":0,"val":"advertisement","end":""}],
+    types: placeholder as Registry['advertisements.submit']['types'],
+  },
+  'advertisements.retry': {
+    methods: ["POST"],
+    pattern: '/accounts/advertisement/retry',
+    tokens: [{"old":"/accounts/advertisement/retry","type":0,"val":"accounts","end":""},{"old":"/accounts/advertisement/retry","type":0,"val":"advertisement","end":""},{"old":"/accounts/advertisement/retry","type":0,"val":"retry","end":""}],
+    types: placeholder as Registry['advertisements.retry']['types'],
+  },
   'return_otps.fetch': {
     methods: ["POST"],
     pattern: '/accounts/return-otps',
@@ -185,6 +197,24 @@ const routes = {
     pattern: '/inventory/products/:id/adjust-stock',
     tokens: [{"old":"/inventory/products/:id/adjust-stock","type":0,"val":"inventory","end":""},{"old":"/inventory/products/:id/adjust-stock","type":0,"val":"products","end":""},{"old":"/inventory/products/:id/adjust-stock","type":1,"val":"id","end":""},{"old":"/inventory/products/:id/adjust-stock","type":0,"val":"adjust-stock","end":""}],
     types: placeholder as Registry['products.adjust_stock']['types'],
+  },
+  'ad_account_configs.show': {
+    methods: ["GET","HEAD"],
+    pattern: '/ad-config/:accountId',
+    tokens: [{"old":"/ad-config/:accountId","type":0,"val":"ad-config","end":""},{"old":"/ad-config/:accountId","type":1,"val":"accountId","end":""}],
+    types: placeholder as Registry['ad_account_configs.show']['types'],
+  },
+  'ad_account_configs.upsert': {
+    methods: ["POST"],
+    pattern: '/ad-config',
+    tokens: [{"old":"/ad-config","type":0,"val":"ad-config","end":""}],
+    types: placeholder as Registry['ad_account_configs.upsert']['types'],
+  },
+  'ad_account_configs.destroy': {
+    methods: ["DELETE"],
+    pattern: '/ad-config/:accountId',
+    tokens: [{"old":"/ad-config/:accountId","type":0,"val":"ad-config","end":""},{"old":"/ad-config/:accountId","type":1,"val":"accountId","end":""}],
+    types: placeholder as Registry['ad_account_configs.destroy']['types'],
   },
   'telegram_webhook.webhook': {
     methods: ["POST"],

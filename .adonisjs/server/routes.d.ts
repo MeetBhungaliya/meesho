@@ -21,6 +21,8 @@ export type ScannedRoutes = {
     'accounts.delete_account': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'flexi_growth_offers.submit': { paramsTuple?: []; params?: {} }
     'flexi_growth_offers.retry': { paramsTuple?: []; params?: {} }
+    'advertisements.submit': { paramsTuple?: []; params?: {} }
+    'advertisements.retry': { paramsTuple?: []; params?: {} }
     'return_otps.fetch': { paramsTuple?: []; params?: {} }
     'images.index': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'images.upload': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
@@ -34,6 +36,9 @@ export type ScannedRoutes = {
     'products.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'products.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'products.adjust_stock': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'ad_account_configs.show': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
+    'ad_account_configs.upsert': { paramsTuple?: []; params?: {} }
+    'ad_account_configs.destroy': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'telegram_webhook.webhook': { paramsTuple?: []; params?: {} }
     'health_checks.health': { paramsTuple?: []; params?: {} }
   }
@@ -48,6 +53,7 @@ export type ScannedRoutes = {
     'products.categories': { paramsTuple?: []; params?: {} }
     'products.index': { paramsTuple?: []; params?: {} }
     'products.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'ad_account_configs.show': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'health_checks.health': { paramsTuple?: []; params?: {} }
   }
   HEAD: {
@@ -61,6 +67,7 @@ export type ScannedRoutes = {
     'products.categories': { paramsTuple?: []; params?: {} }
     'products.index': { paramsTuple?: []; params?: {} }
     'products.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'ad_account_configs.show': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'health_checks.health': { paramsTuple?: []; params?: {} }
   }
   POST: {
@@ -73,11 +80,14 @@ export type ScannedRoutes = {
     'accounts.create_account': { paramsTuple?: []; params?: {} }
     'flexi_growth_offers.submit': { paramsTuple?: []; params?: {} }
     'flexi_growth_offers.retry': { paramsTuple?: []; params?: {} }
+    'advertisements.submit': { paramsTuple?: []; params?: {} }
+    'advertisements.retry': { paramsTuple?: []; params?: {} }
     'return_otps.fetch': { paramsTuple?: []; params?: {} }
     'images.upload': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'images.retry': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'products.store': { paramsTuple?: []; params?: {} }
     'products.adjust_stock': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'ad_account_configs.upsert': { paramsTuple?: []; params?: {} }
     'telegram_webhook.webhook': { paramsTuple?: []; params?: {} }
   }
   PUT: {
@@ -89,6 +99,7 @@ export type ScannedRoutes = {
     'accounts.delete_account': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'images.destroy': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'products.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'ad_account_configs.destroy': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
   }
 }
 declare module '@adonisjs/core/types/http' {

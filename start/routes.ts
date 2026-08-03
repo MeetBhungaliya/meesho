@@ -2,6 +2,8 @@ import transmit from '@adonisjs/transmit/services/main'
 import { controllers } from '#generated/controllers'
 const ReturnOtpsController = () => import('#controllers/return_otps_controller')
 const ProductsController = () => import('#controllers/products_controller')
+const AdAccountConfigsController = () => import('#controllers/ad_account_configs_controller')
+const AdvertisementsController = () => import('#controllers/advertisements_controller')
 import { middleware } from '#start/kernel'
 import router from '@adonisjs/core/services/router'
 
@@ -29,6 +31,8 @@ router
         router.delete('/:accountId', [controllers.Accounts, 'deleteAccount'])
         router.post('/flexi-growth-offer', [controllers.FlexiGrowthOffers, 'submit'])
         router.post('/flexi-growth-offer/retry', [controllers.FlexiGrowthOffers, 'retry'])
+        router.post('/advertisement', [AdvertisementsController, 'submit'])
+        router.post('/advertisement/retry', [AdvertisementsController, 'retry'])
         router.post('/return-otps', [ReturnOtpsController, 'fetch'])
       })
       .prefix('accounts')
@@ -56,6 +60,15 @@ router
         router.post('/:id/adjust-stock', [ProductsController, 'adjustStock'])
       })
       .prefix('inventory/products')
+
+    // Ad Account Config
+    router
+      .group(() => {
+        router.get('/:accountId', [AdAccountConfigsController, 'show'])
+        router.post('/', [AdAccountConfigsController, 'upsert'])
+        router.delete('/:accountId', [AdAccountConfigsController, 'destroy'])
+      })
+      .prefix('ad-config')
   })
   .use(middleware.auth())
 

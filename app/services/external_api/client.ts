@@ -185,6 +185,10 @@ export class MeeshoApiClient {
     return this.request<T>(url, { ...options, method: 'GET' })
   }
 
+  public getHeaders(options: RequestOptions = {}): Record<string, string> {
+    return this.buildHeaders(options)
+  }
+
   private buildHeaders(options: RequestOptions): Record<string, string> {
     const headers: Record<string, string> = { ...API_HEADERS }
 

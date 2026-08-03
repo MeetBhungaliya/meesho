@@ -211,6 +211,30 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/flexi_growth_offers_controller').default['retry']>>>
     }
   }
+  'advertisements.submit': {
+    methods: ["POST"]
+    pattern: '/accounts/advertisement'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/advertisements_controller').default['submit']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/advertisements_controller').default['submit']>>>
+    }
+  }
+  'advertisements.retry': {
+    methods: ["POST"]
+    pattern: '/accounts/advertisement/retry'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/advertisements_controller').default['retry']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/advertisements_controller').default['retry']>>>
+    }
+  }
   'return_otps.fetch': {
     methods: ["POST"]
     pattern: '/accounts/return-otps'
@@ -365,6 +389,42 @@ export interface Registry {
       query: ExtractQuery<InferInput<(typeof import('#validators/product').adjustStockValidator)>>
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/products_controller').default['adjustStock']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/products_controller').default['adjustStock']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'ad_account_configs.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/ad-config/:accountId'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { accountId: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/ad_account_configs_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/ad_account_configs_controller').default['show']>>>
+    }
+  }
+  'ad_account_configs.upsert': {
+    methods: ["POST"]
+    pattern: '/ad-config'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/ad_account_config').upsertAdAccountConfigValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/ad_account_config').upsertAdAccountConfigValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/ad_account_configs_controller').default['upsert']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/ad_account_configs_controller').default['upsert']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'ad_account_configs.destroy': {
+    methods: ["DELETE"]
+    pattern: '/ad-config/:accountId'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { accountId: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/ad_account_configs_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/ad_account_configs_controller').default['destroy']>>>
     }
   }
   'telegram_webhook.webhook': {

@@ -29,6 +29,10 @@ export interface ApiDefinition {
     submit: typeof routes['flexi_growth_offers.submit']
     retry: typeof routes['flexi_growth_offers.retry']
   }
+  advertisements: {
+    submit: typeof routes['advertisements.submit']
+    retry: typeof routes['advertisements.retry']
+  }
   returnOtps: {
     fetch: typeof routes['return_otps.fetch']
   }
@@ -47,6 +51,11 @@ export interface ApiDefinition {
     update: typeof routes['products.update']
     destroy: typeof routes['products.destroy']
     adjustStock: typeof routes['products.adjust_stock']
+  }
+  adAccountConfigs: {
+    show: typeof routes['ad_account_configs.show']
+    upsert: typeof routes['ad_account_configs.upsert']
+    destroy: typeof routes['ad_account_configs.destroy']
   }
   telegramWebhook: {
     webhook: typeof routes['telegram_webhook.webhook']
