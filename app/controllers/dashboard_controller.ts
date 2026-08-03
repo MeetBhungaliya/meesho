@@ -5,9 +5,30 @@ import redis from '@adonisjs/redis/services/main'
 import { DateTime } from 'luxon'
 
 export default class DashboardController {
-  async getStats({ auth, response }: HttpContext) {
+  async getStats({ auth, request, response }: HttpContext) {
     const user = await auth.authenticate()
-    const accounts = await Account.query().where('user_id', user.id)
+    const { accountIds } = request.qs()
+
+    let accountsQuery = Account.query().where('user_id', user.id)
+
+    if (accountIds !== undefined) {
+      const ids = Array.isArray(accountIds)
+        ? accountIds
+        : typeof accountIds === 'string'
+          ? accountIds.split(',').filter(Boolean)
+          : [accountIds]
+      if (ids.length === 0) {
+        return response.ok({
+          message: 'Dashboard stats fetched successfully',
+          data: {
+            acceptedOrdersToday: 0,
+          },
+        })
+      }
+      accountsQuery = accountsQuery.whereIn('id', ids)
+    }
+
+    const accounts = await accountsQuery
 
     let totalAcceptedOrdersToday = 0
     const dateKey = DateTime.now().setZone('Asia/Kolkata').toFormat('yyyy-MM-dd')

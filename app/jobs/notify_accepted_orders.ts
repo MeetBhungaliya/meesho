@@ -57,31 +57,21 @@ export default class NotifyAcceptedOrders extends Job<NotifyAcceptedOrdersPayloa
             }
           )
 
-          const responseItem = data.data?.[0]
+          const responseItem = data.data?.find((item) => item.request_id === acc.requestId)
 
           if (!responseItem) {
             logger.warn(
               { accountId: acc.accountId, requestId: acc.requestId },
-              'Empty history response'
+              'Matching history item not found yet'
             )
             allComplete = false
             return
           }
 
           const {
-            request_id: resRequestId,
             progress_percent: progressPercent,
             processed_orders_count: processedOrdersCount,
           } = responseItem
-
-          if (resRequestId !== acc.requestId) {
-            logger.warn(
-              { accountId: acc.accountId, expected: acc.requestId, received: resRequestId },
-              'Request ID mismatch'
-            )
-            allComplete = false
-            return
-          }
 
           if (progressPercent === POLLING_CONFIG.PROGRESS_COMPLETE) {
             await client
@@ -138,10 +128,16 @@ export default class NotifyAcceptedOrders extends Job<NotifyAcceptedOrdersPayloa
       return
     }
 
+    const currentAttempt = this.payload.attempt || 0
+    if (currentAttempt >= POLLING_CONFIG.MAX_ATTEMPTS) {
+      logger.warn({ userId, accounts }, 'NotifyAcceptedOrders reached maximum polling attempts')
+      return
+    }
+
     await NotifyAcceptedOrders.dispatch({
       userId,
       accounts,
-      attempt: (this.payload.attempt || 0) + 1,
+      attempt: currentAttempt + 1,
     }).in(POLLING_CONFIG.DELAY)
   }
 

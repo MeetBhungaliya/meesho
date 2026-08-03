@@ -18,7 +18,7 @@ import { Job } from '@adonisjs/queue'
 
 export default class AcceptOrders extends Job {
   async execute(): Promise<void> {
-    const accounts = await Account.query().where('autoAcceptOrders', true)
+    const accounts = await Account.query().where('auto_accept_orders', true)
 
     const userAccountsMap = new Map<number, Account[]>()
     for (const account of accounts) {
@@ -85,8 +85,11 @@ export default class AcceptOrders extends Job {
                 supplierName: client.supplier.name,
                 isComplete: false,
               })
-            } catch (error) {
-              logger.error({ accountId: account.id, error }, 'AcceptOrders failed for account')
+            } catch (error: any) {
+              logger.error(
+                { accountId: account.id, error: error.message || error },
+                'AcceptOrders failed for account'
+              )
             }
           })
         )
