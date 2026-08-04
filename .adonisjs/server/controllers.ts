@@ -7,6 +7,7 @@ export const controllers = {
   Accounts: () => import('#controllers/accounts_controller'),
   AdAccountConfigs: () => import('#controllers/ad_account_configs_controller'),
   Advertisements: () => import('#controllers/advertisements_controller'),
+  Dashboard: () => import('#controllers/dashboard_controller'),
   FlexiGrowthOffers: () => import('#controllers/flexi_growth_offers_controller'),
   HealthChecks: () => import('#controllers/health_checks_controller'),
   Images: () => import('#controllers/images_controller'),
@@ -14,5 +15,4 @@ export const controllers = {
   ReturnOtps: () => import('#controllers/return_otps_controller'),
   TelegramWebhook: () => import('#controllers/telegram_webhook_controller'),
   Users: () => import('#controllers/users_controller'),
-  Dashboard: () => import('#controllers/dashboard_controller'),
 }

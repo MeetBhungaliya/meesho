@@ -8,6 +8,7 @@ import {
   POLLING_CONFIG,
   POPUP_STATUS,
   REDIS_KEYS,
+  TIMEZONE,
 } from '#services/external_api/constants'
 import type {
   MeeshoOrderHistoryResponse,
@@ -108,7 +109,7 @@ export default class NotifyAcceptedOrders extends Job<NotifyAcceptedOrdersPayloa
     if (allComplete) {
       const telegramAccounts = await TelegramAccount.query().where('isUpdates', true)
 
-      const dateKey = DateTime.now().toFormat('yyyy-MM-dd')
+      const dateKey = DateTime.now().setZone(TIMEZONE).toFormat('yyyy-MM-dd')
       let message = ''
 
       for (const acc of accounts) {
