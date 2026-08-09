@@ -25,6 +25,10 @@ router
       .group(() => {
         router.get('/', [controllers.Accounts, 'getAllAccounts'])
         router.get('/dashboard/stats', [controllers.Dashboard, 'getStats'])
+        router.get('/dashboard/activities', [controllers.Dashboard, 'getActivities'])
+        router.post('/dashboard/activities/:id/read', [controllers.Dashboard, 'markActivityRead'])
+        router.delete('/dashboard/activities/clear', [controllers.Dashboard, 'clearActivities'])
+        router.delete('/dashboard/activities/:id', [controllers.Dashboard, 'deleteActivity'])
         router.post('/add-account', [controllers.Accounts, 'createAccount'])
         router.get('/retry-login/:accountId?', [controllers.Accounts, 'retryLogin'])
         router.put('/update-password/:accountId', [controllers.Accounts, 'updatePassword'])

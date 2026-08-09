@@ -1,41 +1,68 @@
-import { REDIS_KEYS, REDIS_TTL } from '#services/external_api/constants'
 import type AcceptedOrders from '#events/accepted_orders'
-import redis from '@adonisjs/redis/services/main'
 import { DateTime } from 'luxon'
+import transmit from '@adonisjs/transmit/services/main'
+import { SessionManager } from '#services/external_api/session_manager'
+import AccountModel from '#models/account'
+import DashboardActivity from '#models/dashboard_activity'
 
 export default class TrackAcceptedOrders {
   async handle(event: AcceptedOrders): Promise<void> {
-    const dateKey = DateTime.fromJSDate(event.acceptedAt)
-      .setZone('Asia/Kolkata')
-      .toFormat('yyyy-MM-dd')
-
-    const accountCountKey = REDIS_KEYS.accountOrders(event.accountId, dateKey)
-
-    await redis.incrby(accountCountKey, event.ordersCount)
-    await redis.expire(accountCountKey, REDIS_TTL.ORDER_TRACKING)
-
-    // Calculate daily total for user across all accounts
-    const AccountModel = (await import('#models/account')).default
     const userAccounts = await AccountModel.query().where('user_id', event.userId)
-    let totalAcceptedOrdersToday = 0
-    for (const acc of userAccounts) {
-      const accKey = REDIS_KEYS.accountOrders(acc.id.toString(), dateKey)
-      totalAcceptedOrdersToday += Number(await redis.get(accKey)) || 0
-    }
 
-    const transmit = (await import('@adonisjs/transmit/services/main')).default
-    
-    // Broadcast live activity and updated total
-    transmit.broadcast(`accounts/${event.userId}`, {
-      type: 'activity',
-      activity: {
-        id: `activity-${Date.now()}-${event.accountId}`,
-        action: 'Orders Auto-Accepted',
-        detail: `${event.ordersCount} orders auto-accepted for account #${event.accountId}`,
-        time: new Date().toISOString(),
+    // Prepare display details
+    const supplierData = await SessionManager.getSupplierData(event.accountId)
+    const targetAccount = userAccounts.find((a) => a.id.toString() === event.accountId)
+    const accountDisplayName = supplierData?.name || targetAccount?.email || `#${event.accountId}`
+    const actionText = 'Orders Auto-Accepted'
+    const detailText = `${event.ordersCount} orders auto-accepted for ${accountDisplayName}`
+
+    try {
+      // Save recent activity to DB
+      const activity = await DashboardActivity.create({
+        userId: event.userId,
+        action: actionText,
+        detail: detailText,
+        time: DateTime.now(),
         type: 'order',
-      },
-      acceptedOrdersToday: totalAcceptedOrdersToday,
-    })
+        read: false,
+      })
+
+      // Storage Control: Delete user's activities older than 24 hours (86400 seconds)
+      await DashboardActivity.query()
+        .where('user_id', event.userId)
+        .where('created_at', '<', DateTime.now().minus({ days: 1 }).toSQL())
+        .delete()
+
+      // Broadcast live activity with database activity id (omitting acceptedOrdersToday to fetch on demand)
+      transmit.broadcast(`accounts/${event.userId}`, {
+        type: 'activity',
+        activity: {
+          id: activity.id.toString(),
+          action: activity.action,
+          detail: activity.detail,
+          time: activity.time.toISO(),
+          type: activity.type,
+          read: activity.read,
+        },
+      })
+    } catch (dbError) {
+      // Fallback: If DB insertion fails, broadcast directly so SSE still works, but log error
+      console.error(
+        'Database failed to persist dashboard activity; using memory fallback:',
+        dbError
+      )
+
+      transmit.broadcast(`accounts/${event.userId}`, {
+        type: 'activity',
+        activity: {
+          id: `fallback-${Date.now()}-${event.accountId}`,
+          action: actionText,
+          detail: detailText,
+          time: new Date().toISOString(),
+          type: 'order',
+          read: false,
+        },
+      })
+    }
   }
 }

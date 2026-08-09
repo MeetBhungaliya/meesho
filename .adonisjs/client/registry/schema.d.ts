@@ -139,6 +139,54 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/dashboard_controller').default['getStats']>>>
     }
   }
+  'dashboard.get_activities': {
+    methods: ["GET","HEAD"]
+    pattern: '/accounts/dashboard/activities'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/dashboard_controller').default['getActivities']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/dashboard_controller').default['getActivities']>>>
+    }
+  }
+  'dashboard.mark_activity_read': {
+    methods: ["POST"]
+    pattern: '/accounts/dashboard/activities/:id/read'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/dashboard_controller').default['markActivityRead']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/dashboard_controller').default['markActivityRead']>>>
+    }
+  }
+  'dashboard.clear_activities': {
+    methods: ["DELETE"]
+    pattern: '/accounts/dashboard/activities/clear'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/dashboard_controller').default['clearActivities']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/dashboard_controller').default['clearActivities']>>>
+    }
+  }
+  'dashboard.delete_activity': {
+    methods: ["DELETE"]
+    pattern: '/accounts/dashboard/activities/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/dashboard_controller').default['deleteActivity']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/dashboard_controller').default['deleteActivity']>>>
+    }
+  }
   'accounts.create_account': {
     methods: ["POST"]
     pattern: '/accounts/add-account'

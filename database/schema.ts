@@ -78,6 +78,29 @@ export class AuthAccessTokenSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
+export class DashboardActivitySchema extends BaseModel {
+  static $columns = ['action', 'createdAt', 'detail', 'id', 'read', 'time', 'type', 'updatedAt', 'userId'] as const
+  $columns = DashboardActivitySchema.$columns
+  @column()
+  declare action: string
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare detail: string
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare read: boolean
+  @column.dateTime()
+  declare time: DateTime
+  @column()
+  declare type: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare userId: number
+}
+
 export class ProductSchema extends BaseModel {
   static $columns = ['createdAt', 'currentStock', 'id', 'imagePath', 'isActive', 'minimumStock', 'name', 'note', 'price', 'updatedAt', 'userId'] as const
   $columns = ProductSchema.$columns

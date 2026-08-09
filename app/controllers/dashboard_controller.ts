@@ -1,8 +1,9 @@
 import Account from '#models/account'
-import { REDIS_KEYS } from '#services/external_api/constants'
+import DashboardActivity from '#models/dashboard_activity'
+import { MEESHO_ENDPOINTS } from '#services/external_api/constants'
 import type { HttpContext } from '@adonisjs/core/http'
-import redis from '@adonisjs/redis/services/main'
 import { DateTime } from 'luxon'
+import { MeeshoApiClient } from '#services/external_api/client'
 
 export default class DashboardController {
   async getStats({ auth, request, response }: HttpContext) {
@@ -30,20 +31,98 @@ export default class DashboardController {
 
     const accounts = await accountsQuery
 
-    let totalAcceptedOrdersToday = 0
-    const dateKey = DateTime.now().setZone('Asia/Kolkata').toFormat('yyyy-MM-dd')
+    // Query order counts from Meesho API concurrently without caching
+    const counts = await Promise.all(
+      accounts.map(async (account) => {
+        try {
+          const client = await MeeshoApiClient.forAccount(account.id.toString())
+          const { data } = await client.post<{ total_count: number }>(MEESHO_ENDPOINTS.orders, {
+            enable_hold: true,
+            supplier_details: {
+              id: client.supplier.supplierId,
+              identifier: client.supplier.identifier,
+              name: client.supplier.name,
+            },
+            limit: 1,
+            status: 3,
+            filter: {
+              label_downloaded: {
+                status: false,
+              },
+            },
+            type: 'ready-to-ship',
+            identifier: client.supplier.identifier,
+          })
+          return data.total_count || 0
+        } catch (error) {
+          return 0
+        }
+      })
+    )
 
-    for (const account of accounts) {
-      const accountCountKey = REDIS_KEYS.accountOrders(account.id.toString(), dateKey)
-      const count = Number(await redis.get(accountCountKey)) || 0
-      totalAcceptedOrdersToday += count
-    }
+    const totalAcceptedOrdersToday = counts.reduce((sum, val) => sum + val, 0)
 
     return response.ok({
       message: 'Dashboard stats fetched successfully',
       data: {
         acceptedOrdersToday: totalAcceptedOrdersToday,
       },
+    })
+  }
+
+  async getActivities({ auth, response }: HttpContext) {
+    const user = await auth.authenticate()
+
+    const activities = await DashboardActivity.query()
+      .where('user_id', user.id)
+      .where('created_at', '>=', DateTime.now().minus({ days: 1 }).toSQL())
+      .orderBy('created_at', 'desc')
+
+    return response.ok({
+      message: 'Dashboard activities fetched successfully',
+      data: activities,
+    })
+  }
+
+  async markActivityRead({ auth, params, response }: HttpContext) {
+    const user = await auth.authenticate()
+
+    const activity = await DashboardActivity.query()
+      .where('id', params.id)
+      .where('user_id', user.id)
+      .firstOrFail()
+
+    activity.read = true
+    await activity.save()
+
+    return response.ok({
+      message: 'Activity marked as read successfully',
+      data: activity,
+    })
+  }
+
+  async deleteActivity({ auth, params, response }: HttpContext) {
+    const user = await auth.authenticate()
+
+    const activity = await DashboardActivity.query()
+      .where('id', params.id)
+      .where('user_id', user.id)
+      .firstOrFail()
+
+    await activity.delete()
+
+    return response.ok({
+      message: 'Activity deleted successfully',
+    })
+  }
+
+  async clearActivities({ auth, response }: HttpContext) {
+    const user = await auth.authenticate()
+
+    await DashboardActivity.query().where('user_id', user.id).delete()
+
+    return response.ok({
+      message: 'All activities cleared successfully',
     })
   }
 }

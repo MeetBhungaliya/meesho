@@ -27,6 +27,10 @@ export interface ApiDefinition {
   }
   dashboard: {
     getStats: typeof routes['dashboard.get_stats']
+    getActivities: typeof routes['dashboard.get_activities']
+    markActivityRead: typeof routes['dashboard.mark_activity_read']
+    clearActivities: typeof routes['dashboard.clear_activities']
+    deleteActivity: typeof routes['dashboard.delete_activity']
   }
   flexiGrowthOffers: {
     submit: typeof routes['flexi_growth_offers.submit']
