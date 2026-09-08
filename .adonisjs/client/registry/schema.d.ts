@@ -487,6 +487,30 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/ad_account_configs_controller').default['destroy']>>>
     }
   }
+  'jobs.active': {
+    methods: ["GET","HEAD"]
+    pattern: '/jobs/active'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/jobs_controller').default['active']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/jobs_controller').default['active']>>>
+    }
+  }
+  'jobs.state': {
+    methods: ["GET","HEAD"]
+    pattern: '/jobs/:channelName/state'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { channelName: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/jobs_controller').default['state']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/jobs_controller').default['state']>>>
+    }
+  }
   'telegram_webhook.webhook': {
     methods: ["POST"]
     pattern: '/telegram/webhook'

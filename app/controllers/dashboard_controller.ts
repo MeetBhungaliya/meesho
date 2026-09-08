@@ -73,9 +73,22 @@ export default class DashboardController {
   async getActivities({ auth, response }: HttpContext) {
     const user = await auth.authenticate()
 
+    // Clean up any legacy 0-orders activity records for this user
+    await DashboardActivity.query()
+      .where('user_id', user.id)
+      .where((query) => {
+        query
+          .where('detail', 'like', '0 orders%')
+          .orWhere('detail', 'like', '0 order%')
+          .orWhere('action', 'like', '0 orders%')
+      })
+      .delete()
+
     const activities = await DashboardActivity.query()
       .where('user_id', user.id)
       .where('created_at', '>=', DateTime.now().minus({ days: 1 }).toSQL())
+      .whereNot('detail', 'like', '0 orders%')
+      .whereNot('detail', 'like', '0 order%')
       .orderBy('created_at', 'desc')
 
     return response.ok({

@@ -246,6 +246,18 @@ const routes = {
     tokens: [{"old":"/ad-config/:accountId","type":0,"val":"ad-config","end":""},{"old":"/ad-config/:accountId","type":1,"val":"accountId","end":""}],
     types: placeholder as Registry['ad_account_configs.destroy']['types'],
   },
+  'jobs.active': {
+    methods: ["GET","HEAD"],
+    pattern: '/jobs/active',
+    tokens: [{"old":"/jobs/active","type":0,"val":"jobs","end":""},{"old":"/jobs/active","type":0,"val":"active","end":""}],
+    types: placeholder as Registry['jobs.active']['types'],
+  },
+  'jobs.state': {
+    methods: ["GET","HEAD"],
+    pattern: '/jobs/:channelName/state',
+    tokens: [{"old":"/jobs/:channelName/state","type":0,"val":"jobs","end":""},{"old":"/jobs/:channelName/state","type":1,"val":"channelName","end":""},{"old":"/jobs/:channelName/state","type":0,"val":"state","end":""}],
+    types: placeholder as Registry['jobs.state']['types'],
+  },
   'telegram_webhook.webhook': {
     methods: ["POST"],
     pattern: '/telegram/webhook',

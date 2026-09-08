@@ -5,6 +5,7 @@ import AdAccountConfig from '#models/ad_account_config'
 import Account from '#models/account'
 import { SessionManager } from '#services/external_api/session_manager'
 import { MeeshoApiClient } from '#services/external_api/client'
+import { JobStateManager } from '#services/job_state_manager'
 import { DateTime } from 'luxon'
 
 export interface AdLaunchPayload {
@@ -30,9 +31,14 @@ export default class AdLaunchJob extends Job<AdLaunchPayload> {
 
   async execute() {
     const { jobId, accountId, catalogIds, startTime, endTime, dynamicFieldValues } = this.payload
+    const channelName = `ad-launch:${jobId}`
 
-    console.log(`ad-launch:${jobId} starting...`)
-    transmit.broadcast(`ad-launch:${jobId}`, {
+    console.log(`${channelName} starting...`)
+
+    // Initialize persistent state in Redis
+    await JobStateManager.initJob(channelName, catalogIds.length)
+
+    transmit.broadcast(channelName, {
       type: 'started',
       total: catalogIds.length,
     })
@@ -138,25 +144,47 @@ export default class AdLaunchJob extends Job<AdLaunchPayload> {
         await client.post(config.apiUrl, finalPayload)
 
         successCount++
-        transmit.broadcast(`ad-launch:${jobId}`, {
+
+        // Persist to Redis
+        await JobStateManager.updateProgress(channelName, {
+          processed: i + 1,
+          itemId: catalogId,
+          status: 'success',
+          itemType: 'catalogId',
+        })
+
+        transmit.broadcast(channelName, {
           type: 'progress',
           processed: i + 1,
           total: catalogIds.length,
           catalogId,
           status: 'success',
+          successCount,
+          failedCount,
         })
       } catch (error) {
         failedCount++
         const reason = (error as Error).message
         failedItems.push({ catalogId, reason })
 
-        transmit.broadcast(`ad-launch:${jobId}`, {
+        // Persist to Redis
+        await JobStateManager.updateProgress(channelName, {
+          processed: i + 1,
+          itemId: catalogId,
+          status: 'failed',
+          error: reason,
+          itemType: 'catalogId',
+        })
+
+        transmit.broadcast(channelName, {
           type: 'progress',
           processed: i + 1,
           total: catalogIds.length,
           catalogId,
           status: 'failed',
           error: reason,
+          successCount,
+          failedCount,
         })
       }
 
@@ -164,7 +192,10 @@ export default class AdLaunchJob extends Job<AdLaunchPayload> {
       await new Promise((resolve) => setTimeout(resolve, 300))
     }
 
-    transmit.broadcast(`ad-launch:${jobId}`, {
+    // Persist completion to Redis
+    await JobStateManager.completeJob(channelName, { successCount, failedCount, failedItems })
+
+    transmit.broadcast(channelName, {
       type: 'completed',
       successCount,
       failedCount,
@@ -173,8 +204,12 @@ export default class AdLaunchJob extends Job<AdLaunchPayload> {
   }
 
   async failed(error: Error) {
+    const channelName = `ad-launch:${this.payload.jobId}`
     console.error('AdLaunchJob failed:', error.message)
-    transmit.broadcast(`ad-launch:${this.payload.jobId}`, {
+
+    await JobStateManager.errorJob(channelName, 'Job encountered an unrecoverable error: ' + error.message)
+
+    transmit.broadcast(channelName, {
       type: 'error',
       message: 'Job encountered an unrecoverable error: ' + error.message,
     })

@@ -64,6 +64,10 @@ export interface ApiDefinition {
     upsert: typeof routes['ad_account_configs.upsert']
     destroy: typeof routes['ad_account_configs.destroy']
   }
+  jobs: {
+    active: typeof routes['jobs.active']
+    state: typeof routes['jobs.state']
+  }
   telegramWebhook: {
     webhook: typeof routes['telegram_webhook.webhook']
   }

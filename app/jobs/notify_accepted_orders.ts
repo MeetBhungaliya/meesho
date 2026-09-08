@@ -3,11 +3,7 @@ import { events } from '#generated/events'
 import Account from '#models/account'
 import TelegramAccount from '#models/telegram_account'
 import { MeeshoApiClient } from '#services/external_api/client'
-import {
-  MEESHO_ENDPOINTS,
-  POLLING_CONFIG,
-  POPUP_STATUS,
-} from '#services/external_api/constants'
+import { MEESHO_ENDPOINTS, POLLING_CONFIG, POPUP_STATUS } from '#services/external_api/constants'
 import type {
   MeeshoOrderHistoryResponse,
   MeeshoUpdateStatusResponse,
@@ -83,7 +79,7 @@ export default class NotifyAcceptedOrders extends Job<NotifyAcceptedOrdersPayloa
               })
 
             const account = await Account.find(Number(acc.accountId))
-            if (account) {
+            if (account && processedOrdersCount > 0) {
               await emitter.emit(
                 events.AcceptedOrders,
                 new AcceptedOrders(acc.accountId, account.userId, processedOrdersCount, new Date())

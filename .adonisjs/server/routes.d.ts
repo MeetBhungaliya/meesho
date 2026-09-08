@@ -44,6 +44,8 @@ export type ScannedRoutes = {
     'ad_account_configs.show': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'ad_account_configs.upsert': { paramsTuple?: []; params?: {} }
     'ad_account_configs.destroy': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
+    'jobs.active': { paramsTuple?: []; params?: {} }
+    'jobs.state': { paramsTuple: [ParamValue]; params: {'channelName': ParamValue} }
     'telegram_webhook.webhook': { paramsTuple?: []; params?: {} }
     'health_checks.health': { paramsTuple?: []; params?: {} }
   }
@@ -61,6 +63,8 @@ export type ScannedRoutes = {
     'products.index': { paramsTuple?: []; params?: {} }
     'products.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'ad_account_configs.show': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
+    'jobs.active': { paramsTuple?: []; params?: {} }
+    'jobs.state': { paramsTuple: [ParamValue]; params: {'channelName': ParamValue} }
     'health_checks.health': { paramsTuple?: []; params?: {} }
   }
   HEAD: {
@@ -77,6 +81,8 @@ export type ScannedRoutes = {
     'products.index': { paramsTuple?: []; params?: {} }
     'products.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'ad_account_configs.show': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
+    'jobs.active': { paramsTuple?: []; params?: {} }
+    'jobs.state': { paramsTuple: [ParamValue]; params: {'channelName': ParamValue} }
     'health_checks.health': { paramsTuple?: []; params?: {} }
   }
   POST: {

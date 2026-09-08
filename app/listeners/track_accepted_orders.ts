@@ -7,6 +7,10 @@ import DashboardActivity from '#models/dashboard_activity'
 
 export default class TrackAcceptedOrders {
   async handle(event: AcceptedOrders): Promise<void> {
+    if (!event.ordersCount || event.ordersCount <= 0) {
+      return
+    }
+
     const userAccounts = await AccountModel.query().where('user_id', event.userId)
 
     // Prepare display details
