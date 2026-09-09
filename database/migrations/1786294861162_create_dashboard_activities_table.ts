@@ -18,7 +18,7 @@ export default class extends BaseSchema {
       table.string('type').notNullable()
       table.boolean('read').notNullable().defaultTo(false)
       table.timestamp('time', { useTz: true }).notNullable()
-      
+
       table.timestamp('created_at', { useTz: true }).defaultTo(this.now())
       table.timestamp('updated_at', { useTz: true }).defaultTo(this.now())
 

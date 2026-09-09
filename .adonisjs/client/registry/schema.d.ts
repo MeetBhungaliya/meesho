@@ -307,6 +307,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/return_otps_controller').default['fetch']>>>
     }
   }
+  'ads_campaigns.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/accounts/ads/campaigns/:accountId'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { accountId: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/ads_campaigns_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/ads_campaigns_controller').default['index']>>>
+    }
+  }
   'images.index': {
     methods: ["GET","HEAD"]
     pattern: '/images/:accountId'

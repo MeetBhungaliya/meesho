@@ -207,7 +207,10 @@ export default class AdLaunchJob extends Job<AdLaunchPayload> {
     const channelName = `ad-launch:${this.payload.jobId}`
     console.error('AdLaunchJob failed:', error.message)
 
-    await JobStateManager.errorJob(channelName, 'Job encountered an unrecoverable error: ' + error.message)
+    await JobStateManager.errorJob(
+      channelName,
+      'Job encountered an unrecoverable error: ' + error.message
+    )
 
     transmit.broadcast(channelName, {
       type: 'error',

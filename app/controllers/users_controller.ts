@@ -32,10 +32,10 @@ export default class UsersController {
     const { email, password } = await request.validateUsing(loginValidator)
 
     const user = await User.verifyCredentials(email, password)
-    
+
     // Create access token valid for 15 minutes
     const token = await User.accessTokens.create(user, ['*'], {
-      expiresIn: '15m'
+      expiresIn: '15m',
     })
 
     // Create refresh token valid for 7 days
@@ -43,7 +43,7 @@ export default class UsersController {
     await RefreshToken.create({
       userId: user.id,
       token: refreshTokenString,
-      expiresAt: DateTime.now().plus({ days: 7 })
+      expiresAt: DateTime.now().plus({ days: 7 }),
     })
 
     const accessTokenValue = token.value!.release()
@@ -100,14 +100,14 @@ export default class UsersController {
     await dbToken.delete()
 
     const newAccessToken = await User.accessTokens.create(user, ['*'], {
-      expiresIn: '15m'
+      expiresIn: '15m',
     })
 
     const newRefreshTokenString = crypto.randomBytes(40).toString('hex')
     await RefreshToken.create({
       userId: user.id,
       token: newRefreshTokenString,
-      expiresAt: DateTime.now().plus({ days: 7 })
+      expiresAt: DateTime.now().plus({ days: 7 }),
     })
 
     const accessTokenValue = newAccessToken.value!.release()

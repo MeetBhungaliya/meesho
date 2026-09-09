@@ -44,7 +44,9 @@ export class JobStateManager {
       failedCount: 0,
       failedItems: [],
       errorMessage: '',
-      logs: [{ type: 'info', message: `Job started. Processing ${total} items...`, timestamp: now }],
+      logs: [
+        { type: 'info', message: `Job started. Processing ${total} items...`, timestamp: now },
+      ],
       startedAt: now,
       updatedAt: now,
     }

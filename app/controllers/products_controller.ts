@@ -271,9 +271,7 @@ export default class ProductsController {
   async analytics({ response, auth }: HttpContext) {
     const user = await auth.authenticate()
 
-    const products = await Product.query()
-      .where('userId', user.id)
-      .where('isActive', true)
+    const products = await Product.query().where('userId', user.id).where('isActive', true)
 
     const totalProducts = products.length
     let totalValue = 0
@@ -345,8 +343,6 @@ export default class ProductsController {
       },
     })
   }
-
-
 
   /**
    * GET /inventory/products/categories

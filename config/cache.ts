@@ -6,6 +6,12 @@ const cacheConfig = defineConfig({
   stores: {
     memoryOnly: store().useL1Layer(drivers.memory()),
 
+    redisOnly: store().useL2Layer(
+      drivers.redis({
+        connectionName: 'main',
+      })
+    ),
+
     default: store()
       .useL1Layer(drivers.memory())
 

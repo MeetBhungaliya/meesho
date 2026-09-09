@@ -1,7 +1,11 @@
 import Account from '#models/account'
 import { SESSION_STATUS } from '#services/external_api/constants'
 import { SessionManager } from '#services/external_api/session_manager'
-import { createAccountValidator, updateAccountPasswordValidator, updateAccountValidator } from '#validators/account'
+import {
+  createAccountValidator,
+  updateAccountPasswordValidator,
+  updateAccountValidator,
+} from '#validators/account'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class AccountsController {

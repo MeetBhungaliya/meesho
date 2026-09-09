@@ -4,6 +4,7 @@ const ReturnOtpsController = () => import('#controllers/return_otps_controller')
 const ProductsController = () => import('#controllers/products_controller')
 const AdAccountConfigsController = () => import('#controllers/ad_account_configs_controller')
 const AdvertisementsController = () => import('#controllers/advertisements_controller')
+const AdsCampaignsController = () => import('#controllers/ads_campaigns_controller')
 const JobsController = () => import('#controllers/jobs_controller')
 import { middleware } from '#start/kernel'
 import router from '@adonisjs/core/services/router'
@@ -40,6 +41,7 @@ router
         router.post('/advertisement', [AdvertisementsController, 'submit'])
         router.post('/advertisement/retry', [AdvertisementsController, 'retry'])
         router.post('/return-otps', [ReturnOtpsController, 'fetch'])
+        router.get('/ads/campaigns/:accountId', [AdsCampaignsController, 'index'])
       })
       .prefix('accounts')
 

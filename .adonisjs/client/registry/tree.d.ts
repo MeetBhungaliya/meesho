@@ -43,6 +43,9 @@ export interface ApiDefinition {
   returnOtps: {
     fetch: typeof routes['return_otps.fetch']
   }
+  adsCampaigns: {
+    index: typeof routes['ads_campaigns.index']
+  }
   images: {
     index: typeof routes['images.index']
     upload: typeof routes['images.upload']

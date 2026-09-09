@@ -156,6 +156,12 @@ const routes = {
     tokens: [{"old":"/accounts/return-otps","type":0,"val":"accounts","end":""},{"old":"/accounts/return-otps","type":0,"val":"return-otps","end":""}],
     types: placeholder as Registry['return_otps.fetch']['types'],
   },
+  'ads_campaigns.index': {
+    methods: ["GET","HEAD"],
+    pattern: '/accounts/ads/campaigns/:accountId',
+    tokens: [{"old":"/accounts/ads/campaigns/:accountId","type":0,"val":"accounts","end":""},{"old":"/accounts/ads/campaigns/:accountId","type":0,"val":"ads","end":""},{"old":"/accounts/ads/campaigns/:accountId","type":0,"val":"campaigns","end":""},{"old":"/accounts/ads/campaigns/:accountId","type":1,"val":"accountId","end":""}],
+    types: placeholder as Registry['ads_campaigns.index']['types'],
+  },
   'images.index': {
     methods: ["GET","HEAD"],
     pattern: '/images/:accountId',

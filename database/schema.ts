@@ -8,7 +8,19 @@ import { BaseModel, column } from '@adonisjs/lucid/orm'
 import { DateTime } from 'luxon'
 
 export class AccountSchema extends BaseModel {
-  static $columns = ['autoAcceptOrders', 'createdAt', 'email', 'id', 'lastLoginAt', 'password', 'provider', 'sessionError', 'sessionStatus', 'updatedAt', 'userId'] as const
+  static $columns = [
+    'autoAcceptOrders',
+    'createdAt',
+    'email',
+    'id',
+    'lastLoginAt',
+    'password',
+    'provider',
+    'sessionError',
+    'sessionStatus',
+    'updatedAt',
+    'userId',
+  ] as const
   $columns = AccountSchema.$columns
   @column()
   declare autoAcceptOrders: boolean
@@ -35,7 +47,15 @@ export class AccountSchema extends BaseModel {
 }
 
 export class AdAccountConfigSchema extends BaseModel {
-  static $columns = ['accountId', 'apiUrl', 'createdAt', 'dynamicFields', 'id', 'payload', 'updatedAt'] as const
+  static $columns = [
+    'accountId',
+    'apiUrl',
+    'createdAt',
+    'dynamicFields',
+    'id',
+    'payload',
+    'updatedAt',
+  ] as const
   $columns = AdAccountConfigSchema.$columns
   @column()
   declare accountId: number
@@ -54,7 +74,18 @@ export class AdAccountConfigSchema extends BaseModel {
 }
 
 export class AuthAccessTokenSchema extends BaseModel {
-  static $columns = ['abilities', 'createdAt', 'expiresAt', 'hash', 'id', 'lastUsedAt', 'name', 'tokenableId', 'type', 'updatedAt'] as const
+  static $columns = [
+    'abilities',
+    'createdAt',
+    'expiresAt',
+    'hash',
+    'id',
+    'lastUsedAt',
+    'name',
+    'tokenableId',
+    'type',
+    'updatedAt',
+  ] as const
   $columns = AuthAccessTokenSchema.$columns
   @column()
   declare abilities: string
@@ -79,7 +110,17 @@ export class AuthAccessTokenSchema extends BaseModel {
 }
 
 export class DashboardActivitySchema extends BaseModel {
-  static $columns = ['action', 'createdAt', 'detail', 'id', 'read', 'time', 'type', 'updatedAt', 'userId'] as const
+  static $columns = [
+    'action',
+    'createdAt',
+    'detail',
+    'id',
+    'read',
+    'time',
+    'type',
+    'updatedAt',
+    'userId',
+  ] as const
   $columns = DashboardActivitySchema.$columns
   @column()
   declare action: string
@@ -102,7 +143,19 @@ export class DashboardActivitySchema extends BaseModel {
 }
 
 export class ProductSchema extends BaseModel {
-  static $columns = ['createdAt', 'currentStock', 'id', 'imagePath', 'isActive', 'minimumStock', 'name', 'note', 'price', 'updatedAt', 'userId'] as const
+  static $columns = [
+    'createdAt',
+    'currentStock',
+    'id',
+    'imagePath',
+    'isActive',
+    'minimumStock',
+    'name',
+    'note',
+    'price',
+    'updatedAt',
+    'userId',
+  ] as const
   $columns = ProductSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime | null
@@ -146,7 +199,19 @@ export class RefreshTokenSchema extends BaseModel {
 }
 
 export class ShippingPriceSchema extends BaseModel {
-  static $columns = ['accountId', 'batchName', 'createdAt', 'errorMessage', 'id', 'imagePath', 'isProcessed', 'meeshoImageUrl', 'price', 'subSubCategoryId', 'updatedAt'] as const
+  static $columns = [
+    'accountId',
+    'batchName',
+    'createdAt',
+    'errorMessage',
+    'id',
+    'imagePath',
+    'isProcessed',
+    'meeshoImageUrl',
+    'price',
+    'subSubCategoryId',
+    'updatedAt',
+  ] as const
   $columns = ShippingPriceSchema.$columns
   @column()
   declare accountId: number
@@ -173,7 +238,16 @@ export class ShippingPriceSchema extends BaseModel {
 }
 
 export class StockTransactionSchema extends BaseModel {
-  static $columns = ['changeAmount', 'createdAt', 'id', 'note', 'productId', 'stockAfter', 'type', 'userId'] as const
+  static $columns = [
+    'changeAmount',
+    'createdAt',
+    'id',
+    'note',
+    'productId',
+    'stockAfter',
+    'type',
+    'userId',
+  ] as const
   $columns = StockTransactionSchema.$columns
   @column()
   declare changeAmount: number

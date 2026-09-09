@@ -130,7 +130,10 @@ export default class FlexiGrowthOfferJob extends Job<FlexiGrowthOfferPayload> {
     const channelName = `flexi-growth-offer:${this.payload.jobId}`
     console.error('FlexiGrowthOffer failed:', error.message)
 
-    await JobStateManager.errorJob(channelName, 'Job encountered an unrecoverable error: ' + error.message)
+    await JobStateManager.errorJob(
+      channelName,
+      'Job encountered an unrecoverable error: ' + error.message
+    )
 
     transmit.broadcast(channelName, {
       type: 'error',
