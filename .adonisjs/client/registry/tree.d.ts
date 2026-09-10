@@ -44,6 +44,9 @@ export interface ApiDefinition {
     fetch: typeof routes['return_otps.fetch']
   }
   adsCampaigns: {
+    campaignDetails: typeof routes['ads_campaigns.campaign_details']
+    pause: typeof routes['ads_campaigns.pause']
+    bulkPause: typeof routes['ads_campaigns.bulk_pause']
     index: typeof routes['ads_campaigns.index']
   }
   images: {

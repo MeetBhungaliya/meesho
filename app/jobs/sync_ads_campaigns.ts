@@ -141,7 +141,9 @@ export default class SyncAdsCampaignsJob extends Job<SyncAdsCampaignsPayload> {
           })
 
           const pageCampaigns = pageRes.data?.data?.campaigns ?? []
-          const sanitizedBatch = pageCampaigns.map(sanitizeCampaign)
+          const sanitizedBatch = pageCampaigns.map((c: any) =>
+            sanitizeCampaign(c, Number(client.supplier.supplierId))
+          )
 
           // If totalCount is not yet known (e.g. starting from page 1), extract it from status_wise_details
           if (totalCount === 0 || page === 1) {

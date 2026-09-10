@@ -307,6 +307,42 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/return_otps_controller').default['fetch']>>>
     }
   }
+  'ads_campaigns.campaign_details': {
+    methods: ["POST"]
+    pattern: '/accounts/ads/campaigns/details'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/ads_campaigns_controller').default['campaignDetails']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/ads_campaigns_controller').default['campaignDetails']>>>
+    }
+  }
+  'ads_campaigns.pause': {
+    methods: ["POST"]
+    pattern: '/accounts/ads/campaigns/pause'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/ads_campaigns_controller').default['pause']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/ads_campaigns_controller').default['pause']>>>
+    }
+  }
+  'ads_campaigns.bulk_pause': {
+    methods: ["POST"]
+    pattern: '/accounts/ads/campaigns/bulk-pause'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/ads_campaigns_controller').default['bulkPause']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/ads_campaigns_controller').default['bulkPause']>>>
+    }
+  }
   'ads_campaigns.index': {
     methods: ["GET","HEAD"]
     pattern: '/accounts/ads/campaigns/:accountId'
