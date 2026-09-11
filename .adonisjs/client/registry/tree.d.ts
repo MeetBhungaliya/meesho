@@ -46,6 +46,7 @@ export interface ApiDefinition {
   adsCampaigns: {
     campaignDetails: typeof routes['ads_campaigns.campaign_details']
     pause: typeof routes['ads_campaigns.pause']
+    editCatalogs: typeof routes['ads_campaigns.edit_catalogs']
     bulkPause: typeof routes['ads_campaigns.bulk_pause']
     index: typeof routes['ads_campaigns.index']
   }

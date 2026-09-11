@@ -331,6 +331,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/ads_campaigns_controller').default['pause']>>>
     }
   }
+  'ads_campaigns.edit_catalogs': {
+    methods: ["POST"]
+    pattern: '/accounts/ads/campaigns/edit-catalogs'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/ads_campaigns_controller').default['editCatalogs']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/ads_campaigns_controller').default['editCatalogs']>>>
+    }
+  }
   'ads_campaigns.bulk_pause': {
     methods: ["POST"]
     pattern: '/accounts/ads/campaigns/bulk-pause'

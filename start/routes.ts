@@ -43,6 +43,7 @@ router
         router.post('/return-otps', [ReturnOtpsController, 'fetch'])
         router.post('/ads/campaigns/details', [AdsCampaignsController, 'campaignDetails'])
         router.post('/ads/campaigns/pause', [AdsCampaignsController, 'pause'])
+        router.post('/ads/campaigns/edit-catalogs', [AdsCampaignsController, 'editCatalogs'])
         router.post('/ads/campaigns/bulk-pause', [AdsCampaignsController, 'bulkPause'])
         router.get('/ads/campaigns/:accountId', [AdsCampaignsController, 'index'])
       })

@@ -168,6 +168,12 @@ const routes = {
     tokens: [{"old":"/accounts/ads/campaigns/pause","type":0,"val":"accounts","end":""},{"old":"/accounts/ads/campaigns/pause","type":0,"val":"ads","end":""},{"old":"/accounts/ads/campaigns/pause","type":0,"val":"campaigns","end":""},{"old":"/accounts/ads/campaigns/pause","type":0,"val":"pause","end":""}],
     types: placeholder as Registry['ads_campaigns.pause']['types'],
   },
+  'ads_campaigns.edit_catalogs': {
+    methods: ["POST"],
+    pattern: '/accounts/ads/campaigns/edit-catalogs',
+    tokens: [{"old":"/accounts/ads/campaigns/edit-catalogs","type":0,"val":"accounts","end":""},{"old":"/accounts/ads/campaigns/edit-catalogs","type":0,"val":"ads","end":""},{"old":"/accounts/ads/campaigns/edit-catalogs","type":0,"val":"campaigns","end":""},{"old":"/accounts/ads/campaigns/edit-catalogs","type":0,"val":"edit-catalogs","end":""}],
+    types: placeholder as Registry['ads_campaigns.edit_catalogs']['types'],
+  },
   'ads_campaigns.bulk_pause': {
     methods: ["POST"],
     pattern: '/accounts/ads/campaigns/bulk-pause',

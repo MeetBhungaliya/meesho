@@ -31,6 +31,7 @@ export type ScannedRoutes = {
     'return_otps.fetch': { paramsTuple?: []; params?: {} }
     'ads_campaigns.campaign_details': { paramsTuple?: []; params?: {} }
     'ads_campaigns.pause': { paramsTuple?: []; params?: {} }
+    'ads_campaigns.edit_catalogs': { paramsTuple?: []; params?: {} }
     'ads_campaigns.bulk_pause': { paramsTuple?: []; params?: {} }
     'ads_campaigns.index': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'images.index': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
@@ -107,6 +108,7 @@ export type ScannedRoutes = {
     'return_otps.fetch': { paramsTuple?: []; params?: {} }
     'ads_campaigns.campaign_details': { paramsTuple?: []; params?: {} }
     'ads_campaigns.pause': { paramsTuple?: []; params?: {} }
+    'ads_campaigns.edit_catalogs': { paramsTuple?: []; params?: {} }
     'ads_campaigns.bulk_pause': { paramsTuple?: []; params?: {} }
     'images.upload': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'images.retry': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }

@@ -322,6 +322,77 @@ export default class AdsCampaignsController {
   }
 
   /**
+   * POST /accounts/ads/campaigns/edit-catalogs
+   *
+   * Updates a catalog bid / CPO on Meesho.
+   * Body: { accountId, campaign_id, supplier_id, catalog_id, bid, prefilled_input_value }
+   */
+  async editCatalogs({ auth, request, response }: HttpContext) {
+    const user = await auth.authenticate()
+    const { accountId, campaign_id, supplier_id, catalog_id, bid, prefilled_input_value } =
+      request.only([
+        'accountId',
+        'campaign_id',
+        'supplier_id',
+        'catalog_id',
+        'bid',
+        'prefilled_input_value',
+      ])
+
+    if (!campaign_id || !catalog_id || bid == null) {
+      return response.badRequest({ message: 'campaign_id, catalog_id, and bid are required' })
+    }
+
+    let targetAccountId = accountId
+    if (!targetAccountId) {
+      const account = await Account.query().where('user_id', user.id).first()
+      if (!account) return response.badRequest({ message: 'No account found for user' })
+      targetAccountId = account.id
+    } else {
+      await Account.query().where('id', targetAccountId).where('user_id', user.id).firstOrFail()
+    }
+
+    try {
+      const client = await MeeshoApiClient.forAccount(targetAccountId.toString())
+      const finalSupplierId = Number(supplier_id || client.supplier.supplierId)
+      const payload = {
+        supplier_id: finalSupplierId,
+        campaign_id: Number(campaign_id),
+        catalog_id: Number(catalog_id),
+        bid: Number(bid),
+        prefilled_input_value: Number(prefilled_input_value || bid),
+      }
+
+      const meeshoRes = await client.post(
+        'https://supplier.meesho.com/api/ads/campaigns/edit-catalogs',
+        payload
+      )
+
+      return response.ok({
+        success: true,
+        message: 'Catalog bid updated successfully',
+        data: meeshoRes,
+      })
+    } catch (error: any) {
+      if (error instanceof ApiError) {
+        return response.status(error.status || 500).send({
+          error: error.message || 'Failed to update catalog bid on Meesho',
+          status: error.status || 500,
+        })
+      }
+      if (error instanceof SessionError) {
+        return response.status(401).send({
+          error: `Meesho session expired for account ${targetAccountId}. Please re-login.`,
+          status: 401,
+        })
+      }
+      return response.status(500).send({
+        error: error.message || 'An unexpected error occurred while updating catalog bid',
+      })
+    }
+  }
+
+  /**
    * POST /accounts/ads/campaigns/bulk-pause
    *
    * Enqueues an AdonisJS queue job to pause multiple campaigns across accounts.
