@@ -21,3 +21,17 @@ transmit.authorize<{ userId: string; accountId: string }>(
     return user.id === +userId && account?.userId === user.id
   }
 )
+
+// Meesho Labels user-level channel
+transmit.authorize<{ userId: string }>('meesho-labels/:userId', async (ctx, { userId }) => {
+  const user = await ctx.auth.authenticate()
+  return user.id === +userId
+})
+
+// Meesho Labels job-level stream channel
+transmit.authorize<{ jobId: string }>('meesho-labels/job/:jobId', async (ctx, { jobId }) => {
+  const user = await ctx.auth.authenticate()
+  const { default: MeeshoLabelJob } = await import('#models/meesho_label_job')
+  const job = await MeeshoLabelJob.find(jobId)
+  return job !== null && job.userId === user.id
+})

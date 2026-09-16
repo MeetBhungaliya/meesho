@@ -13,6 +13,7 @@ export const controllers = {
   HealthChecks: () => import('#controllers/health_checks_controller'),
   Images: () => import('#controllers/images_controller'),
   Jobs: () => import('#controllers/jobs_controller'),
+  MeeshoLabels: () => import('#controllers/meesho_labels_controller'),
   Products: () => import('#controllers/products_controller'),
   ReturnOtps: () => import('#controllers/return_otps_controller'),
   TelegramWebhook: () => import('#controllers/telegram_webhook_controller'),

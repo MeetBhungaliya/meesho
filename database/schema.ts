@@ -142,6 +142,287 @@ export class DashboardActivitySchema extends BaseModel {
   declare userId: number
 }
 
+export class MeeshoLabelDocumentSchema extends BaseModel {
+  static $columns = [
+    'accountId',
+    'awb',
+    'color',
+    'createdAt',
+    'errorCode',
+    'errorMessage',
+    'id',
+    'jobAccountId',
+    'jobId',
+    'orderId',
+    'processedAt',
+    'processedPageNumber',
+    'processedPdfS3Key',
+    'quantity',
+    'rawPdfS3Key',
+    'size',
+    'sku',
+    'sourcePageNumber',
+    'status',
+    'subOrderId',
+    'updatedAt',
+  ] as const
+  $columns = MeeshoLabelDocumentSchema.$columns
+  @column()
+  declare accountId: number
+  @column()
+  declare awb: string | null
+  @column()
+  declare color: string | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare errorCode: string | null
+  @column()
+  declare errorMessage: string | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare jobAccountId: number
+  @column()
+  declare jobId: string
+  @column()
+  declare orderId: string | null
+  @column.dateTime()
+  declare processedAt: DateTime | null
+  @column()
+  declare processedPageNumber: number | null
+  @column()
+  declare processedPdfS3Key: string | null
+  @column()
+  declare quantity: number | null
+  @column()
+  declare rawPdfS3Key: string | null
+  @column()
+  declare size: string | null
+  @column()
+  declare sku: string | null
+  @column()
+  declare sourcePageNumber: number
+  @column()
+  declare status: string
+  @column()
+  declare subOrderId: string | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
+export class MeeshoLabelJobAccountSchema extends BaseModel {
+  static $columns = [
+    'accountId',
+    'attemptCount',
+    'completedAt',
+    'createdAt',
+    'errorCode',
+    'errorMessage',
+    'id',
+    'identifier',
+    'jobId',
+    'meeshoRequestId',
+    'processedPdfS3Key',
+    'progressPercent',
+    'rawPdfS3Key',
+    'requestedAt',
+    'status',
+    'successfulSuborders',
+    'supplierId',
+    'supplierName',
+    'totalSuborders',
+    'updatedAt',
+  ] as const
+  $columns = MeeshoLabelJobAccountSchema.$columns
+  @column()
+  declare accountId: number
+  @column()
+  declare attemptCount: number | null
+  @column.dateTime()
+  declare completedAt: DateTime | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare errorCode: string | null
+  @column()
+  declare errorMessage: string | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare identifier: string | null
+  @column()
+  declare jobId: string
+  @column()
+  declare meeshoRequestId: string | null
+  @column()
+  declare processedPdfS3Key: string | null
+  @column()
+  declare progressPercent: number | null
+  @column()
+  declare rawPdfS3Key: string | null
+  @column.dateTime()
+  declare requestedAt: DateTime | null
+  @column()
+  declare status: string
+  @column()
+  declare successfulSuborders: number | null
+  @column()
+  declare supplierId: string | null
+  @column()
+  declare supplierName: string | null
+  @column()
+  declare totalSuborders: number | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
+export class MeeshoLabelJobSchema extends BaseModel {
+  static $columns = [
+    'completedAccounts',
+    'completedAt',
+    'createdAt',
+    'errorCode',
+    'errorMessage',
+    'failedAccounts',
+    'failedLabels',
+    'finalPdfS3Key',
+    'finalPdfSize',
+    'id',
+    'processedLabels',
+    'startedAt',
+    'status',
+    'totalAccounts',
+    'totalLabels',
+    'type',
+    'updatedAt',
+    'userId',
+  ] as const
+  $columns = MeeshoLabelJobSchema.$columns
+  @column()
+  declare completedAccounts: number | null
+  @column.dateTime()
+  declare completedAt: DateTime | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare errorCode: string | null
+  @column()
+  declare errorMessage: string | null
+  @column()
+  declare failedAccounts: number | null
+  @column()
+  declare failedLabels: number | null
+  @column()
+  declare finalPdfS3Key: string | null
+  @column()
+  declare finalPdfSize: number | null
+  @column({ isPrimary: true })
+  declare id: string
+  @column()
+  declare processedLabels: number | null
+  @column.dateTime()
+  declare startedAt: DateTime | null
+  @column()
+  declare status: string
+  @column()
+  declare totalAccounts: number | null
+  @column()
+  declare totalLabels: number | null
+  @column()
+  declare type: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare userId: number
+}
+
+export class MeeshoLabelScheduleAccountSchema extends BaseModel {
+  static $columns = ['accountId', 'id', 'scheduleId'] as const
+  $columns = MeeshoLabelScheduleAccountSchema.$columns
+  @column()
+  declare accountId: number
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare scheduleId: number
+}
+
+export class MeeshoLabelScheduleRunSchema extends BaseModel {
+  static $columns = [
+    'completedAt',
+    'createdAt',
+    'id',
+    'jobId',
+    'scheduleId',
+    'scheduledFor',
+    'startedAt',
+    'status',
+  ] as const
+  $columns = MeeshoLabelScheduleRunSchema.$columns
+  @column.dateTime()
+  declare completedAt: DateTime | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare jobId: string | null
+  @column()
+  declare scheduleId: number
+  @column.dateTime()
+  declare scheduledFor: DateTime
+  @column.dateTime()
+  declare startedAt: DateTime | null
+  @column()
+  declare status: string
+}
+
+export class MeeshoLabelScheduleSchema extends BaseModel {
+  static $columns = [
+    'createdAt',
+    'cronExpression',
+    'daysOfWeek',
+    'enabled',
+    'frequency',
+    'id',
+    'lastRunAt',
+    'name',
+    'nextRunAt',
+    'runTime',
+    'timezone',
+    'updatedAt',
+    'userId',
+  ] as const
+  $columns = MeeshoLabelScheduleSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare cronExpression: string | null
+  @column()
+  declare daysOfWeek: any | null
+  @column()
+  declare enabled: boolean
+  @column()
+  declare frequency: string
+  @column({ isPrimary: true })
+  declare id: number
+  @column.dateTime()
+  declare lastRunAt: DateTime | null
+  @column()
+  declare name: string
+  @column.dateTime()
+  declare nextRunAt: DateTime | null
+  @column()
+  declare runTime: string
+  @column()
+  declare timezone: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare userId: number
+}
+
 export class ProductSchema extends BaseModel {
   static $columns = [
     'createdAt',

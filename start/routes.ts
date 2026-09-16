@@ -6,6 +6,7 @@ const AdAccountConfigsController = () => import('#controllers/ad_account_configs
 const AdvertisementsController = () => import('#controllers/advertisements_controller')
 const AdsCampaignsController = () => import('#controllers/ads_campaigns_controller')
 const JobsController = () => import('#controllers/jobs_controller')
+const MeeshoLabelsController = () => import('#controllers/meesho_labels_controller')
 import { middleware } from '#start/kernel'
 import router from '@adonisjs/core/services/router'
 
@@ -89,6 +90,24 @@ router
         router.get('/:channelName/state', [JobsController, 'state'])
       })
       .prefix('jobs')
+
+    // Meesho Labels Manager
+    router
+      .group(() => {
+        router.post('/download', [MeeshoLabelsController, 'download'])
+        router.get('/jobs', [MeeshoLabelsController, 'indexJobs'])
+        router.get('/jobs/:id', [MeeshoLabelsController, 'showJob'])
+        router.get('/jobs/:id/progress', [MeeshoLabelsController, 'jobProgress'])
+        router.get('/jobs/:id/download', [MeeshoLabelsController, 'downloadFinalPdf'])
+
+        router.get('/schedules', [MeeshoLabelsController, 'listSchedules'])
+        router.post('/schedules', [MeeshoLabelsController, 'createSchedule'])
+        router.get('/schedules/:id', [MeeshoLabelsController, 'showSchedule'])
+        router.put('/schedules/:id', [MeeshoLabelsController, 'updateSchedule'])
+        router.patch('/schedules/:id/toggle', [MeeshoLabelsController, 'toggleSchedule'])
+        router.delete('/schedules/:id', [MeeshoLabelsController, 'destroySchedule'])
+      })
+      .prefix('meesho/labels')
   })
   .use(middleware.auth())
 

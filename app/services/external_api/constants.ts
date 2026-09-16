@@ -40,6 +40,9 @@ export const MEESHO_ENDPOINTS = {
   updatePendingOrderStatus: `${MEESHO_BASE_URL}/api/fulfillment/orders/updatePendingOrderStatus`,
   uploadSingleCatalogImages: `${MEESHO_BASE_URL}/api/cataloging/singleCatalogUpload/uploadSingleCatalogImages`,
   fetchDuplicatePid: `${MEESHO_BASE_URL}/api/cataloging/priceRecommendation/fetchDuplicatePid`,
+  reqDownloadLabelV2: `${MEESHO_BASE_URL}/api/fulfillment/orders/reqDownloadLabelV2`,
+  fetchLabelDownloadHistory: `${MEESHO_BASE_URL}/api/fulfillment/orders/fetchLabelDownloadHistory`,
+  updateGroupDownloadBackendFlag: `${MEESHO_BASE_URL}/api/fulfillment/orders/updateGroupDownloadBackendFlag`,
 } as const
 
 export const ORDER_STATUS = {
@@ -79,3 +82,26 @@ export const REDIS_TTL = {
 } as const
 
 export const TIMEZONE = 'Asia/Kolkata' as const
+
+export const LABEL_ERROR_CODES = {
+  MEESHO_API_TIMEOUT: 'MEESHO_API_TIMEOUT',
+  MEESHO_API_RATE_LIMIT: 'MEESHO_API_RATE_LIMIT',
+  MEESHO_API_AUTH_FAILED: 'MEESHO_API_AUTH_FAILED',
+  MEESHO_REQUEST_FAILED: 'MEESHO_REQUEST_FAILED',
+  MEESHO_REQUEST_ID_NOT_FOUND: 'MEESHO_REQUEST_ID_NOT_FOUND',
+  MEESHO_LABEL_PROCESSING_FAILED: 'MEESHO_LABEL_PROCESSING_FAILED',
+  MEESHO_LABEL_URL_MISSING: 'MEESHO_LABEL_URL_MISSING',
+  PDF_DOWNLOAD_FAILED: 'PDF_DOWNLOAD_FAILED',
+  PDF_INVALID: 'PDF_INVALID',
+  PDF_TEMPLATE_NOT_RECOGNIZED: 'PDF_TEMPLATE_NOT_RECOGNIZED',
+  SKU_NOT_FOUND: 'SKU_NOT_FOUND',
+  AWB_NOT_FOUND: 'AWB_NOT_FOUND',
+  PDF_CROP_FAILED: 'PDF_CROP_FAILED',
+  PDF_MERGE_FAILED: 'PDF_MERGE_FAILED',
+  S3_UPLOAD_FAILED: 'S3_UPLOAD_FAILED',
+  SCHEDULE_INVALID: 'SCHEDULE_INVALID',
+  SCHEDULE_EXECUTION_FAILED: 'SCHEDULE_EXECUTION_FAILED',
+  ACCOUNTS_NOT_FOUND: 'ACCOUNTS_NOT_FOUND',
+} as const
+
+export type LabelErrorCode = (typeof LABEL_ERROR_CODES)[keyof typeof LABEL_ERROR_CODES]

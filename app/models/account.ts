@@ -1,8 +1,10 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, belongsTo } from '@adonisjs/lucid/orm'
-import type { BelongsTo } from '@adonisjs/lucid/types/relations'
+import { BaseModel, column, belongsTo, hasMany } from '@adonisjs/lucid/orm'
+import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 import User from '#models/user'
 import type { SessionStatus } from '#services/external_api/constants'
+import MeeshoLabelJobAccount from '#models/meesho_label_job_account'
+import MeeshoLabelDocument from '#models/meesho_label_document'
 
 export default class Account extends BaseModel {
   @column({ isPrimary: true })
@@ -40,4 +42,10 @@ export default class Account extends BaseModel {
 
   @belongsTo(() => User)
   declare user: BelongsTo<typeof User>
+
+  @hasMany(() => MeeshoLabelJobAccount)
+  declare meeshoJobAccounts: HasMany<typeof MeeshoLabelJobAccount>
+
+  @hasMany(() => MeeshoLabelDocument)
+  declare meeshoDocuments: HasMany<typeof MeeshoLabelDocument>
 }

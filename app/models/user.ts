@@ -8,6 +8,8 @@ import type { HasMany } from '@adonisjs/lucid/types/relations'
 import { DateTime } from 'luxon'
 import Account from '#models/account'
 import Product from '#models/product'
+import MeeshoLabelJob from '#models/meesho_label_job'
+import MeeshoLabelSchedule from '#models/meesho_label_schedule'
 
 export default class User extends compose(
   UserSchema,
@@ -36,4 +38,10 @@ export default class User extends compose(
 
   @hasMany(() => Product)
   declare products: HasMany<typeof Product>
+
+  @hasMany(() => MeeshoLabelJob)
+  declare meeshoLabelJobs: HasMany<typeof MeeshoLabelJob>
+
+  @hasMany(() => MeeshoLabelSchedule)
+  declare meeshoLabelSchedules: HasMany<typeof MeeshoLabelSchedule>
 }
