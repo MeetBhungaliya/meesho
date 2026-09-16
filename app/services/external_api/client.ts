@@ -11,6 +11,7 @@ import Account from '#models/account'
 
 const DEFAULT_RETRIES = 2
 const BACKOFF_BASE_MS = 500
+const DEFAULT_REQUEST_TIMEOUT_MS = 30_000
 
 export class MeeshoApiClient {
   private accountId: string
@@ -61,19 +62,11 @@ export class MeeshoApiClient {
 
   async request<T = unknown>(url: string, options: RequestOptions = {}): Promise<ApiResponse<T>> {
     const maxRetries = options.retries ?? DEFAULT_RETRIES
+    const timeoutMs = options.timeoutMs ?? DEFAULT_REQUEST_TIMEOUT_MS
 
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
-        const res = await fetch(url, {
-          method: options.method || 'POST',
-          headers: this.buildHeaders(options),
-          body:
-            options.body instanceof FormData
-              ? options.body
-              : options.body
-                ? JSON.stringify(options.body)
-                : undefined,
-        })
+        const res = await this.fetchWithTimeout(url, options, timeoutMs)
 
         if (res.status === 401 || res.status === MEESHO_SESSION_EXPIRED_STATUS) {
           // 401 = standard unauthorised; 463 = Meesho's custom session-expired code.
@@ -90,16 +83,7 @@ export class MeeshoApiClient {
             )
           }
 
-          const retryRes = await fetch(url, {
-            method: options.method || 'POST',
-            headers: this.buildHeaders(options),
-            body:
-              options.body instanceof FormData
-                ? options.body
-                : options.body
-                  ? JSON.stringify(options.body)
-                  : undefined,
-          })
+          const retryRes = await this.fetchWithTimeout(url, options, timeoutMs)
 
           if (!retryRes.ok) {
             const body = await retryRes.text().catch(() => 'Unknown error')
@@ -251,6 +235,26 @@ export class MeeshoApiClient {
 
   private sleep(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms))
+  }
+
+  private async fetchWithTimeout(url: string, options: RequestOptions, timeoutMs: number) {
+    const controller = new AbortController()
+    const timer = setTimeout(() => controller.abort(), timeoutMs)
+    try {
+      return await fetch(url, {
+        method: options.method || 'POST',
+        headers: this.buildHeaders(options),
+        body:
+          options.body instanceof FormData
+            ? options.body
+            : options.body
+              ? JSON.stringify(options.body)
+              : undefined,
+        signal: controller.signal,
+      })
+    } finally {
+      clearTimeout(timer)
+    }
   }
 }
 

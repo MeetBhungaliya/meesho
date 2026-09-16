@@ -19,6 +19,7 @@ export interface RequestOptions {
   body?: Record<string, unknown> | FormData
   headers?: Record<string, string>
   retries?: number
+  timeoutMs?: number
   skipAuth?: boolean
 }
 

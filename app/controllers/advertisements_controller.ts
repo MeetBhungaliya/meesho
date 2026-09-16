@@ -27,7 +27,10 @@ export default class AdvertisementsController {
     }
 
     const parsedCatalogIds = Array.isArray(catalogIds)
-      ? catalogIds.map(String)
+      ? catalogIds
+          .map(String)
+          .map((id) => id.trim())
+          .filter(Boolean)
       : typeof catalogIds === 'string'
         ? catalogIds
             .split(',')
@@ -80,7 +83,12 @@ export default class AdvertisementsController {
       return response.badRequest({ message: 'Missing required fields' })
     }
 
-    const parsedCatalogIds = Array.isArray(catalogIds) ? catalogIds.map(String) : []
+    const parsedCatalogIds = Array.isArray(catalogIds)
+      ? catalogIds
+          .map(String)
+          .map((id) => id.trim())
+          .filter(Boolean)
+      : []
 
     if (parsedCatalogIds.length === 0) {
       return response.badRequest({ message: 'catalogIds cannot be empty for retry' })

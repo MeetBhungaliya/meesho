@@ -23,7 +23,7 @@ interface FailedItem {
 export default class FlexiGrowthOfferJob extends Job<FlexiGrowthOfferPayload> {
   static options: JobOptions = {
     queue: 'default',
-    maxRetries: 1, // Let user retry manually instead of automatic retries hiding the failure
+    maxRetries: 0, // Per-request retries happen in the client; replaying a batch can duplicate external writes.
   }
 
   async execute() {
@@ -76,15 +76,16 @@ export default class FlexiGrowthOfferJob extends Job<FlexiGrowthOfferPayload> {
           itemType: 'productId',
         })
 
-        transmit.broadcast(channelName, {
-          type: 'progress',
-          processed: i + 1,
-          total: productIds.length,
-          productId,
-          status: 'success',
-          successCount,
-          failedCount,
-        })
+        if ((i + 1) % 5 === 0 || i + 1 === productIds.length)
+          transmit.broadcast(channelName, {
+            type: 'progress',
+            processed: i + 1,
+            total: productIds.length,
+            productId,
+            status: 'success',
+            successCount,
+            failedCount,
+          })
       } catch (error) {
         failedCount++
         const reason = error instanceof ApiError ? error.message : (error as Error).message

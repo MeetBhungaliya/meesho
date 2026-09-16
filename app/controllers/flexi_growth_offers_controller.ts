@@ -25,7 +25,10 @@ export default class FlexiGrowthOffersController {
             .map((id: string) => id.trim())
             .filter(Boolean)
         : Array.isArray(productIds)
-          ? productIds.map(String)
+          ? productIds
+              .map(String)
+              .map((id) => id.trim())
+              .filter(Boolean)
           : []
 
     if (parsedProductIds.length === 0) {
@@ -65,7 +68,12 @@ export default class FlexiGrowthOffersController {
       return response.badRequest({ message: 'Missing required fields' })
     }
 
-    const parsedProductIds = Array.isArray(productIds) ? productIds.map(String) : []
+    const parsedProductIds = Array.isArray(productIds)
+      ? productIds
+          .map(String)
+          .map((id) => id.trim())
+          .filter(Boolean)
+      : []
 
     if (parsedProductIds.length === 0) {
       return response.badRequest({ message: 'productIds cannot be empty for retry' })

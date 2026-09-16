@@ -26,7 +26,7 @@ interface FailedItem {
 export default class AdLaunchJob extends Job<AdLaunchPayload> {
   static options: JobOptions = {
     queue: 'default',
-    maxRetries: 1, // Manual retries preferred
+    maxRetries: 0, // The API client retries individual requests; never replay a partially applied batch.
   }
 
   async execute() {
@@ -153,15 +153,16 @@ export default class AdLaunchJob extends Job<AdLaunchPayload> {
           itemType: 'catalogId',
         })
 
-        transmit.broadcast(channelName, {
-          type: 'progress',
-          processed: i + 1,
-          total: catalogIds.length,
-          catalogId,
-          status: 'success',
-          successCount,
-          failedCount,
-        })
+        if ((i + 1) % 5 === 0 || i + 1 === catalogIds.length)
+          transmit.broadcast(channelName, {
+            type: 'progress',
+            processed: i + 1,
+            total: catalogIds.length,
+            catalogId,
+            status: 'success',
+            successCount,
+            failedCount,
+          })
       } catch (error) {
         failedCount++
         const reason = (error as Error).message
