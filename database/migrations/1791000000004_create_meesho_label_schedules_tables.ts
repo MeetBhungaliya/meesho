@@ -19,6 +19,7 @@ export default class extends BaseSchema {
       table.jsonb('days_of_week').nullable() // e.g. [1, 3, 5] for Mon, Wed, Fri
       table.string('cron_expression', 64).nullable()
       table.boolean('enabled').notNullable().defaultTo(true)
+      table.jsonb('filter').nullable()
 
       table.timestamp('next_run_at', { useTz: true }).nullable()
       table.timestamp('last_run_at', { useTz: true }).nullable()
