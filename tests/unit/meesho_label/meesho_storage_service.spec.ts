@@ -1,4 +1,5 @@
 import { test } from '@japa/runner'
+import '#start/routes'
 import { MeeshoLabelStorageService } from '#services/meesho_label/meesho_label_storage_service'
 
 test.group('MeeshoLabelStorageService', () => {
@@ -29,5 +30,16 @@ test.group('MeeshoLabelStorageService', () => {
     const key = MeeshoLabelStorageService.getFinalPdfKey(12, 'job-uuid-1234')
 
     assert.equal(key, 'meesho-labels/12/job-uuid-1234/final/meesho-labels-job-uuid-1234.pdf')
+  })
+
+  test('getSignedDownloadUrl prepends APP_URL for local fs relative paths', async ({ assert }) => {
+    const url = await MeeshoLabelStorageService.getSignedDownloadUrl(
+      'meesho-labels/12/job-1/final/test.pdf',
+      300,
+      'Vati_Enterprise_Labels_17-09-2026_17-30.pdf'
+    )
+
+    assert.isTrue(url.startsWith('http'))
+    assert.include(url, '/uploads/meesho-labels/12/job-1/final/test.pdf')
   })
 })

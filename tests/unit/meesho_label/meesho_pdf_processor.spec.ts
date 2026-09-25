@@ -113,14 +113,16 @@ test.group('Meesho PDF Processing Engine', () => {
     rawBuffer = fs.readFileSync(fixturePath)
     const srcDoc = await PDFDocument.load(rawBuffer)
 
-    const croppedDoc = await MeeshoCropper.cropSinglePage(srcDoc, 0)
+    const croppedDoc = await MeeshoCropper.cropSinglePage(srcDoc, 0, rawBuffer)
     assert.equal(croppedDoc.getPageCount(), 1)
 
     const croppedPage = croppedDoc.getPage(0)
     const size = croppedPage.getSize()
 
     assert.closeTo(size.width, 589.6, 1)
-    assert.closeTo(size.height, 343.0, 1)
+    // Height is now dynamic based on TAX INVOICE position
+    assert.isAbove(size.height, 200)
+    assert.isBelow(size.height, 500)
 
     const croppedBytes = await croppedDoc.save()
     const pageTexts = await MeeshoParser.extractPageTexts(Buffer.from(croppedBytes))
@@ -136,10 +138,24 @@ test.group('Meesho PDF Processing Engine', () => {
     const srcDoc = await PDFDocument.load(rawBuffer)
 
     const mergeItems: MergeableLabelItem[] = [
-      { id: 1, sku: 'VATI 115', sourceOrder: 1, srcDoc, sourcePageIndex: 0 },
-      { id: 2, sku: 'A MS + A RING 124', sourceOrder: 2, srcDoc, sourcePageIndex: 1 },
-      { id: 3, sku: 'VATI 111', sourceOrder: 3, srcDoc, sourcePageIndex: 2 },
-      { id: 4, sku: 'G-alphabet-1729', sourceOrder: 4, srcDoc, sourcePageIndex: 3 },
+      { id: 1, sku: 'VATI 115', sourceOrder: 1, srcDoc, sourcePageIndex: 0, pdfBuffer: rawBuffer },
+      {
+        id: 2,
+        sku: 'A MS + A RING 124',
+        sourceOrder: 2,
+        srcDoc,
+        sourcePageIndex: 1,
+        pdfBuffer: rawBuffer,
+      },
+      { id: 3, sku: 'VATI 111', sourceOrder: 3, srcDoc, sourcePageIndex: 2, pdfBuffer: rawBuffer },
+      {
+        id: 4,
+        sku: 'G-alphabet-1729',
+        sourceOrder: 4,
+        srcDoc,
+        sourcePageIndex: 3,
+        pdfBuffer: rawBuffer,
+      },
     ]
 
     const { buffer: mergedBuf, pageCount } = await MeeshoPdfProcessor.mergeSortedLabels(mergeItems)

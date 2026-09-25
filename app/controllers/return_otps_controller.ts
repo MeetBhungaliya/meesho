@@ -1,4 +1,4 @@
-import { HttpContext } from '@adonisjs/core/http'
+import { type HttpContext } from '@adonisjs/core/http'
 import { MeeshoApiClient } from '#services/external_api/client'
 import { ApiError, SessionError } from '#services/external_api/errors'
 

@@ -43,6 +43,8 @@ export const MEESHO_ENDPOINTS = {
   reqDownloadLabelV2: `${MEESHO_BASE_URL}/api/fulfillment/orders/reqDownloadLabelV2`,
   fetchLabelDownloadHistory: `${MEESHO_BASE_URL}/api/fulfillment/orders/fetchLabelDownloadHistory`,
   updateGroupDownloadBackendFlag: `${MEESHO_BASE_URL}/api/fulfillment/orders/updateGroupDownloadBackendFlag`,
+  updateLabelDownloadStatus: `${MEESHO_BASE_URL}/api/fulfillment/orders/updateLabelDownloadStatus`,
+  allPayments: `${MEESHO_BASE_URL}/api/payouts/payments/all-payments`,
 } as const
 
 export const ORDER_STATUS = {

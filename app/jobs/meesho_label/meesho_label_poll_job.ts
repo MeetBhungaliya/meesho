@@ -132,6 +132,14 @@ export default class MeeshoLabelPollJob extends Job<MeeshoLabelPollJobPayload> {
           'Meesho label ready for download, dispatching download job'
         )
 
+        await MeeshoLabelEventBroadcaster.broadcast(userId, jobId, 'progress_updated', {
+          accountId,
+          progress: 100,
+          totalLabels: jobAccount.totalSuborders,
+          processedLabels: jobAccount.successfulSuborders,
+          status: 'READY_FOR_DOWNLOAD',
+        })
+
         await MeeshoLabelDownloadJob.dispatch({
           jobId,
           jobAccountId,
@@ -144,10 +152,34 @@ export default class MeeshoLabelPollJob extends Job<MeeshoLabelPollJobPayload> {
 
       // Check for explicit failure from Meesho
       if (match.status === 'FAILED' || match.status === 'ERROR') {
+        try {
+          logger.info(
+            { jobId, jobAccountId, requestId: jobAccount.meeshoRequestId },
+            'Calling Meesho updateLabelDownloadStatus for failed request'
+          )
+          await MeeshoLabelApiService.updateLabelDownloadStatus(
+            String(accountId),
+            jobAccount.meeshoRequestId,
+            'POPUP_CLOSED'
+          )
+        } catch (statusErr: any) {
+          logger.warn(
+            {
+              jobId,
+              jobAccountId,
+              requestId: jobAccount.meeshoRequestId,
+              error: statusErr.message,
+            },
+            'Failed to update Meesho label download status on failure'
+          )
+        }
+
         jobAccount.status = 'FAILED'
         jobAccount.errorCode = LABEL_ERROR_CODES.MEESHO_LABEL_PROCESSING_FAILED
         jobAccount.errorMessage =
-          match.status_message || 'Meesho reported failure during label generation'
+          match.error_message ||
+          match.status_message ||
+          'Meesho reported failure during label generation'
         jobAccount.completedAt = DateTime.now()
         await jobAccount.save()
 
@@ -181,9 +213,9 @@ export default class MeeshoLabelPollJob extends Job<MeeshoLabelPollJobPayload> {
         return
       }
 
-      // Determine next delay (from response or fallback 10s)
+      // Determine next delay — respect Meesho's hint but enforce a tighter floor (5s)
       const delayMs =
-        history.polling_time_ms && history.polling_time_ms >= 5000 ? history.polling_time_ms : 10000
+        history.polling_time_ms && history.polling_time_ms >= 5000 ? history.polling_time_ms : 5000
 
       // Enqueue next delayed job; worker exits immediately
       await MeeshoLabelPollJob.dispatch({

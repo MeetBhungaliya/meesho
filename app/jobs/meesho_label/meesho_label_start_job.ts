@@ -14,11 +14,13 @@ export interface MeeshoLabelStartJobPayload {
   jobAccountId: number
   accountId: number
   userId: number
+  /** Optional filter forwarded from the original download request */
+  filter?: Record<string, unknown>
 }
 
 export default class MeeshoLabelStartJob extends Job<MeeshoLabelStartJobPayload> {
   async execute(): Promise<void> {
-    const { jobId, jobAccountId, accountId, userId } = this.payload
+    const { jobId, jobAccountId, accountId, userId, filter } = this.payload
 
     const jobAccount = await MeeshoLabelJobAccount.find(jobAccountId)
     if (!jobAccount) {
@@ -45,7 +47,9 @@ export default class MeeshoLabelStartJob extends Job<MeeshoLabelStartJobPayload>
     })
 
     try {
-      const result = await MeeshoLabelApiService.requestLabelDownload(String(accountId))
+      const result = await MeeshoLabelApiService.requestLabelDownload(String(accountId), {
+        filter: filter ?? undefined,
+      })
 
       jobAccount.supplierId = String(result.supplier.supplierId)
       jobAccount.identifier = result.supplier.identifier
@@ -74,14 +78,14 @@ export default class MeeshoLabelStartJob extends Job<MeeshoLabelStartJobPayload>
         status: 'POLLING',
       })
 
-      // Dispatch recursive polling job with 10s initial delay
+      // Dispatch recursive polling job with 3s initial delay (fast first check)
       await MeeshoLabelPollJob.dispatch({
         jobId,
         jobAccountId,
         accountId,
         userId,
         attempt: 1,
-      }).in('10s')
+      }).in('3s')
     } catch (err: any) {
       logger.error(
         { jobId, jobAccountId, accountId, error: err.message },

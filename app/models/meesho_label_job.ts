@@ -47,7 +47,7 @@ export default class MeeshoLabelJob extends BaseModel {
   @column()
   declare failedLabels: number
 
-  @column()
+  @column({ columnName: 'final_pdf_s3_key' })
   declare finalPdfS3Key: string | null
 
   @column()

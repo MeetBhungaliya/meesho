@@ -60,9 +60,7 @@ export default class MeeshoLabelScheduleReconcileJob extends Job {
     for (const schedule of unscheduled) {
       const nextRun = MeeshoScheduleHelper.calculateNextRun(
         schedule.timezone,
-        schedule.frequency,
         schedule.runTime,
-        schedule.daysOfWeek,
         now
       )
 

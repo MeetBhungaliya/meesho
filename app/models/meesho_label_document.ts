@@ -47,10 +47,10 @@ export default class MeeshoLabelDocument extends BaseModel {
   @column()
   declare processedPageNumber: number | null
 
-  @column()
+  @column({ columnName: 'raw_pdf_s3_key' })
   declare rawPdfS3Key: string | null
 
-  @column()
+  @column({ columnName: 'processed_pdf_s3_key' })
   declare processedPdfS3Key: string | null
 
   @column()

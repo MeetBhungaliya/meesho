@@ -384,6 +384,7 @@ export class MeeshoLabelScheduleSchema extends BaseModel {
     'cronExpression',
     'daysOfWeek',
     'enabled',
+    'filter',
     'frequency',
     'id',
     'lastRunAt',
@@ -403,6 +404,8 @@ export class MeeshoLabelScheduleSchema extends BaseModel {
   declare daysOfWeek: any | null
   @column()
   declare enabled: boolean
+  @column()
+  declare filter: any | null
   @column()
   declare frequency: string
   @column({ isPrimary: true })

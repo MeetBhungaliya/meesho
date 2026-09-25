@@ -9,12 +9,19 @@ const shieldConfig = defineConfig({
     /**
      * Enable the Content-Security-Policy header.
      */
-    enabled: false,
+    enabled: true,
 
     /**
      * Per-resource CSP directives.
+     * Restrictive defaults for a JSON API backend.
      */
-    directives: {},
+    directives: {
+      defaultSrc: ["'none'"],
+      scriptSrc: ["'self'"],
+      connectSrc: ["'self'"],
+      imgSrc: ["'self'"],
+      styleSrc: ["'self'"],
+    },
 
     /**
      * Report violations without blocking resources.

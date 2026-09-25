@@ -27,6 +27,7 @@ export interface ApiDefinition {
   }
   dashboard: {
     getStats: typeof routes['dashboard.get_stats']
+    getPayments: typeof routes['dashboard.get_payments']
     getActivities: typeof routes['dashboard.get_activities']
     markActivityRead: typeof routes['dashboard.mark_activity_read']
     clearActivities: typeof routes['dashboard.clear_activities']
@@ -74,6 +75,19 @@ export interface ApiDefinition {
   jobs: {
     active: typeof routes['jobs.active']
     state: typeof routes['jobs.state']
+  }
+  meeshoLabels: {
+    download: typeof routes['meesho_labels.download']
+    indexJobs: typeof routes['meesho_labels.index_jobs']
+    showJob: typeof routes['meesho_labels.show_job']
+    jobProgress: typeof routes['meesho_labels.job_progress']
+    downloadFinalPdf: typeof routes['meesho_labels.download_final_pdf']
+    listSchedules: typeof routes['meesho_labels.list_schedules']
+    createSchedule: typeof routes['meesho_labels.create_schedule']
+    showSchedule: typeof routes['meesho_labels.show_schedule']
+    updateSchedule: typeof routes['meesho_labels.update_schedule']
+    toggleSchedule: typeof routes['meesho_labels.toggle_schedule']
+    destroySchedule: typeof routes['meesho_labels.destroy_schedule']
   }
   telegramWebhook: {
     webhook: typeof routes['telegram_webhook.webhook']

@@ -24,14 +24,34 @@ transmit.authorize<{ userId: string; accountId: string }>(
 
 // Meesho Labels user-level channel
 transmit.authorize<{ userId: string }>('meesho-labels/:userId', async (ctx, { userId }) => {
-  const user = await ctx.auth.authenticate()
-  return user.id === +userId
+  try {
+    const user = await ctx.auth.authenticate()
+    const isAuthorized = user.id === +userId
+    if (!isAuthorized) {
+      console.error(`[Transmit Auth] Unauthorized: user.id (${user.id}) !== userId (${userId})`)
+    }
+    return isAuthorized
+  } catch (err) {
+    console.error('[Transmit Auth] Exception during authentication:', err)
+    throw err
+  }
 })
 
 // Meesho Labels job-level stream channel
 transmit.authorize<{ jobId: string }>('meesho-labels/job/:jobId', async (ctx, { jobId }) => {
-  const user = await ctx.auth.authenticate()
-  const { default: MeeshoLabelJob } = await import('#models/meesho_label_job')
-  const job = await MeeshoLabelJob.find(jobId)
-  return job !== null && job.userId === user.id
+  try {
+    const user = await ctx.auth.authenticate()
+    const { default: MeeshoLabelJob } = await import('#models/meesho_label_job')
+    const job = await MeeshoLabelJob.find(jobId)
+    const isAuthorized = job !== null && job.userId === user.id
+    if (!isAuthorized) {
+      console.error(
+        `[Transmit Auth] Unauthorized job: job !== null (${job !== null}), job.userId (${job?.userId}) !== user.id (${user.id})`
+      )
+    }
+    return isAuthorized
+  } catch (err) {
+    console.error('[Transmit Auth] Exception during job authentication:', err)
+    throw err
+  }
 })

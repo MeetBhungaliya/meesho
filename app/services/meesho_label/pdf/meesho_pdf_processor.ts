@@ -85,9 +85,15 @@ export class MeeshoPdfProcessor {
 
   /**
    * Generates a single cropped shipping label PDF buffer for an individual page.
+   * When `pdfBuffer` is provided, dynamic "TAX INVOICE" detection is used for
+   * precise cropping; otherwise falls back to static bounds.
    */
-  static async cropPageToBuffer(srcDoc: PDFDocument, pageIndex: number): Promise<Buffer> {
-    const croppedDoc = await MeeshoCropper.cropSinglePage(srcDoc, pageIndex)
+  static async cropPageToBuffer(
+    srcDoc: PDFDocument,
+    pageIndex: number,
+    pdfBuffer?: Buffer
+  ): Promise<Buffer> {
+    const croppedDoc = await MeeshoCropper.cropSinglePage(srcDoc, pageIndex, pdfBuffer)
     const bytes = await croppedDoc.save()
     return Buffer.from(bytes)
   }

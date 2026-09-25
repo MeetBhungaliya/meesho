@@ -164,7 +164,7 @@ test.group('MeeshoLabelsController Functional Tests', (group) => {
       })
 
     createRes.assertStatus(201)
-    const created = createRes.body().data
+    const created = createRes.body().data as any
     assert.equal(created.name, 'Morning Labels Run')
     assert.isTrue(created.enabled)
     assert.isDefined(created.nextRunAt)
@@ -174,12 +174,12 @@ test.group('MeeshoLabelsController Functional Tests', (group) => {
     // 2. List Schedules
     const listRes = await client.get('/meesho/labels/schedules').loginAs(user)
     listRes.assertStatus(200)
-    assert.isTrue(listRes.body().data.some((s: any) => s.id === scheduleId))
+    assert.isTrue((listRes.body().data as any[]).some((s: any) => s.id === scheduleId))
 
     // 3. Show Schedule
     const showRes = await client.get(`/meesho/labels/schedules/${scheduleId}`).loginAs(user)
     showRes.assertStatus(200)
-    assert.equal(showRes.body().data.id, scheduleId)
+    assert.equal((showRes.body() as any).data.id, scheduleId)
 
     // 4. Toggle Schedule
     const toggleRes = await client
@@ -196,5 +196,33 @@ test.group('MeeshoLabelsController Functional Tests', (group) => {
 
     const deletedInDb = await MeeshoLabelSchedule.find(scheduleId)
     assert.isNull(deletedInDb)
+  })
+
+  test('GET /meesho/labels/jobs/:id/download returns formatted filename with account name and timestamp', async ({
+    client,
+    assert,
+  }) => {
+    const job = await MeeshoLabelJob.create({
+      id: randomUUID(),
+      userId: user.id,
+      type: 'manual',
+      status: 'COMPLETED',
+      totalAccounts: 1,
+      completedAccounts: 1,
+      failedAccounts: 0,
+      finalPdfS3Key: 'meesho-labels/12/job-1/final/test.pdf',
+      finalPdfSize: 12345,
+    })
+
+    const response = await client
+      .get(`/meesho/labels/jobs/${job.id}/download`)
+      .loginAs(user)
+      .header('accept', 'application/json')
+
+    response.assertStatus(200)
+    const body = response.body() as any
+    assert.isDefined(body.downloadUrl)
+    assert.isTrue(body.filename.endsWith('.pdf'))
+    assert.include(body.filename, '_Labels_')
   })
 })

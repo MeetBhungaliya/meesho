@@ -71,7 +71,7 @@ export default class MeeshoLabelDownloadJob extends Job<MeeshoLabelDownloadJobPa
       jobAccount.status = 'DOWNLOADED'
       await jobAccount.save()
 
-      // Notify Meesho group download backend flag after successful download
+      // Notify Meesho backend flags after successful download
       if (jobAccount.meeshoRequestId) {
         try {
           logger.info(
@@ -86,6 +86,23 @@ export default class MeeshoLabelDownloadJob extends Job<MeeshoLabelDownloadJobPa
           logger.warn(
             { jobId, jobAccountId, error: flagErr.message },
             'Failed to update Meesho group download backend flag (continuing label processing)'
+          )
+        }
+
+        try {
+          logger.info(
+            { jobId, jobAccountId, requestId: jobAccount.meeshoRequestId },
+            'Updating Meesho label download status to POPUP_CLOSED'
+          )
+          await MeeshoLabelApiService.updateLabelDownloadStatus(
+            String(accountId),
+            jobAccount.meeshoRequestId,
+            'POPUP_CLOSED'
+          )
+        } catch (statusErr: any) {
+          logger.warn(
+            { jobId, jobAccountId, error: statusErr.message },
+            'Failed to update Meesho label download status (continuing label processing)'
           )
         }
       }

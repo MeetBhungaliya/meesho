@@ -35,6 +35,13 @@ export default class MeeshoLabelProcessJob extends Job<MeeshoLabelProcessJobPayl
     jobAccount.status = 'PROCESSING'
     await jobAccount.save()
 
+    // Ensure the parent job status reflects active processing
+    const parentJobForStatus = await MeeshoLabelJob.find(jobId)
+    if (parentJobForStatus && parentJobForStatus.status === 'QUEUED') {
+      parentJobForStatus.status = 'PROCESSING'
+      await parentJobForStatus.save()
+    }
+
     await MeeshoLabelEventBroadcaster.broadcast(userId, jobId, 'processing_started', {
       accountId,
       status: 'PROCESSING',
@@ -91,14 +98,18 @@ export default class MeeshoLabelProcessJob extends Job<MeeshoLabelProcessJobPayl
       // Update parent job counters in SQL
       await this.syncJobCounters(jobId)
 
-      await MeeshoLabelEventBroadcaster.broadcast(userId, jobId, 'account_completed', {
-        accountId,
-        supplierName: jobAccount.supplierName || undefined,
-        totalLabels: processed.pageCount,
-        processedLabels: docsToInsert.filter((d) => d.status === 'PROCESSED').length,
-        failedLabels: docsToInsert.filter((d) => d.status === 'FAILED').length,
-        status: 'PROCESSED',
-      })
+      // Broadcast updated totals so the frontend progress bar advances immediately
+      const updatedParentJob = await MeeshoLabelJob.find(jobId)
+      if (updatedParentJob) {
+        await MeeshoLabelEventBroadcaster.broadcast(userId, jobId, 'account_completed', {
+          accountId,
+          supplierName: jobAccount.supplierName || undefined,
+          totalLabels: updatedParentJob.totalLabels,
+          processedLabels: updatedParentJob.processedLabels,
+          failedLabels: updatedParentJob.failedLabels,
+          status: 'PROCESSED',
+        })
+      }
 
       // Check if all accounts have reached a terminal state
       await this.checkJobFinalization(jobId, userId)
@@ -116,10 +127,15 @@ export default class MeeshoLabelProcessJob extends Job<MeeshoLabelProcessJobPayl
 
       await this.syncJobCounters(jobId)
 
+      // Broadcast so frontend knows this account failed and gets updated counts
+      const updatedParentJobOnFail = await MeeshoLabelJob.find(jobId)
       await MeeshoLabelEventBroadcaster.broadcast(userId, jobId, 'account_failed', {
         accountId,
         errorCode: jobAccount.errorCode || undefined,
         errorMessage: jobAccount.errorMessage || undefined,
+        totalLabels: updatedParentJobOnFail?.totalLabels,
+        processedLabels: updatedParentJobOnFail?.processedLabels,
+        failedLabels: updatedParentJobOnFail?.failedLabels,
         status: 'FAILED',
       })
 

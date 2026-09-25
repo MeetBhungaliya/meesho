@@ -15,6 +15,7 @@ export type ScannedRoutes = {
     'users.me': { paramsTuple?: []; params?: {} }
     'accounts.get_all_accounts': { paramsTuple?: []; params?: {} }
     'dashboard.get_stats': { paramsTuple?: []; params?: {} }
+    'dashboard.get_payments': { paramsTuple?: []; params?: {} }
     'dashboard.get_activities': { paramsTuple?: []; params?: {} }
     'dashboard.mark_activity_read': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard.clear_activities': { paramsTuple?: []; params?: {} }
@@ -51,6 +52,17 @@ export type ScannedRoutes = {
     'ad_account_configs.destroy': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'jobs.active': { paramsTuple?: []; params?: {} }
     'jobs.state': { paramsTuple: [ParamValue]; params: {'channelName': ParamValue} }
+    'meesho_labels.download': { paramsTuple?: []; params?: {} }
+    'meesho_labels.index_jobs': { paramsTuple?: []; params?: {} }
+    'meesho_labels.show_job': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'meesho_labels.job_progress': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'meesho_labels.download_final_pdf': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'meesho_labels.list_schedules': { paramsTuple?: []; params?: {} }
+    'meesho_labels.create_schedule': { paramsTuple?: []; params?: {} }
+    'meesho_labels.show_schedule': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'meesho_labels.update_schedule': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'meesho_labels.toggle_schedule': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'meesho_labels.destroy_schedule': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'telegram_webhook.webhook': { paramsTuple?: []; params?: {} }
     'health_checks.health': { paramsTuple?: []; params?: {} }
   }
@@ -60,6 +72,7 @@ export type ScannedRoutes = {
     'users.me': { paramsTuple?: []; params?: {} }
     'accounts.get_all_accounts': { paramsTuple?: []; params?: {} }
     'dashboard.get_stats': { paramsTuple?: []; params?: {} }
+    'dashboard.get_payments': { paramsTuple?: []; params?: {} }
     'dashboard.get_activities': { paramsTuple?: []; params?: {} }
     'accounts.retry_login': { paramsTuple?: [ParamValue?]; params?: {'accountId'?: ParamValue} }
     'ads_campaigns.index': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
@@ -71,6 +84,12 @@ export type ScannedRoutes = {
     'ad_account_configs.show': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'jobs.active': { paramsTuple?: []; params?: {} }
     'jobs.state': { paramsTuple: [ParamValue]; params: {'channelName': ParamValue} }
+    'meesho_labels.index_jobs': { paramsTuple?: []; params?: {} }
+    'meesho_labels.show_job': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'meesho_labels.job_progress': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'meesho_labels.download_final_pdf': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'meesho_labels.list_schedules': { paramsTuple?: []; params?: {} }
+    'meesho_labels.show_schedule': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'health_checks.health': { paramsTuple?: []; params?: {} }
   }
   HEAD: {
@@ -79,6 +98,7 @@ export type ScannedRoutes = {
     'users.me': { paramsTuple?: []; params?: {} }
     'accounts.get_all_accounts': { paramsTuple?: []; params?: {} }
     'dashboard.get_stats': { paramsTuple?: []; params?: {} }
+    'dashboard.get_payments': { paramsTuple?: []; params?: {} }
     'dashboard.get_activities': { paramsTuple?: []; params?: {} }
     'accounts.retry_login': { paramsTuple?: [ParamValue?]; params?: {'accountId'?: ParamValue} }
     'ads_campaigns.index': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
@@ -90,6 +110,12 @@ export type ScannedRoutes = {
     'ad_account_configs.show': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'jobs.active': { paramsTuple?: []; params?: {} }
     'jobs.state': { paramsTuple: [ParamValue]; params: {'channelName': ParamValue} }
+    'meesho_labels.index_jobs': { paramsTuple?: []; params?: {} }
+    'meesho_labels.show_job': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'meesho_labels.job_progress': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'meesho_labels.download_final_pdf': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'meesho_labels.list_schedules': { paramsTuple?: []; params?: {} }
+    'meesho_labels.show_schedule': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'health_checks.health': { paramsTuple?: []; params?: {} }
   }
   POST: {
@@ -115,6 +141,8 @@ export type ScannedRoutes = {
     'products.store': { paramsTuple?: []; params?: {} }
     'products.adjust_stock': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'ad_account_configs.upsert': { paramsTuple?: []; params?: {} }
+    'meesho_labels.download': { paramsTuple?: []; params?: {} }
+    'meesho_labels.create_schedule': { paramsTuple?: []; params?: {} }
     'telegram_webhook.webhook': { paramsTuple?: []; params?: {} }
   }
   DELETE: {
@@ -124,11 +152,16 @@ export type ScannedRoutes = {
     'images.destroy': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'products.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'ad_account_configs.destroy': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
+    'meesho_labels.destroy_schedule': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   PUT: {
     'accounts.update_password': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'accounts.update_account': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'products.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'meesho_labels.update_schedule': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+  }
+  PATCH: {
+    'meesho_labels.toggle_schedule': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
 }
 declare module '@adonisjs/core/types/http' {

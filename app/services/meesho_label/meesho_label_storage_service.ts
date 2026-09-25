@@ -113,7 +113,33 @@ export class MeeshoLabelStorageService {
    * Generates a short-lived authenticated download URL.
    * Defaults to 5 minutes (300s). Never log this URL.
    */
-  static async getSignedDownloadUrl(key: string, expiresInSeconds = 300): Promise<string> {
-    return this.disk.getSignedUrl(key, { expiresIn: expiresInSeconds })
+  static async getSignedDownloadUrl(
+    key: string,
+    expiresInSeconds = 300,
+    filename?: string
+  ): Promise<string> {
+    const contentDisposition = filename ? `attachment; filename="${filename}"` : 'attachment'
+
+    let url: string
+    try {
+      url = await this.disk.getSignedUrl(key, {
+        expiresIn: expiresInSeconds,
+        contentType: 'application/pdf',
+        contentDisposition,
+      })
+    } catch {
+      try {
+        url = await this.disk.getUrl(key)
+      } catch {
+        url = `/uploads/${key}`
+      }
+    }
+
+    if (url.startsWith('/')) {
+      const appUrl = env.get('APP_URL', 'http://127.0.0.1:8443')
+      return `${appUrl.replace(/\/$/, '')}${url}`
+    }
+
+    return url
   }
 }

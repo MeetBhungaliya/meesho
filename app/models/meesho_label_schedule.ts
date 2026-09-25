@@ -41,6 +41,15 @@ export default class MeeshoLabelSchedule extends BaseModel {
   @column()
   declare enabled: boolean
 
+  @column({
+    prepare: (value: Record<string, unknown> | null) => (value ? JSON.stringify(value) : null),
+    consume: (value: string | Record<string, unknown> | null) => {
+      if (!value) return null
+      return typeof value === 'string' ? JSON.parse(value) : value
+    },
+  })
+  declare filter: Record<string, unknown> | null
+
   @column.dateTime()
   declare nextRunAt: DateTime | null
 

@@ -75,6 +75,7 @@ export default class MeeshoLabelFinalizeJob extends Job<MeeshoLabelFinalizeJobPa
 
       // Cache raw PDFs loaded from S3 so we only download each account's PDF once
       const pdfDocCache = new Map<string, PDFDocument>()
+      const rawBufferCache = new Map<string, Buffer>()
 
       const mergeableItems: MergeableLabelItem[] = []
 
@@ -82,10 +83,12 @@ export default class MeeshoLabelFinalizeJob extends Job<MeeshoLabelFinalizeJobPa
         if (!doc.rawPdfS3Key) continue
 
         let srcDoc = pdfDocCache.get(doc.rawPdfS3Key)
-        if (!srcDoc) {
-          const rawBuffer = await MeeshoLabelStorageService.getBuffer(doc.rawPdfS3Key)
+        let rawBuffer = rawBufferCache.get(doc.rawPdfS3Key)
+        if (!srcDoc || !rawBuffer) {
+          rawBuffer = await MeeshoLabelStorageService.getBuffer(doc.rawPdfS3Key)
           srcDoc = await PDFDocument.load(rawBuffer)
           pdfDocCache.set(doc.rawPdfS3Key, srcDoc)
+          rawBufferCache.set(doc.rawPdfS3Key, rawBuffer)
         }
 
         mergeableItems.push({
@@ -94,6 +97,7 @@ export default class MeeshoLabelFinalizeJob extends Job<MeeshoLabelFinalizeJobPa
           sourceOrder: doc.id,
           srcDoc,
           sourcePageIndex: doc.sourcePageNumber - 1,
+          pdfBuffer: rawBuffer,
         })
       }
 
@@ -123,6 +127,7 @@ export default class MeeshoLabelFinalizeJob extends Job<MeeshoLabelFinalizeJobPa
 
       // Clear document cache from memory
       pdfDocCache.clear()
+      rawBufferCache.clear()
 
       // Generate presigned download URL for event
       let downloadUrl = ''

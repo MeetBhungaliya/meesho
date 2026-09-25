@@ -51,10 +51,10 @@ export default class MeeshoLabelJobAccount extends BaseModel {
   @column()
   declare progressPercent: number
 
-  @column()
+  @column({ columnName: 'raw_pdf_s3_key' })
   declare rawPdfS3Key: string | null
 
-  @column()
+  @column({ columnName: 'processed_pdf_s3_key' })
   declare processedPdfS3Key: string | null
 
   @column()

@@ -117,6 +117,7 @@ export default class MeeshoLabelScheduleExecuteJob extends Job<MeeshoLabelSchedu
         jobAccountId: jobAccount.id,
         accountId: account.id,
         userId: schedule.userId,
+        filter: schedule.filter || undefined,
       })
     }
 
@@ -124,9 +125,7 @@ export default class MeeshoLabelScheduleExecuteJob extends Job<MeeshoLabelSchedu
     try {
       const nextRun = MeeshoScheduleHelper.calculateNextRun(
         schedule.timezone,
-        schedule.frequency,
         schedule.runTime,
-        schedule.daysOfWeek,
         DateTime.now()
       )
 

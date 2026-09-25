@@ -30,6 +30,7 @@ export interface MeeshoLabelHistoryItem {
   status_message?: string
   status: string
   requested_at_msg?: string
+  error_message?: string
   success_suborder_count?: number
   total_suborder_count?: number
   progress_percent?: number
@@ -65,7 +66,11 @@ export class MeeshoLabelApiService {
       current_status: 1,
       requested_status: 101,
       max_transitions: options.maxTransitions ?? 1996,
-      filter: options.filter ?? {},
+      filter: options.filter ?? {
+        label_downloaded: {
+          status: false,
+        },
+      },
       child_supplier_identifier: null,
       child_supplier_id: null,
     }
@@ -151,6 +156,30 @@ export class MeeshoLabelApiService {
 
     await MeeshoRequestQueue.enqueue(async () => {
       return client.post(MEESHO_ENDPOINTS.updateGroupDownloadBackendFlag, payload)
+    })
+  }
+
+  /**
+   * Updates Meesho label download status (e.g. POPUP_CLOSED on failure or modal close):
+   * POST https://supplier.meesho.com/api/fulfillment/orders/updateLabelDownloadStatus
+   */
+  static async updateLabelDownloadStatus(
+    accountId: string,
+    requestId: string,
+    status: string = 'POPUP_CLOSED'
+  ): Promise<void> {
+    const client = await MeeshoApiClient.forAccount(accountId)
+    const payload = {
+      supplier_id: Number(client.supplier.supplierId),
+      identifier: client.supplier.identifier,
+      request_id: requestId,
+      status,
+      child_supplier_identifier: null,
+      child_supplier_id: null,
+    }
+
+    await MeeshoRequestQueue.enqueue(async () => {
+      return client.post(MEESHO_ENDPOINTS.updateLabelDownloadStatus, payload)
     })
   }
 }

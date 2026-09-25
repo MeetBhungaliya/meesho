@@ -32,9 +32,13 @@ const loggerConfig = defineConfig({
 
       /**
        * Configure where logs are written.
+       * In production: write to stdout and a rotating log file.
+       * In development: stdout only.
        */
       transport: {
-        targets: [targets.file({ destination: 1 })],
+        targets: app.inProduction
+          ? [targets.file({ destination: 1 }), targets.file({ destination: './tmp/logs/app.log' })]
+          : [targets.file({ destination: 1 })],
       },
     },
   },

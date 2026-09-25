@@ -28,7 +28,7 @@ test.group('MeeshoLabelApiService', () => {
     assert.equal(payload.current_status, 1)
     assert.equal(payload.requested_status, 101)
     assert.equal(payload.max_transitions, 1996)
-    assert.deepEqual(payload.filter, {})
+    assert.deepEqual(payload.filter, { label_downloaded: { status: false } })
     assert.isNull(payload.child_supplier_identifier)
     assert.isNull(payload.child_supplier_id)
   })
@@ -62,6 +62,7 @@ test.group('MeeshoLabelApiService', () => {
           progress_percent: 45,
           total_suborder_count: 10,
           success_suborder_count: 4,
+          error_message: 'No penalty will be charged. Please try again later.',
         },
       ],
       is_polling: true,
@@ -74,6 +75,7 @@ test.group('MeeshoLabelApiService', () => {
     assert.equal(match!.request_id, '4339024_fk14g_target_99999')
     assert.equal(match!.progress_percent, 45)
     assert.equal(match!.success_suborder_count, 4)
+    assert.equal(match!.error_message, 'No penalty will be charged. Please try again later.')
   })
 
   test('findRequestInHistory returns undefined if target request_id is not in list', ({
@@ -96,6 +98,13 @@ test.group('MeeshoLabelApiService', () => {
     assert.equal(
       MEESHO_ENDPOINTS.updateGroupDownloadBackendFlag,
       'https://supplier.meesho.com/api/fulfillment/orders/updateGroupDownloadBackendFlag'
+    )
+  })
+
+  test('updateLabelDownloadStatus endpoint is correctly configured', ({ assert }) => {
+    assert.equal(
+      MEESHO_ENDPOINTS.updateLabelDownloadStatus,
+      'https://supplier.meesho.com/api/fulfillment/orders/updateLabelDownloadStatus'
     )
   })
 })

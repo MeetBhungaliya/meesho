@@ -139,6 +139,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/dashboard_controller').default['getStats']>>>
     }
   }
+  'dashboard.get_payments': {
+    methods: ["GET","HEAD"]
+    pattern: '/accounts/dashboard/payments'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/dashboard_controller').default['getPayments']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/dashboard_controller').default['getPayments']>>>
+    }
+  }
   'dashboard.get_activities': {
     methods: ["GET","HEAD"]
     pattern: '/accounts/dashboard/activities'
@@ -569,6 +581,138 @@ export interface Registry {
       query: {}
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/jobs_controller').default['state']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/jobs_controller').default['state']>>>
+    }
+  }
+  'meesho_labels.download': {
+    methods: ["POST"]
+    pattern: '/meesho/labels/download'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/meesho_label').createManualDownloadValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/meesho_label').createManualDownloadValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/meesho_labels_controller').default['download']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/meesho_labels_controller').default['download']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'meesho_labels.index_jobs': {
+    methods: ["GET","HEAD"]
+    pattern: '/meesho/labels/jobs'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/meesho_labels_controller').default['indexJobs']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/meesho_labels_controller').default['indexJobs']>>>
+    }
+  }
+  'meesho_labels.show_job': {
+    methods: ["GET","HEAD"]
+    pattern: '/meesho/labels/jobs/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/meesho_labels_controller').default['showJob']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/meesho_labels_controller').default['showJob']>>>
+    }
+  }
+  'meesho_labels.job_progress': {
+    methods: ["GET","HEAD"]
+    pattern: '/meesho/labels/jobs/:id/progress'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/meesho_labels_controller').default['jobProgress']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/meesho_labels_controller').default['jobProgress']>>>
+    }
+  }
+  'meesho_labels.download_final_pdf': {
+    methods: ["GET","HEAD"]
+    pattern: '/meesho/labels/jobs/:id/download'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/meesho_labels_controller').default['downloadFinalPdf']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/meesho_labels_controller').default['downloadFinalPdf']>>>
+    }
+  }
+  'meesho_labels.list_schedules': {
+    methods: ["GET","HEAD"]
+    pattern: '/meesho/labels/schedules'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/meesho_labels_controller').default['listSchedules']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/meesho_labels_controller').default['listSchedules']>>>
+    }
+  }
+  'meesho_labels.create_schedule': {
+    methods: ["POST"]
+    pattern: '/meesho/labels/schedules'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/meesho_label').createScheduleValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/meesho_label').createScheduleValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/meesho_labels_controller').default['createSchedule']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/meesho_labels_controller').default['createSchedule']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'meesho_labels.show_schedule': {
+    methods: ["GET","HEAD"]
+    pattern: '/meesho/labels/schedules/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/meesho_labels_controller').default['showSchedule']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/meesho_labels_controller').default['showSchedule']>>>
+    }
+  }
+  'meesho_labels.update_schedule': {
+    methods: ["PUT"]
+    pattern: '/meesho/labels/schedules/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/meesho_label').updateScheduleValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/meesho_label').updateScheduleValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/meesho_labels_controller').default['updateSchedule']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/meesho_labels_controller').default['updateSchedule']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'meesho_labels.toggle_schedule': {
+    methods: ["PATCH"]
+    pattern: '/meesho/labels/schedules/:id/toggle'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/meesho_labels_controller').default['toggleSchedule']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/meesho_labels_controller').default['toggleSchedule']>>>
+    }
+  }
+  'meesho_labels.destroy_schedule': {
+    methods: ["DELETE"]
+    pattern: '/meesho/labels/schedules/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/meesho_labels_controller').default['destroySchedule']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/meesho_labels_controller').default['destroySchedule']>>>
     }
   }
   'telegram_webhook.webhook': {
