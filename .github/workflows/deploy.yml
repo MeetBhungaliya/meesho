@@ -77,7 +77,7 @@ jobs:
             cp .env build/.env
 
             # Ensure log directories exist
-            mkdir -p tmp/logs
+            # mkdir -p tmp/logs
 
             # Load NVM
             export NVM_DIR="$HOME/.nvm"

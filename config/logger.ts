@@ -36,9 +36,11 @@ const loggerConfig = defineConfig({
        * In development: stdout only.
        */
       transport: {
-        targets: app.inProduction
-          ? [targets.file({ destination: 1 }), targets.file({ destination: './tmp/logs/app.log' })]
-          : [targets.file({ destination: 1 })],
+        targets: [targets.file({ destination: 1 })],
+
+        // targets: app.inProduction
+        //   ? [targets.file({ destination: 1 }), targets.file({ destination: './tmp/logs/app.log' })]
+        //   : [targets.file({ destination: 1 })],
       },
     },
   },
