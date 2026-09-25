@@ -228,14 +228,14 @@ export default class AdsCampaignsController {
    */
   async pause({ auth, request, response }: HttpContext) {
     const user = await auth.authenticate()
-    const { accountId, campaign_id, supplier_id, pause_nudge_status } = request.only([
-      'accountId',
-      'campaign_id',
-      'supplier_id',
-      'pause_nudge_status',
-    ])
+    const {
+      accountId,
+      campaign_id: campaignId,
+      supplier_id: supplierId,
+      pause_nudge_status: pauseNudgeStatus,
+    } = request.only(['accountId', 'campaign_id', 'supplier_id', 'pause_nudge_status'])
 
-    if (!campaign_id) {
+    if (!campaignId) {
       return response.badRequest({ message: 'campaign_id is required' })
     }
 
@@ -253,16 +253,16 @@ export default class AdsCampaignsController {
 
     try {
       const client = await MeeshoApiClient.forAccount(targetAccountId.toString())
-      const finalSupplierId = Number(supplier_id || client.supplier.supplierId)
+      const finalSupplierId = Number(supplierId || client.supplier.supplierId)
 
       const payload = {
         supplier_id: finalSupplierId,
-        campaign_id: Number(campaign_id),
-        pause_nudge_status: pause_nudge_status || 'DETAILS_PAGE',
+        campaign_id: Number(campaignId),
+        pause_nudge_status: pauseNudgeStatus || 'DETAILS_PAGE',
       }
 
       console.log(
-        `[AdsCampaignsController] Pausing campaign ${campaign_id} for supplier ${finalSupplierId} (Account ${targetAccountId})`
+        `[AdsCampaignsController] Pausing campaign ${campaignId} for supplier ${finalSupplierId} (Account ${targetAccountId})`
       )
 
       const meeshoRes = await client.post(
@@ -277,7 +277,7 @@ export default class AdsCampaignsController {
         const cached = await redisCache.get<CampaignsData>({ key: cacheKey })
         if (cached && cached.campaigns) {
           const updatedCampaigns = cached.campaigns.filter(
-            (c) => Number(c.campaign_id) !== Number(campaign_id)
+            (c) => Number(c.campaign_id) !== Number(campaignId)
           )
           await redisCache.set({
             key: cacheKey,
@@ -329,17 +329,23 @@ export default class AdsCampaignsController {
    */
   async editCatalogs({ auth, request, response }: HttpContext) {
     const user = await auth.authenticate()
-    const { accountId, campaign_id, supplier_id, catalog_id, bid, prefilled_input_value } =
-      request.only([
-        'accountId',
-        'campaign_id',
-        'supplier_id',
-        'catalog_id',
-        'bid',
-        'prefilled_input_value',
-      ])
+    const {
+      accountId,
+      campaign_id: campaignId,
+      supplier_id: supplierId,
+      catalog_id: catalogId,
+      bid,
+      prefilled_input_value: prefilledInputValue,
+    } = request.only([
+      'accountId',
+      'campaign_id',
+      'supplier_id',
+      'catalog_id',
+      'bid',
+      'prefilled_input_value',
+    ])
 
-    if (!campaign_id || !catalog_id || bid == null) {
+    if (!campaignId || !catalogId || bid === null || bid === undefined) {
       return response.badRequest({ message: 'campaign_id, catalog_id, and bid are required' })
     }
 
@@ -354,13 +360,13 @@ export default class AdsCampaignsController {
 
     try {
       const client = await MeeshoApiClient.forAccount(targetAccountId.toString())
-      const finalSupplierId = Number(supplier_id || client.supplier.supplierId)
+      const finalSupplierId = Number(supplierId || client.supplier.supplierId)
       const payload = {
         supplier_id: finalSupplierId,
-        campaign_id: Number(campaign_id),
-        catalog_id: Number(catalog_id),
+        campaign_id: Number(campaignId),
+        catalog_id: Number(catalogId),
         bid: Number(bid),
-        prefilled_input_value: Number(prefilled_input_value || bid),
+        prefilled_input_value: Number(prefilledInputValue || bid),
       }
 
       const meeshoRes = await client.post(
@@ -408,14 +414,14 @@ export default class AdsCampaignsController {
     const user = await auth.authenticate()
     const {
       accountId,
-      campaign_id,
-      supplier_id,
-      page_number = 1,
-      page_size = 10,
-      start_date = null,
-      end_date = null,
-      is_graph_required = true,
-      date_window = 'AUTO',
+      campaign_id: campaignId,
+      supplier_id: supplierId,
+      page_number: pageNumber = 1,
+      page_size: pageSize = 10,
+      start_date: startDate = null,
+      end_date: endDate = null,
+      is_graph_required: isGraphRequired = true,
+      date_window: dateWindow = 'AUTO',
     } = request.only([
       'accountId',
       'campaign_id',
@@ -428,7 +434,7 @@ export default class AdsCampaignsController {
       'date_window',
     ])
 
-    if (!campaign_id) {
+    if (!campaignId) {
       return response.badRequest({ message: 'campaign_id is required' })
     }
 
@@ -445,17 +451,17 @@ export default class AdsCampaignsController {
 
     try {
       const client = await MeeshoApiClient.forAccount(targetAccountId.toString())
-      const finalSupplierId = Number(supplier_id || client.supplier.supplierId)
+      const finalSupplierId = Number(supplierId || client.supplier.supplierId)
 
       const payload = {
         supplier_id: finalSupplierId,
-        campaign_id: String(campaign_id),
-        page_number: Number(page_number),
-        page_size: Number(page_size),
-        start_date: start_date ?? null,
-        end_date: end_date ?? null,
-        is_graph_required: Boolean(is_graph_required),
-        date_window: date_window ?? 'AUTO',
+        campaign_id: String(campaignId),
+        page_number: Number(pageNumber),
+        page_size: Number(pageSize),
+        start_date: startDate ?? null,
+        end_date: endDate ?? null,
+        is_graph_required: Boolean(isGraphRequired),
+        date_window: dateWindow ?? 'AUTO',
       }
 
       const meeshoRes = await client.post(
@@ -499,7 +505,7 @@ export default class AdsCampaignsController {
       new Set(
         items
           .map((it: any) => Number(it.accountId ?? it.account_id))
-          .filter((id) => !isNaN(id) && id > 0)
+          .filter((id) => !Number.isNaN(id) && id > 0)
       )
     )
 

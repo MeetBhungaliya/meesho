@@ -8,17 +8,17 @@ import { MeeshoApiClient } from '#services/external_api/client'
 export default class DashboardController {
   async getStats({ auth, request, response }: HttpContext) {
     const user = await auth.authenticate()
-    const { accountIds, label_downloaded } = request.qs()
+    const { accountIds, label_downloaded: labelDownloaded } = request.qs()
 
     // Determine label_downloaded filter:
     // If not provided (or 'all'), do not pass filter object to get total count
     let isLabelDownloaded: boolean | undefined
-    if (label_downloaded !== undefined && label_downloaded !== '' && label_downloaded !== 'all') {
+    if (labelDownloaded !== undefined && labelDownloaded !== '' && labelDownloaded !== 'all') {
       isLabelDownloaded =
-        label_downloaded === true ||
-        label_downloaded === 'true' ||
-        label_downloaded === 'Yes' ||
-        label_downloaded === '1'
+        labelDownloaded === true ||
+        labelDownloaded === 'true' ||
+        labelDownloaded === 'Yes' ||
+        labelDownloaded === '1'
     }
 
     let accountsQuery = Account.query().where('user_id', user.id)
