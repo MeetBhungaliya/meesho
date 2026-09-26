@@ -236,9 +236,10 @@ export default class MeeshoLabelsController {
     }
 
     const dt = (job.createdAt || DateTime.now()).setZone('Asia/Kolkata')
-    const dateStr = dt.toFormat('dd-MM-yyyy_HH-mm')
+    const monthStr = dt.toFormat('LLLL') // e.g. January
+    const dateStr = dt.toFormat('dd-MM-yyyy')
 
-    return `${accountStr}_Labels_${dateStr}.pdf`
+    return `${accountStr}_Labels_${monthStr}_${dateStr}.pdf`
   }
 
   /**

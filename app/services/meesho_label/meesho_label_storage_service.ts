@@ -1,5 +1,6 @@
 import env from '#start/env'
 import drive from '@adonisjs/drive/services/main'
+import { DateTime } from 'luxon'
 import { MeeshoPdfProcessor } from '#services/meesho_label/pdf/meesho_pdf_processor'
 
 export class MeeshoLabelStorageService {
@@ -9,7 +10,7 @@ export class MeeshoLabelStorageService {
 
   /**
    * S3 key structure:
-   * meesho-labels/{userId}/{jobId}/raw/{accountId}/{requestId}.pdf
+   * {userId}/{MonthName}/raw/{jobId}_{accountId}_{requestId}.pdf
    */
   static getRawPdfKey(
     userId: number,
@@ -17,13 +18,14 @@ export class MeeshoLabelStorageService {
     accountId: number | string,
     requestId: string
   ): string {
+    const month = DateTime.now().toFormat('LLLL')
     const sanitizedReqId = requestId.replace(/[^a-zA-Z0-9_-]/g, '_')
-    return `meesho-labels/${userId}/${jobId}/raw/${accountId}/${sanitizedReqId}.pdf`
+    return `${userId}/${month}/raw/${jobId}_${accountId}_${sanitizedReqId}.pdf`
   }
 
   /**
    * S3 key structure:
-   * meesho-labels/{userId}/{jobId}/processed/{accountId}/{documentId}.pdf
+   * {userId}/{MonthName}/processed/{jobId}_{accountId}_{documentId}.pdf
    */
   static getProcessedPdfKey(
     userId: number,
@@ -31,15 +33,17 @@ export class MeeshoLabelStorageService {
     accountId: number | string,
     documentId: number | string
   ): string {
-    return `meesho-labels/${userId}/${jobId}/processed/${accountId}/${documentId}.pdf`
+    const month = DateTime.now().toFormat('LLLL')
+    return `${userId}/${month}/processed/${jobId}_${accountId}_${documentId}.pdf`
   }
 
   /**
    * S3 key structure:
-   * meesho-labels/{userId}/{jobId}/final/meesho-labels-{jobId}.pdf
+   * {userId}/{MonthName}/final/meesho-labels-${jobId}.pdf
    */
   static getFinalPdfKey(userId: number, jobId: string): string {
-    return `meesho-labels/${userId}/${jobId}/final/meesho-labels-${jobId}.pdf`
+    const month = DateTime.now().toFormat('LLLL')
+    return `${userId}/${month}/final/meesho-labels-${jobId}.pdf`
   }
 
   /**
@@ -106,7 +110,11 @@ export class MeeshoLabelStorageService {
    * Checks if an S3 key exists.
    */
   static async exists(key: string): Promise<boolean> {
-    return this.disk.exists(key)
+    try {
+      return await this.disk.exists(key)
+    } catch {
+      return false
+    }
   }
 
   /**
