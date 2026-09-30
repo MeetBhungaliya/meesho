@@ -11,7 +11,7 @@ export const API_HEADERS = {
   'client-type': 'd-web',
   'Accept': '*/*',
   'User-Agent':
-    'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Mobile Safari/537.36',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
 } as const
 
 export const SESSION_STATUS = {
@@ -26,6 +26,7 @@ export type SessionStatus = (typeof SESSION_STATUS)[keyof typeof SESSION_STATUS]
 export const CACHE_PREFIX = {
   session: 'session:',
   supplier: 'supplier:',
+  adsCampaigns: 'ads:campaigns:',
 } as const
 
 export const MEESHO_BASE_URL = 'https://supplier.meesho.com'
@@ -39,15 +40,18 @@ export const MEESHO_ENDPOINTS = {
   updatePendingOrderStatus: `${MEESHO_BASE_URL}/api/fulfillment/orders/updatePendingOrderStatus`,
   uploadSingleCatalogImages: `${MEESHO_BASE_URL}/api/cataloging/singleCatalogUpload/uploadSingleCatalogImages`,
   fetchDuplicatePid: `${MEESHO_BASE_URL}/api/cataloging/priceRecommendation/fetchDuplicatePid`,
+  allPayments: `${MEESHO_BASE_URL}/api/payouts/payments/all-payments`,
 } as const
 
 export const ORDER_STATUS = {
+  HOLD: 0,
   PENDING: 1,
   ACCEPTED: 3,
 } as const
 
 export const ORDER_TYPE = {
   PENDING: 'pending',
+  HOLD: 'hold',
 } as const
 
 export const SHIPMENT_TYPE = {

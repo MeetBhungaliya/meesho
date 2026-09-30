@@ -14,6 +14,12 @@ export type ScannedRoutes = {
     'users.logout': { paramsTuple?: []; params?: {} }
     'users.me': { paramsTuple?: []; params?: {} }
     'accounts.get_all_accounts': { paramsTuple?: []; params?: {} }
+    'dashboard.get_stats': { paramsTuple?: []; params?: {} }
+    'dashboard.get_payments': { paramsTuple?: []; params?: {} }
+    'dashboard.get_activities': { paramsTuple?: []; params?: {} }
+    'dashboard.mark_activity_read': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'dashboard.clear_activities': { paramsTuple?: []; params?: {} }
+    'dashboard.delete_activity': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'accounts.create_account': { paramsTuple?: []; params?: {} }
     'accounts.retry_login': { paramsTuple?: [ParamValue?]; params?: {'accountId'?: ParamValue} }
     'accounts.update_password': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
@@ -47,6 +53,9 @@ export type ScannedRoutes = {
     'event_stream': { paramsTuple?: []; params?: {} }
     'users.me': { paramsTuple?: []; params?: {} }
     'accounts.get_all_accounts': { paramsTuple?: []; params?: {} }
+    'dashboard.get_stats': { paramsTuple?: []; params?: {} }
+    'dashboard.get_payments': { paramsTuple?: []; params?: {} }
+    'dashboard.get_activities': { paramsTuple?: []; params?: {} }
     'accounts.retry_login': { paramsTuple?: [ParamValue?]; params?: {'accountId'?: ParamValue} }
     'images.index': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'products.analytics': { paramsTuple?: []; params?: {} }
@@ -61,6 +70,9 @@ export type ScannedRoutes = {
     'event_stream': { paramsTuple?: []; params?: {} }
     'users.me': { paramsTuple?: []; params?: {} }
     'accounts.get_all_accounts': { paramsTuple?: []; params?: {} }
+    'dashboard.get_stats': { paramsTuple?: []; params?: {} }
+    'dashboard.get_payments': { paramsTuple?: []; params?: {} }
+    'dashboard.get_activities': { paramsTuple?: []; params?: {} }
     'accounts.retry_login': { paramsTuple?: [ParamValue?]; params?: {'accountId'?: ParamValue} }
     'images.index': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'products.analytics': { paramsTuple?: []; params?: {} }
@@ -77,6 +89,7 @@ export type ScannedRoutes = {
     'users.login': { paramsTuple?: []; params?: {} }
     'users.refresh': { paramsTuple?: []; params?: {} }
     'users.logout': { paramsTuple?: []; params?: {} }
+    'dashboard.mark_activity_read': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'accounts.create_account': { paramsTuple?: []; params?: {} }
     'flexi_growth_offers.submit': { paramsTuple?: []; params?: {} }
     'flexi_growth_offers.retry': { paramsTuple?: []; params?: {} }
@@ -90,16 +103,18 @@ export type ScannedRoutes = {
     'ad_account_configs.upsert': { paramsTuple?: []; params?: {} }
     'telegram_webhook.webhook': { paramsTuple?: []; params?: {} }
   }
-  PUT: {
-    'accounts.update_password': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
-    'accounts.update_account': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
-    'products.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-  }
   DELETE: {
+    'dashboard.clear_activities': { paramsTuple?: []; params?: {} }
+    'dashboard.delete_activity': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'accounts.delete_account': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'images.destroy': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'products.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'ad_account_configs.destroy': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
+  }
+  PUT: {
+    'accounts.update_password': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
+    'accounts.update_account': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
+    'products.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
 }
 declare module '@adonisjs/core/types/http' {

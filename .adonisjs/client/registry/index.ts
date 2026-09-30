@@ -66,6 +66,42 @@ const routes = {
     tokens: [{"old":"/accounts","type":0,"val":"accounts","end":""}],
     types: placeholder as Registry['accounts.get_all_accounts']['types'],
   },
+  'dashboard.get_stats': {
+    methods: ["GET","HEAD"],
+    pattern: '/accounts/dashboard/stats',
+    tokens: [{"old":"/accounts/dashboard/stats","type":0,"val":"accounts","end":""},{"old":"/accounts/dashboard/stats","type":0,"val":"dashboard","end":""},{"old":"/accounts/dashboard/stats","type":0,"val":"stats","end":""}],
+    types: placeholder as Registry['dashboard.get_stats']['types'],
+  },
+  'dashboard.get_payments': {
+    methods: ["GET","HEAD"],
+    pattern: '/accounts/dashboard/payments',
+    tokens: [{"old":"/accounts/dashboard/payments","type":0,"val":"accounts","end":""},{"old":"/accounts/dashboard/payments","type":0,"val":"dashboard","end":""},{"old":"/accounts/dashboard/payments","type":0,"val":"payments","end":""}],
+    types: placeholder as Registry['dashboard.get_payments']['types'],
+  },
+  'dashboard.get_activities': {
+    methods: ["GET","HEAD"],
+    pattern: '/accounts/dashboard/activities',
+    tokens: [{"old":"/accounts/dashboard/activities","type":0,"val":"accounts","end":""},{"old":"/accounts/dashboard/activities","type":0,"val":"dashboard","end":""},{"old":"/accounts/dashboard/activities","type":0,"val":"activities","end":""}],
+    types: placeholder as Registry['dashboard.get_activities']['types'],
+  },
+  'dashboard.mark_activity_read': {
+    methods: ["POST"],
+    pattern: '/accounts/dashboard/activities/:id/read',
+    tokens: [{"old":"/accounts/dashboard/activities/:id/read","type":0,"val":"accounts","end":""},{"old":"/accounts/dashboard/activities/:id/read","type":0,"val":"dashboard","end":""},{"old":"/accounts/dashboard/activities/:id/read","type":0,"val":"activities","end":""},{"old":"/accounts/dashboard/activities/:id/read","type":1,"val":"id","end":""},{"old":"/accounts/dashboard/activities/:id/read","type":0,"val":"read","end":""}],
+    types: placeholder as Registry['dashboard.mark_activity_read']['types'],
+  },
+  'dashboard.clear_activities': {
+    methods: ["DELETE"],
+    pattern: '/accounts/dashboard/activities/clear',
+    tokens: [{"old":"/accounts/dashboard/activities/clear","type":0,"val":"accounts","end":""},{"old":"/accounts/dashboard/activities/clear","type":0,"val":"dashboard","end":""},{"old":"/accounts/dashboard/activities/clear","type":0,"val":"activities","end":""},{"old":"/accounts/dashboard/activities/clear","type":0,"val":"clear","end":""}],
+    types: placeholder as Registry['dashboard.clear_activities']['types'],
+  },
+  'dashboard.delete_activity': {
+    methods: ["DELETE"],
+    pattern: '/accounts/dashboard/activities/:id',
+    tokens: [{"old":"/accounts/dashboard/activities/:id","type":0,"val":"accounts","end":""},{"old":"/accounts/dashboard/activities/:id","type":0,"val":"dashboard","end":""},{"old":"/accounts/dashboard/activities/:id","type":0,"val":"activities","end":""},{"old":"/accounts/dashboard/activities/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['dashboard.delete_activity']['types'],
+  },
   'accounts.create_account': {
     methods: ["POST"],
     pattern: '/accounts/add-account',
