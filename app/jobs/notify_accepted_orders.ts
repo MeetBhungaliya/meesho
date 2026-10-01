@@ -3,12 +3,7 @@ import { events } from '#generated/events'
 import Account from '#models/account'
 import TelegramAccount from '#models/telegram_account'
 import { MeeshoApiClient } from '#services/external_api/client'
-import {
-  MEESHO_ENDPOINTS,
-  POLLING_CONFIG,
-  POPUP_STATUS,
-  REDIS_KEYS,
-} from '#services/external_api/constants'
+import { MEESHO_ENDPOINTS, POLLING_CONFIG, POPUP_STATUS } from '#services/external_api/constants'
 import type {
   MeeshoOrderHistoryResponse,
   MeeshoUpdateStatusResponse,
@@ -17,8 +12,6 @@ import TelegramService from '#services/telegram_service'
 import emitter from '@adonisjs/core/services/emitter'
 import logger from '@adonisjs/core/services/logger'
 import { Job } from '@adonisjs/queue'
-import redis from '@adonisjs/redis/services/main'
-import { DateTime } from 'luxon'
 
 interface AccountPayload {
   accountId: string
@@ -118,13 +111,11 @@ export default class NotifyAcceptedOrders extends Job<NotifyAcceptedOrdersPayloa
     if (allComplete) {
       const telegramAccounts = await TelegramAccount.query().where('isUpdates', true)
 
-      const dateKey = DateTime.now().toFormat('yyyy-MM-dd')
       let message = ''
 
       for (const acc of accounts) {
-        const accountCountKey = REDIS_KEYS.accountOrders(acc.accountId, dateKey)
-        const dailyTotal = Number(await redis.get(accountCountKey)) || 0
-        message += `• *${acc.supplierName}:* ${dailyTotal} Orders\n`
+        const count = acc.processedCount ?? acc.totalCount
+        message += `• *${acc.supplierName}:* ${count} Orders\n`
       }
 
       await Promise.all(

@@ -24,4 +24,3 @@ export const updateAccountValidator = vine.create(
     autoAcceptOrders: vine.boolean().optional(),
   })
 )
-

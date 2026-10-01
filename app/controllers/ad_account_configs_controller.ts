@@ -17,9 +17,7 @@ export default class AdAccountConfigsController {
       .where('user_id', user.id)
       .firstOrFail()
 
-    const config = await AdAccountConfig.query()
-      .where('account_id', account.id)
-      .first()
+    const config = await AdAccountConfig.query().where('account_id', account.id).first()
 
     if (!config) {
       return response.ok({ data: null })
@@ -70,9 +68,7 @@ export default class AdAccountConfigsController {
       .where('user_id', user.id)
       .firstOrFail()
 
-    const deleted = await AdAccountConfig.query()
-      .where('account_id', account.id)
-      .delete()
+    const deleted = await AdAccountConfig.query().where('account_id', account.id).delete()
 
     if (deleted[0] === 0) {
       return response.notFound({ message: 'No configuration found' })

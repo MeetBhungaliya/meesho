@@ -1,18 +1,31 @@
-import { REDIS_KEYS, REDIS_TTL } from '#services/external_api/constants'
 import type AcceptedOrders from '#events/accepted_orders'
-import redis from '@adonisjs/redis/services/main'
+import DashboardActivity from '#models/dashboard_activity'
+import Ws from '#services/ws'
 import { DateTime } from 'luxon'
 
 export default class TrackAcceptedOrders {
   async handle(event: AcceptedOrders): Promise<void> {
-    const dateKey = DateTime.fromJSDate(event.acceptedAt)
-      .setZone('Asia/Kolkata')
-      .toFormat('yyyy-MM-dd')
+    // Skip creating an activity for 0-order events
+    if (event.ordersCount <= 0) return
 
-    const accountCountKey = REDIS_KEYS.accountOrders(event.accountId, dateKey)
+    // Persist activity to DB so it survives page reloads
+    const count = event.ordersCount
+    const label = count === 1 ? '1 order' : `${count} orders`
 
-    await redis.incrby(accountCountKey, event.ordersCount)
+    const activity = await DashboardActivity.create({
+      userId: event.userId,
+      action: 'Orders Auto-Accepted',
+      detail: `${label} auto-accepted successfully`,
+      type: 'order',
+      read: false,
+      time: DateTime.fromJSDate(event.acceptedAt),
+    })
 
-    await redis.expire(accountCountKey, REDIS_TTL.ORDER_TRACKING)
+    // Broadcast over WebSocket so the dashboard updates in real-time
+    // The dashboard listens on `accounts/:userId` for { type: 'activity', activity: ... }
+    await Ws.broadcast(`accounts/${event.userId}`, {
+      type: 'activity',
+      activity: activity.serialize(),
+    })
   }
 }

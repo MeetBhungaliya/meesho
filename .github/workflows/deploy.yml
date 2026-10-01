@@ -16,7 +16,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "24.13.1"
+          node-version: '24.13.1'
           cache: npm
 
       - name: Install Dependencies
@@ -43,7 +43,7 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          source: "deploy.zip"
+          source: 'deploy.zip'
           target: ${{ secrets.DEPLOY_PATH }}
 
       - name: Deploy on Server
@@ -71,7 +71,7 @@ jobs:
             cp .env build/.env
 
             # Restart application
-            
+
             export NVM_DIR="$HOME/.nvm"
 
             if [ -s "$NVM_DIR/nvm.sh" ]; then

@@ -73,12 +73,4 @@ export const POLLING_CONFIG = {
   PROGRESS_COMPLETE: 100,
 } as const
 
-export const REDIS_KEYS = {
-  accountOrders: (accountId: string, date: string) => `orders:accepted:${accountId}:${date}`,
-} as const
-
-export const REDIS_TTL = {
-  ORDER_TRACKING: 60 * 60 * 48,
-} as const
-
 export const TIMEZONE = 'Asia/Kolkata' as const

@@ -4,7 +4,14 @@ import FlexiGrowthOfferJob from '#jobs/flexi_growth_offer'
 
 export default class FlexiGrowthOffersController {
   async submit({ request, response }: HttpContext) {
-    const payload = request.only(['accountId', 'productIds', 'start', 'end', 'discountPercent', 'jobId'])
+    const payload = request.only([
+      'accountId',
+      'productIds',
+      'start',
+      'end',
+      'discountPercent',
+      'jobId',
+    ])
     const { accountId, productIds, start, end, discountPercent, jobId: clientJobId } = payload
 
     if (!accountId || !productIds || !start || !end || !discountPercent) {
@@ -44,7 +51,14 @@ export default class FlexiGrowthOffersController {
   }
 
   async retry({ request, response }: HttpContext) {
-    const payload = request.only(['accountId', 'productIds', 'start', 'end', 'discountPercent', 'jobId'])
+    const payload = request.only([
+      'accountId',
+      'productIds',
+      'start',
+      'end',
+      'discountPercent',
+      'jobId',
+    ])
     const { accountId, productIds, start, end, discountPercent, jobId: clientJobId } = payload
 
     if (!accountId || !productIds || !start || !end || !discountPercent) {
