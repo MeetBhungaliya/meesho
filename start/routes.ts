@@ -1,4 +1,3 @@
-import transmit from '@adonisjs/transmit/services/main'
 import { controllers } from '#generated/controllers'
 const ReturnOtpsController = () => import('#controllers/return_otps_controller')
 const ProductsController = () => import('#controllers/products_controller')
@@ -6,12 +5,6 @@ const AdAccountConfigsController = () => import('#controllers/ad_account_configs
 const AdvertisementsController = () => import('#controllers/advertisements_controller')
 import { middleware } from '#start/kernel'
 import router from '@adonisjs/core/services/router'
-
-transmit.registerRoutes((route) => {
-  if (route.getPattern().includes('subscribe') || route.getPattern().includes('unsubscribe')) {
-    route.middleware(middleware.auth())
-  }
-})
 
 router.post('/signup', [controllers.Users, 'signup'])
 router.post('/login', [controllers.Users, 'login'])

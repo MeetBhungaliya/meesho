@@ -5,9 +5,6 @@ type ParamValue = string | number | bigint | boolean
 export type ScannedRoutes = {
   ALL: {
     'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
-    'event_stream': { paramsTuple?: []; params?: {} }
-    'subscribe': { paramsTuple?: []; params?: {} }
-    'unsubscribe': { paramsTuple?: []; params?: {} }
     'users.signup': { paramsTuple?: []; params?: {} }
     'users.login': { paramsTuple?: []; params?: {} }
     'users.refresh': { paramsTuple?: []; params?: {} }
@@ -50,7 +47,6 @@ export type ScannedRoutes = {
   }
   GET: {
     'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
-    'event_stream': { paramsTuple?: []; params?: {} }
     'users.me': { paramsTuple?: []; params?: {} }
     'accounts.get_all_accounts': { paramsTuple?: []; params?: {} }
     'dashboard.get_stats': { paramsTuple?: []; params?: {} }
@@ -67,7 +63,6 @@ export type ScannedRoutes = {
   }
   HEAD: {
     'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
-    'event_stream': { paramsTuple?: []; params?: {} }
     'users.me': { paramsTuple?: []; params?: {} }
     'accounts.get_all_accounts': { paramsTuple?: []; params?: {} }
     'dashboard.get_stats': { paramsTuple?: []; params?: {} }
@@ -83,8 +78,6 @@ export type ScannedRoutes = {
     'health_checks.health': { paramsTuple?: []; params?: {} }
   }
   POST: {
-    'subscribe': { paramsTuple?: []; params?: {} }
-    'unsubscribe': { paramsTuple?: []; params?: {} }
     'users.signup': { paramsTuple?: []; params?: {} }
     'users.login': { paramsTuple?: []; params?: {} }
     'users.refresh': { paramsTuple?: []; params?: {} }

@@ -1,6 +1,6 @@
 import { Job } from '@adonisjs/queue'
 import type { JobOptions } from '@adonisjs/queue/types'
-import transmit from '@adonisjs/transmit/services/main'
+import Ws from '#services/ws'
 import { MeeshoApiClient } from '#services/external_api/client'
 import { ApiError } from '#services/external_api/errors'
 
@@ -29,7 +29,7 @@ export default class FlexiGrowthOfferJob extends Job<FlexiGrowthOfferPayload> {
     const { jobId, accountId, productIds, start, end, discountPercent } = this.payload
 
     console.log(`flexi-growth-offer:${jobId}`)
-    transmit.broadcast(`flexi-growth-offer:${jobId}`, {
+    Ws.broadcast(`flexi-growth-offer:${jobId}`, {
       type: 'started',
       total: productIds.length,
     })
@@ -61,7 +61,7 @@ export default class FlexiGrowthOfferJob extends Job<FlexiGrowthOfferPayload> {
         await client.post(apiUrl, payload)
 
         successCount++
-        transmit.broadcast(`flexi-growth-offer:${jobId}`, {
+        Ws.broadcast(`flexi-growth-offer:${jobId}`, {
           type: 'progress',
           processed: i + 1,
           total: productIds.length,
@@ -73,7 +73,7 @@ export default class FlexiGrowthOfferJob extends Job<FlexiGrowthOfferPayload> {
         const reason = error instanceof ApiError ? error.message : (error as Error).message
         failedItems.push({ productId, reason })
 
-        transmit.broadcast(`flexi-growth-offer:${jobId}`, {
+        Ws.broadcast(`flexi-growth-offer:${jobId}`, {
           type: 'progress',
           processed: i + 1,
           total: productIds.length,
@@ -87,7 +87,7 @@ export default class FlexiGrowthOfferJob extends Job<FlexiGrowthOfferPayload> {
       await new Promise((resolve) => setTimeout(resolve, 300))
     }
 
-    transmit.broadcast(`flexi-growth-offer:${jobId}`, {
+    Ws.broadcast(`flexi-growth-offer:${jobId}`, {
       type: 'completed',
       successCount,
       failedCount,
@@ -97,7 +97,7 @@ export default class FlexiGrowthOfferJob extends Job<FlexiGrowthOfferPayload> {
 
   async failed(error: Error) {
     console.error('FlexiGrowthOffer failed:', error.message)
-    transmit.broadcast(`flexi-growth-offer:${this.payload.jobId}`, {
+    Ws.broadcast(`flexi-growth-offer:${this.payload.jobId}`, {
       type: 'error',
       message: 'Job encountered an unrecoverable error: ' + error.message,
     })

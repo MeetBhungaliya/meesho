@@ -7,9 +7,6 @@ export interface ApiDefinition {
       serve: typeof routes['drive.fs.serve']
     }
   }
-  eventStream: typeof routes['event_stream']
-  subscribe: typeof routes['subscribe']
-  unsubscribe: typeof routes['unsubscribe']
   users: {
     signup: typeof routes['users.signup']
     login: typeof routes['users.login']

@@ -30,7 +30,7 @@ export default defineConfig({
     () => import('@adonisjs/session/commands'),
     () => import('@adonisjs/queue/commands'),
     () => import('@adonisjs/cache/commands'),
-    () => import('@jrmc/adonis-mcp/commands')
+    () => import('@jrmc/adonis-mcp/commands'),
   ],
 
   /*
@@ -59,10 +59,9 @@ export default defineConfig({
     () => import('@adonisjs/redis/redis_provider'),
     () => import('@adonisjs/queue/queue_provider'),
     () => import('@adonisjs/cache/cache_provider'),
-    () => import('@adonisjs/transmit/transmit_provider'),
     () => import('@adonisjs/drive/drive_provider'),
     () => import('@jrmc/adonis-mcp/mcp_provider'),
-    () => import('@jrmc/adonis-mcp/vinejs_provider')
+    () => import('@jrmc/adonis-mcp/vinejs_provider'),
   ],
 
   /*
@@ -82,7 +81,10 @@ export default defineConfig({
       environment: ['web'],
     },
     () => import('#start/events'),
-    () => import('#start/transmit'),
+    {
+      file: () => import('#start/ws'),
+      environment: ['web'],
+    },
   ],
 
   /*

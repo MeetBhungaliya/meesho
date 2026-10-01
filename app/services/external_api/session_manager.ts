@@ -8,7 +8,7 @@ import {
   SESSION_STATUS,
 } from '#services/external_api/constants'
 import { ApiError, SessionError } from '#services/external_api/errors'
-import transmit from '@adonisjs/transmit/services/main'
+import Ws from '#services/ws'
 import type {
   AccountId,
   MeeshoSupplierPrefetchResponse,
@@ -25,7 +25,7 @@ export class SessionManager {
   static async broadcastAccountState(account: Account): Promise<void> {
     try {
       const supplierData = await SessionManager.getSupplierData(account.id.toString())
-      transmit.broadcast(`accounts/${account.userId}`, {
+      Ws.broadcast(`accounts/${account.userId}`, {
         type: 'account_updated',
         account: {
           ...account.serialize(),

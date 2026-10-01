@@ -32,7 +32,7 @@ export default class UsersController {
     const { email, password } = await request.validateUsing(loginValidator)
 
     const user = await User.verifyCredentials(email, password)
-    
+
     // Create access token valid for 15 minutes
     const token = await User.accessTokens.create(user, ['*'], {
       expiresIn: '15m'

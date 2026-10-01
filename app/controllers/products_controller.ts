@@ -8,7 +8,7 @@ import {
 } from '#validators/product'
 import type { HttpContext } from '@adonisjs/core/http'
 import db from '@adonisjs/lucid/services/db'
-import transmit from '@adonisjs/transmit/services/main'
+import Ws from '#services/ws'
 import env from '#start/env'
 import { globals } from '#libs/globals'
 
@@ -100,7 +100,7 @@ export default class ProductsController {
     })
 
     // Broadcast SSE event
-    transmit.broadcast(`inventory/${user.id}`, {
+    Ws.broadcast(`inventory/${user.id}`, {
       type: 'product_created',
       product: product.serialize(),
     })
@@ -154,7 +154,7 @@ export default class ProductsController {
     await product.save()
 
     // Broadcast SSE event
-    transmit.broadcast(`inventory/${user.id}`, {
+    Ws.broadcast(`inventory/${user.id}`, {
       type: 'product_updated',
       product: product.serialize(),
     })
@@ -180,7 +180,7 @@ export default class ProductsController {
     await product.delete()
 
     // Broadcast SSE event
-    transmit.broadcast(`inventory/${user.id}`, {
+    Ws.broadcast(`inventory/${user.id}`, {
       type: 'product_deleted',
       productId: product.id,
     })
@@ -248,7 +248,7 @@ export default class ProductsController {
           }
         : null
 
-    transmit.broadcast(`inventory/${user.id}`, {
+    Ws.broadcast(`inventory/${user.id}`, {
       type: 'stock_adjusted',
       product: product.serialize(),
       transaction: transaction.serialize(),
@@ -271,9 +271,7 @@ export default class ProductsController {
   async analytics({ response, auth }: HttpContext) {
     const user = await auth.authenticate()
 
-    const products = await Product.query()
-      .where('userId', user.id)
-      .where('isActive', true)
+    const products = await Product.query().where('userId', user.id).where('isActive', true)
 
     const totalProducts = products.length
     let totalValue = 0
@@ -345,8 +343,6 @@ export default class ProductsController {
       },
     })
   }
-
-
 
   /**
    * GET /inventory/products/categories

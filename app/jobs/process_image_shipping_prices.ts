@@ -1,6 +1,6 @@
 import { Job } from '@adonisjs/queue'
 import type { JobOptions } from '@adonisjs/queue/types'
-import transmit from '@adonisjs/transmit/services/main'
+import Ws from '#services/ws'
 import { MeeshoApiClient } from '#services/external_api/client'
 import logger from '@adonisjs/core/services/logger'
 import { globals } from '#libs/globals'
@@ -68,7 +68,7 @@ export default class ProcessImageShippingPrices extends Job<ProcessImageShipping
         shippingPrice.errorMessage = null
         await shippingPrice.save()
 
-        transmit.broadcast(channel, {
+        Ws.broadcast(channel, {
           event: 'success',
           name: file.clientName,
           wuShippingCharge,
@@ -80,7 +80,7 @@ export default class ProcessImageShippingPrices extends Job<ProcessImageShipping
           .where('id', file.shippingPriceId)
           .update({ errorMessage: message, isProcessed: false })
 
-        transmit.broadcast(channel, {
+        Ws.broadcast(channel, {
           event: 'failed',
           name: file.clientName,
           error: message,

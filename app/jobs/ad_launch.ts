@@ -1,6 +1,6 @@
 import { Job } from '@adonisjs/queue'
 import type { JobOptions } from '@adonisjs/queue/types'
-import transmit from '@adonisjs/transmit/services/main'
+import Ws from '#services/ws'
 import AdAccountConfig from '#models/ad_account_config'
 import Account from '#models/account'
 import { SessionManager } from '#services/external_api/session_manager'
@@ -32,7 +32,7 @@ export default class AdLaunchJob extends Job<AdLaunchPayload> {
     const { jobId, accountId, catalogIds, startTime, endTime, dynamicFieldValues } = this.payload
 
     console.log(`ad-launch:${jobId} starting...`)
-    transmit.broadcast(`ad-launch:${jobId}`, {
+    Ws.broadcast(`ad-launch:${jobId}`, {
       type: 'started',
       total: catalogIds.length,
     })
@@ -138,7 +138,7 @@ export default class AdLaunchJob extends Job<AdLaunchPayload> {
         await client.post(config.apiUrl, finalPayload)
 
         successCount++
-        transmit.broadcast(`ad-launch:${jobId}`, {
+        Ws.broadcast(`ad-launch:${jobId}`, {
           type: 'progress',
           processed: i + 1,
           total: catalogIds.length,
@@ -150,7 +150,7 @@ export default class AdLaunchJob extends Job<AdLaunchPayload> {
         const reason = (error as Error).message
         failedItems.push({ catalogId, reason })
 
-        transmit.broadcast(`ad-launch:${jobId}`, {
+        Ws.broadcast(`ad-launch:${jobId}`, {
           type: 'progress',
           processed: i + 1,
           total: catalogIds.length,
@@ -164,7 +164,7 @@ export default class AdLaunchJob extends Job<AdLaunchPayload> {
       await new Promise((resolve) => setTimeout(resolve, 300))
     }
 
-    transmit.broadcast(`ad-launch:${jobId}`, {
+    Ws.broadcast(`ad-launch:${jobId}`, {
       type: 'completed',
       successCount,
       failedCount,
@@ -174,7 +174,7 @@ export default class AdLaunchJob extends Job<AdLaunchPayload> {
 
   async failed(error: Error) {
     console.error('AdLaunchJob failed:', error.message)
-    transmit.broadcast(`ad-launch:${this.payload.jobId}`, {
+    Ws.broadcast(`ad-launch:${this.payload.jobId}`, {
       type: 'error',
       message: 'Job encountered an unrecoverable error: ' + error.message,
     })
