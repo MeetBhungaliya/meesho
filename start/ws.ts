@@ -36,4 +36,9 @@ app.ready(() => {
   Ws.authorize('flexi-growth-offer::jobId', (user) => {
     return user !== null
   })
+
+  // Bulk pause ads job progress channel
+  Ws.authorize('bulk-pause-ads::jobId', (user) => {
+    return user !== null
+  })
 })

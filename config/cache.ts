@@ -9,6 +9,12 @@ const cacheConfig = defineConfig({
      */
     memoryOnly: store().useL1Layer(drivers.memory()),
 
+    redisOnly: store().useL2Layer(
+      drivers.redis({
+        connectionName: 'main',
+      })
+    ),
+
     /**
      * default uses Redis only (no L1 in-memory layer).
      *

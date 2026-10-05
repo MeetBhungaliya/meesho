@@ -41,6 +41,13 @@ export interface ApiDefinition {
   returnOtps: {
     fetch: typeof routes['return_otps.fetch']
   }
+  adsCampaigns: {
+    campaignDetails: typeof routes['ads_campaigns.campaign_details']
+    pause: typeof routes['ads_campaigns.pause']
+    editCatalogs: typeof routes['ads_campaigns.edit_catalogs']
+    bulkPause: typeof routes['ads_campaigns.bulk_pause']
+    index: typeof routes['ads_campaigns.index']
+  }
   images: {
     index: typeof routes['images.index']
     upload: typeof routes['images.upload']
@@ -61,6 +68,10 @@ export interface ApiDefinition {
     show: typeof routes['ad_account_configs.show']
     upsert: typeof routes['ad_account_configs.upsert']
     destroy: typeof routes['ad_account_configs.destroy']
+  }
+  jobs: {
+    active: typeof routes['jobs.active']
+    state: typeof routes['jobs.state']
   }
   telegramWebhook: {
     webhook: typeof routes['telegram_webhook.webhook']

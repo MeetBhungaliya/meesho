@@ -27,6 +27,11 @@ export type ScannedRoutes = {
     'advertisements.submit': { paramsTuple?: []; params?: {} }
     'advertisements.retry': { paramsTuple?: []; params?: {} }
     'return_otps.fetch': { paramsTuple?: []; params?: {} }
+    'ads_campaigns.campaign_details': { paramsTuple?: []; params?: {} }
+    'ads_campaigns.pause': { paramsTuple?: []; params?: {} }
+    'ads_campaigns.edit_catalogs': { paramsTuple?: []; params?: {} }
+    'ads_campaigns.bulk_pause': { paramsTuple?: []; params?: {} }
+    'ads_campaigns.index': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'images.index': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'images.upload': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'images.retry': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
@@ -42,6 +47,8 @@ export type ScannedRoutes = {
     'ad_account_configs.show': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'ad_account_configs.upsert': { paramsTuple?: []; params?: {} }
     'ad_account_configs.destroy': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
+    'jobs.active': { paramsTuple?: []; params?: {} }
+    'jobs.state': { paramsTuple: [ParamValue]; params: {'channelName': ParamValue} }
     'telegram_webhook.webhook': { paramsTuple?: []; params?: {} }
     'health_checks.health': { paramsTuple?: []; params?: {} }
   }
@@ -53,12 +60,15 @@ export type ScannedRoutes = {
     'dashboard.get_payments': { paramsTuple?: []; params?: {} }
     'dashboard.get_activities': { paramsTuple?: []; params?: {} }
     'accounts.retry_login': { paramsTuple?: [ParamValue?]; params?: {'accountId'?: ParamValue} }
+    'ads_campaigns.index': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'images.index': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'products.analytics': { paramsTuple?: []; params?: {} }
     'products.categories': { paramsTuple?: []; params?: {} }
     'products.index': { paramsTuple?: []; params?: {} }
     'products.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'ad_account_configs.show': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
+    'jobs.active': { paramsTuple?: []; params?: {} }
+    'jobs.state': { paramsTuple: [ParamValue]; params: {'channelName': ParamValue} }
     'health_checks.health': { paramsTuple?: []; params?: {} }
   }
   HEAD: {
@@ -69,12 +79,15 @@ export type ScannedRoutes = {
     'dashboard.get_payments': { paramsTuple?: []; params?: {} }
     'dashboard.get_activities': { paramsTuple?: []; params?: {} }
     'accounts.retry_login': { paramsTuple?: [ParamValue?]; params?: {'accountId'?: ParamValue} }
+    'ads_campaigns.index': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'images.index': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'products.analytics': { paramsTuple?: []; params?: {} }
     'products.categories': { paramsTuple?: []; params?: {} }
     'products.index': { paramsTuple?: []; params?: {} }
     'products.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'ad_account_configs.show': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
+    'jobs.active': { paramsTuple?: []; params?: {} }
+    'jobs.state': { paramsTuple: [ParamValue]; params: {'channelName': ParamValue} }
     'health_checks.health': { paramsTuple?: []; params?: {} }
   }
   POST: {
@@ -89,6 +102,10 @@ export type ScannedRoutes = {
     'advertisements.submit': { paramsTuple?: []; params?: {} }
     'advertisements.retry': { paramsTuple?: []; params?: {} }
     'return_otps.fetch': { paramsTuple?: []; params?: {} }
+    'ads_campaigns.campaign_details': { paramsTuple?: []; params?: {} }
+    'ads_campaigns.pause': { paramsTuple?: []; params?: {} }
+    'ads_campaigns.edit_catalogs': { paramsTuple?: []; params?: {} }
+    'ads_campaigns.bulk_pause': { paramsTuple?: []; params?: {} }
     'images.upload': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'images.retry': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'products.store': { paramsTuple?: []; params?: {} }

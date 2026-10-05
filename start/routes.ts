@@ -3,6 +3,8 @@ const ReturnOtpsController = () => import('#controllers/return_otps_controller')
 const ProductsController = () => import('#controllers/products_controller')
 const AdAccountConfigsController = () => import('#controllers/ad_account_configs_controller')
 const AdvertisementsController = () => import('#controllers/advertisements_controller')
+const AdsCampaignsController = () => import('#controllers/ads_campaigns_controller')
+const JobsController = () => import('#controllers/jobs_controller')
 import { middleware } from '#start/kernel'
 import router from '@adonisjs/core/services/router'
 
@@ -33,6 +35,11 @@ router
         router.post('/advertisement', [AdvertisementsController, 'submit'])
         router.post('/advertisement/retry', [AdvertisementsController, 'retry'])
         router.post('/return-otps', [ReturnOtpsController, 'fetch'])
+        router.post('/ads/campaigns/details', [AdsCampaignsController, 'campaignDetails'])
+        router.post('/ads/campaigns/pause', [AdsCampaignsController, 'pause'])
+        router.post('/ads/campaigns/edit-catalogs', [AdsCampaignsController, 'editCatalogs'])
+        router.post('/ads/campaigns/bulk-pause', [AdsCampaignsController, 'bulkPause'])
+        router.get('/ads/campaigns/:accountId', [AdsCampaignsController, 'index'])
       })
       .prefix('accounts')
 
@@ -68,6 +75,14 @@ router
         router.delete('/:accountId', [AdAccountConfigsController, 'destroy'])
       })
       .prefix('ad-config')
+
+    // Job State (for progress persistence across reloads / cross-user visibility)
+    router
+      .group(() => {
+        router.get('/active', [JobsController, 'active'])
+        router.get('/:channelName/state', [JobsController, 'state'])
+      })
+      .prefix('jobs')
   })
   .use(middleware.auth())
 

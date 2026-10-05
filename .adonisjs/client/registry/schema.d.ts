@@ -283,6 +283,66 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/return_otps_controller').default['fetch']>>>
     }
   }
+  'ads_campaigns.campaign_details': {
+    methods: ["POST"]
+    pattern: '/accounts/ads/campaigns/details'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/ads_campaigns_controller').default['campaignDetails']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/ads_campaigns_controller').default['campaignDetails']>>>
+    }
+  }
+  'ads_campaigns.pause': {
+    methods: ["POST"]
+    pattern: '/accounts/ads/campaigns/pause'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/ads_campaigns_controller').default['pause']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/ads_campaigns_controller').default['pause']>>>
+    }
+  }
+  'ads_campaigns.edit_catalogs': {
+    methods: ["POST"]
+    pattern: '/accounts/ads/campaigns/edit-catalogs'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/ads_campaigns_controller').default['editCatalogs']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/ads_campaigns_controller').default['editCatalogs']>>>
+    }
+  }
+  'ads_campaigns.bulk_pause': {
+    methods: ["POST"]
+    pattern: '/accounts/ads/campaigns/bulk-pause'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/ads_campaigns_controller').default['bulkPause']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/ads_campaigns_controller').default['bulkPause']>>>
+    }
+  }
+  'ads_campaigns.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/accounts/ads/campaigns/:accountId'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { accountId: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/ads_campaigns_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/ads_campaigns_controller').default['index']>>>
+    }
+  }
   'images.index': {
     methods: ["GET","HEAD"]
     pattern: '/images/:accountId'
@@ -461,6 +521,30 @@ export interface Registry {
       query: {}
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/ad_account_configs_controller').default['destroy']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/ad_account_configs_controller').default['destroy']>>>
+    }
+  }
+  'jobs.active': {
+    methods: ["GET","HEAD"]
+    pattern: '/jobs/active'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/jobs_controller').default['active']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/jobs_controller').default['active']>>>
+    }
+  }
+  'jobs.state': {
+    methods: ["GET","HEAD"]
+    pattern: '/jobs/:channelName/state'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { channelName: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/jobs_controller').default['state']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/jobs_controller').default['state']>>>
     }
   }
   'telegram_webhook.webhook': {

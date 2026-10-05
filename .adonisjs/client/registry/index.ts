@@ -144,6 +144,36 @@ const routes = {
     tokens: [{"old":"/accounts/return-otps","type":0,"val":"accounts","end":""},{"old":"/accounts/return-otps","type":0,"val":"return-otps","end":""}],
     types: placeholder as Registry['return_otps.fetch']['types'],
   },
+  'ads_campaigns.campaign_details': {
+    methods: ["POST"],
+    pattern: '/accounts/ads/campaigns/details',
+    tokens: [{"old":"/accounts/ads/campaigns/details","type":0,"val":"accounts","end":""},{"old":"/accounts/ads/campaigns/details","type":0,"val":"ads","end":""},{"old":"/accounts/ads/campaigns/details","type":0,"val":"campaigns","end":""},{"old":"/accounts/ads/campaigns/details","type":0,"val":"details","end":""}],
+    types: placeholder as Registry['ads_campaigns.campaign_details']['types'],
+  },
+  'ads_campaigns.pause': {
+    methods: ["POST"],
+    pattern: '/accounts/ads/campaigns/pause',
+    tokens: [{"old":"/accounts/ads/campaigns/pause","type":0,"val":"accounts","end":""},{"old":"/accounts/ads/campaigns/pause","type":0,"val":"ads","end":""},{"old":"/accounts/ads/campaigns/pause","type":0,"val":"campaigns","end":""},{"old":"/accounts/ads/campaigns/pause","type":0,"val":"pause","end":""}],
+    types: placeholder as Registry['ads_campaigns.pause']['types'],
+  },
+  'ads_campaigns.edit_catalogs': {
+    methods: ["POST"],
+    pattern: '/accounts/ads/campaigns/edit-catalogs',
+    tokens: [{"old":"/accounts/ads/campaigns/edit-catalogs","type":0,"val":"accounts","end":""},{"old":"/accounts/ads/campaigns/edit-catalogs","type":0,"val":"ads","end":""},{"old":"/accounts/ads/campaigns/edit-catalogs","type":0,"val":"campaigns","end":""},{"old":"/accounts/ads/campaigns/edit-catalogs","type":0,"val":"edit-catalogs","end":""}],
+    types: placeholder as Registry['ads_campaigns.edit_catalogs']['types'],
+  },
+  'ads_campaigns.bulk_pause': {
+    methods: ["POST"],
+    pattern: '/accounts/ads/campaigns/bulk-pause',
+    tokens: [{"old":"/accounts/ads/campaigns/bulk-pause","type":0,"val":"accounts","end":""},{"old":"/accounts/ads/campaigns/bulk-pause","type":0,"val":"ads","end":""},{"old":"/accounts/ads/campaigns/bulk-pause","type":0,"val":"campaigns","end":""},{"old":"/accounts/ads/campaigns/bulk-pause","type":0,"val":"bulk-pause","end":""}],
+    types: placeholder as Registry['ads_campaigns.bulk_pause']['types'],
+  },
+  'ads_campaigns.index': {
+    methods: ["GET","HEAD"],
+    pattern: '/accounts/ads/campaigns/:accountId',
+    tokens: [{"old":"/accounts/ads/campaigns/:accountId","type":0,"val":"accounts","end":""},{"old":"/accounts/ads/campaigns/:accountId","type":0,"val":"ads","end":""},{"old":"/accounts/ads/campaigns/:accountId","type":0,"val":"campaigns","end":""},{"old":"/accounts/ads/campaigns/:accountId","type":1,"val":"accountId","end":""}],
+    types: placeholder as Registry['ads_campaigns.index']['types'],
+  },
   'images.index': {
     methods: ["GET","HEAD"],
     pattern: '/images/:accountId',
@@ -233,6 +263,18 @@ const routes = {
     pattern: '/ad-config/:accountId',
     tokens: [{"old":"/ad-config/:accountId","type":0,"val":"ad-config","end":""},{"old":"/ad-config/:accountId","type":1,"val":"accountId","end":""}],
     types: placeholder as Registry['ad_account_configs.destroy']['types'],
+  },
+  'jobs.active': {
+    methods: ["GET","HEAD"],
+    pattern: '/jobs/active',
+    tokens: [{"old":"/jobs/active","type":0,"val":"jobs","end":""},{"old":"/jobs/active","type":0,"val":"active","end":""}],
+    types: placeholder as Registry['jobs.active']['types'],
+  },
+  'jobs.state': {
+    methods: ["GET","HEAD"],
+    pattern: '/jobs/:channelName/state',
+    tokens: [{"old":"/jobs/:channelName/state","type":0,"val":"jobs","end":""},{"old":"/jobs/:channelName/state","type":1,"val":"channelName","end":""},{"old":"/jobs/:channelName/state","type":0,"val":"state","end":""}],
+    types: placeholder as Registry['jobs.state']['types'],
   },
   'telegram_webhook.webhook': {
     methods: ["POST"],
