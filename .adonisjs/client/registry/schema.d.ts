@@ -333,14 +333,26 @@ export interface Registry {
   }
   'ads_campaigns.index': {
     methods: ["GET","HEAD"]
-    pattern: '/accounts/ads/campaigns/:accountId'
+    pattern: '/accounts/ads/campaigns'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/ads_campaigns_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/ads_campaigns_controller').default['index']>>>
+    }
+  }
+  'ads_campaigns.trigger_sync': {
+    methods: ["POST"]
+    pattern: '/accounts/ads/campaigns/:accountId/sync'
     types: {
       body: {}
       paramsTuple: [ParamValue]
       params: { accountId: ParamValue }
       query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#controllers/ads_campaigns_controller').default['index']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/ads_campaigns_controller').default['index']>>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/ads_campaigns_controller').default['triggerSync']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/ads_campaigns_controller').default['triggerSync']>>>
     }
   }
   'images.index': {

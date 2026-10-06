@@ -1,17 +1,12 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { randomUUID } from 'node:crypto'
-import SyncAdsCampaignsJob from '#jobs/sync_ads_campaigns'
 import BulkPauseCampaignsJob from '#jobs/bulk_pause_campaigns'
-import { CACHE_PREFIX } from '#services/external_api/constants'
+import SyncMeeshoAdsAccountJob from '#jobs/sync_meesho_ads_account'
 import { ApiError, SessionError } from '#services/external_api/errors'
-import cache from '@adonisjs/cache/services/main'
-import redis from '@adonisjs/redis/services/main'
 import Account from '#models/account'
-import Ws from '#services/ws'
-import { SessionManager } from '#services/external_api/session_manager'
 import { MeeshoApiClient } from '#services/external_api/client'
-
-const PAGE_SIZE = 50
+import MeeshoCampaign, { SYNC_STATUS } from '#models/meesho_campaign'
+import logger from '@adonisjs/core/services/logger'
 
 export interface SanitizedCampaign {
   [key: string]: any
@@ -85,138 +80,338 @@ export function sanitizeCampaign(
 
 export default class AdsCampaignsController {
   /**
-   * GET /ads/campaigns/:accountId
+   * GET /accounts/ads/campaigns/:accountId
    *
-   * Fetches campaign pages from Meesho Ads API with:
-   *   1. Progressive Streaming: Returns Page 1 immediately (< 800ms)
-   *   2. Background Queue Job: Dispatches remaining pages to SyncAdsCampaignsJob
-   *   3. Live WebSocket broadcasts: Streams chunks to accounts/:userId via Ws
-   *   4. Dedicated Redis-only cache layer (10 min TTL, no Node.js heap pollution)
-   *   5. Single-flight deduplication & rate limit pacing
+   * Reads campaign data directly from PostgreSQL — never calls Meesho API.
+   * Background sync (BullMQ) keeps PostgreSQL up-to-date.
+   * Response shape is backward-compatible with the old Redis-cached API.
    */
-  async index({ auth, params, request, response }: HttpContext) {
+  async index({ auth, request, response }: HttpContext) {
     const user = await auth.authenticate()
 
-    // Ensure the account belongs to this user
+    // 1. Parse query parameters
+    const accountIdsStr = request.input('accountIds', '')
+    const accountIds = accountIdsStr
+      .split(',')
+      .map((id: string) => Number(id.trim()))
+      .filter((id: number) => !isNaN(id) && id > 0)
+
+    if (accountIds.length === 0) {
+      return response.badRequest({ message: 'accountIds is required' })
+    }
+
+    // Verify user owns these accounts
+    const accounts = await Account.query().whereIn('id', accountIds).where('user_id', user.id)
+    if (accounts.length !== accountIds.length) {
+      return response.forbidden({ message: 'Unauthorized access to one or more accounts' })
+    }
+
+    const statusFilter = request.input('status')
+    const search = request.input('search', '').trim()
+    const sortBy = request.input('sortBy', 'avg_roi')
+    const sortOrder = request.input('sortOrder', 'desc').toLowerCase() === 'asc' ? 'asc' : 'desc'
+    const limit = Math.min(Math.max(Number(request.input('limit', 100)) || 100, 1), 500)
+    const cursor = request.input('cursor')
+
+    // Range filters
+    const budgetMin = request.input('budgetMin')
+    const budgetMax = request.input('budgetMax')
+    const spentMin = request.input('spentMin')
+    const spentMax = request.input('spentMax')
+    const roiMin = request.input('roiMin')
+    const roiMax = request.input('roiMax')
+    const ordersMin = request.input('ordersMin')
+    const ordersMax = request.input('ordersMax')
+    const revenueMin = request.input('revenueMin')
+    const revenueMax = request.input('revenueMax')
+    const viewsMin = request.input('viewsMin')
+    const viewsMax = request.input('viewsMax')
+    const clicksMin = request.input('clicksMin')
+    const clicksMax = request.input('clicksMax')
+
+    // 2. Map sort field
+    const SORT_FIELD_MAP: Record<string, string> = {
+      campaign_name: 'campaign_name',
+      budget: 'total_budget',
+      budget_utilized: 'budget_utilised',
+      views: 'total_views',
+      clicks: 'total_clicks',
+      orders: 'order_count',
+      revenue: 'revenue',
+      avg_roi: 'roi',
+    }
+
+    const sortColumn = SORT_FIELD_MAP[sortBy] || 'roi'
+
+    try {
+      const query = MeeshoCampaign.query()
+        .whereIn('account_id', accountIds)
+        .where('sync_status', SYNC_STATUS.PRESENT)
+
+      if (statusFilter) query.where('status', statusFilter.toUpperCase())
+      if (search) {
+        // ILIKE for case-insensitive search
+        query.where((q) => {
+          q.where('campaign_name', 'ilike', `%${search}%`).orWhere(
+            'campaign_id',
+            'ilike',
+            `%${search}%`
+          )
+        })
+      }
+
+      // Apply range filters
+      if (budgetMin) query.where('total_budget', '>=', Number(budgetMin))
+      if (budgetMax) query.where('total_budget', '<=', Number(budgetMax))
+      if (spentMin) query.where('budget_utilised', '>=', Number(spentMin))
+      if (spentMax) query.where('budget_utilised', '<=', Number(spentMax))
+      if (roiMin) query.where('roi', '>=', Number(roiMin))
+      if (roiMax) query.where('roi', '<=', Number(roiMax))
+      if (ordersMin) query.where('order_count', '>=', Number(ordersMin))
+      if (ordersMax) query.where('order_count', '<=', Number(ordersMax))
+      if (revenueMin) query.where('revenue', '>=', Number(revenueMin))
+      if (revenueMax) query.where('revenue', '<=', Number(revenueMax))
+      if (viewsMin) query.where('total_views', '>=', Number(viewsMin))
+      if (viewsMax) query.where('total_views', '<=', Number(viewsMax))
+      if (clicksMin) query.where('total_clicks', '>=', Number(clicksMin))
+      if (clicksMax) query.where('total_clicks', '<=', Number(clicksMax))
+
+      // Apply cursor
+      if (cursor) {
+        try {
+          const decoded = JSON.parse(Buffer.from(cursor, 'base64').toString('utf-8'))
+          const val = decoded.v
+          const id = decoded.id
+
+          if (val !== undefined && id !== undefined) {
+            query.where((q) => {
+              if (sortOrder === 'desc') {
+                q.where(sortColumn, '<', val).orWhere((qq) => {
+                  qq.where(sortColumn, val).where('id', '<', id)
+                })
+              } else {
+                q.where(sortColumn, '>', val).orWhere((qq) => {
+                  qq.where(sortColumn, val).where('id', '>', id)
+                })
+              }
+            })
+          }
+        } catch (err) {
+          logger.warn({ cursor }, '[AdsCampaignsController] Invalid cursor format')
+        }
+      }
+
+      // Apply sorting
+      // We use id as tie-breaker
+      query.orderByRaw(
+        `${sortColumn} ${sortOrder === 'desc' ? 'DESC NULLS LAST' : 'ASC NULLS LAST'}`
+      )
+      query.orderBy('id', sortOrder)
+
+      // Limit + 1 to check if hasMore
+      query.limit(limit + 1)
+
+      const campaigns = await query
+
+      const hasMore = campaigns.length > limit
+      const recordsToReturn = hasMore ? campaigns.slice(0, limit) : campaigns
+
+      let nextCursor: string | null = null
+      if (hasMore) {
+        const lastRecord = recordsToReturn[recordsToReturn.length - 1]
+        // @ts-ignore - dynamic access
+        const val =
+          lastRecord[sortColumn.replace(/_([a-z])/g, (g) => g[1].toUpperCase())] ??
+          lastRecord.$extras[sortColumn] ??
+          lastRecord.serialize()[sortColumn.replace(/_([a-z])/g, (g) => g[1].toUpperCase())]
+
+        let cursorVal = val
+        if (sortColumn === 'campaign_name') {
+          cursorVal = lastRecord.campaignName
+        } else if (sortColumn === 'total_budget') {
+          cursorVal = lastRecord.totalBudget
+        } else if (sortColumn === 'budget_utilised') {
+          cursorVal = lastRecord.budgetUtilised
+        } else if (sortColumn === 'total_views') {
+          cursorVal = lastRecord.totalViews
+        } else if (sortColumn === 'total_clicks') {
+          cursorVal = lastRecord.totalClicks
+        } else if (sortColumn === 'order_count') {
+          cursorVal = lastRecord.orderCount
+        } else if (sortColumn === 'revenue') {
+          cursorVal = lastRecord.revenue
+        } else if (sortColumn === 'roi') {
+          cursorVal = lastRecord.roi
+        }
+
+        // Handle numeric conversion just to be safe
+        cursorVal =
+          typeof cursorVal === 'object' && cursorVal?.toString
+            ? Number(cursorVal.toString())
+            : cursorVal
+        if (
+          typeof cursorVal === 'string' &&
+          !isNaN(Number(cursorVal)) &&
+          sortColumn !== 'campaign_name'
+        ) {
+          cursorVal = Number(cursorVal)
+        }
+
+        nextCursor = Buffer.from(JSON.stringify({ v: cursorVal, id: lastRecord.id })).toString(
+          'base64'
+        )
+      }
+
+      // Get count if first page (cursor not provided)
+      let totalCount = 0
+      let aggregates = {}
+      if (!cursor) {
+        const countQuery = query
+          .clone()
+          .clearOrder()
+          .clearLimit()
+          .clearSelect()
+          .count('* as total')
+          .first()
+        const countRes = await countQuery
+        totalCount = Number(countRes?.$extras.total || 0)
+
+        // Get global aggregates across these accounts for filter limits (ignoring current range/search filters)
+        const aggQuery = MeeshoCampaign.query()
+          .whereIn('account_id', accountIds)
+          .where('sync_status', SYNC_STATUS.PRESENT)
+          .clearSelect()
+          .min('total_budget as min_budget')
+          .max('total_budget as max_budget')
+          .min('budget_utilised as min_spent')
+          .max('budget_utilised as max_spent')
+          .min('roi as min_roi')
+          .max('roi as max_roi')
+          .min('order_count as min_orders')
+          .max('order_count as max_orders')
+          .min('revenue as min_revenue')
+          .max('revenue as max_revenue')
+          .min('total_views as min_views')
+          .max('total_views as max_views')
+          .min('total_clicks as min_clicks')
+          .max('total_clicks as max_clicks')
+          .first()
+
+        const aggRes = await aggQuery
+        if (aggRes) {
+          aggregates = {
+            budget: {
+              min: Number(aggRes.$extras.min_budget || 0),
+              max: Number(aggRes.$extras.max_budget || 0),
+            },
+            budget_utilized: {
+              min: Number(aggRes.$extras.min_spent || 0),
+              max: Number(aggRes.$extras.max_spent || 0),
+            },
+            avg_roi: {
+              min: Number(aggRes.$extras.min_roi || 0),
+              max: Number(aggRes.$extras.max_roi || 0),
+            },
+            orders: {
+              min: Number(aggRes.$extras.min_orders || 0),
+              max: Number(aggRes.$extras.max_orders || 0),
+            },
+            revenue: {
+              min: Number(aggRes.$extras.min_revenue || 0),
+              max: Number(aggRes.$extras.max_revenue || 0),
+            },
+            views: {
+              min: Number(aggRes.$extras.min_views || 0),
+              max: Number(aggRes.$extras.max_views || 0),
+            },
+            clicks: {
+              min: Number(aggRes.$extras.min_clicks || 0),
+              max: Number(aggRes.$extras.max_clicks || 0),
+            },
+          }
+        }
+      }
+
+      const sanitized = recordsToReturn.map((c) => ({
+        account_id: c.accountId, // Ensure frontend knows which account this belongs to
+        campaign_id: c.campaignId,
+        campaign_name: c.campaignName,
+        total_budget: Number(c.totalBudget),
+        budget: Number(c.totalBudget),
+        budget_type: c.budgetType || 'DAILY_BUDGET',
+        start_date: c.startDate?.toISO() ?? null,
+        end_date: null,
+        status: c.status,
+        campaign_type: c.campaignType,
+        catalog_id: c.catalogId,
+        sync_status: c.syncStatus,
+        perf_details: {
+          budget_utilised: Number(c.budgetUtilised),
+          total_views: Number(c.totalViews),
+          total_clicks: Number(c.totalClicks),
+          order_count: Number(c.orderCount),
+          revenue: Number(c.revenue),
+          roi: Number(c.roi),
+          cpc: Number(c.cpc),
+          conversion_rate: Number(c.conversionRate),
+        },
+      }))
+
+      return response.ok({
+        data: sanitized,
+        pagination: {
+          nextCursor,
+          hasMore,
+        },
+        meta: {
+          total: totalCount,
+          aggregates,
+        },
+      })
+    } catch (error: any) {
+      logger.error(
+        { error: error.message },
+        '[AdsCampaignsController] Failed to fetch campaigns from DB'
+      )
+      return response.status(500).send({
+        error: error.message || 'Failed to fetch campaigns',
+        status: 500,
+      })
+    }
+  }
+
+  /**
+   * POST /accounts/ads/campaigns/:accountId/sync
+   *
+   * Triggers a background Meesho Ads sync for a specific account.
+   * Returns immediately — sync happens in the background.
+   * Prevents duplicate syncs using Redis distributed lock.
+   */
+  async triggerSync({ auth, params, response }: HttpContext) {
+    const user = await auth.authenticate()
+
     const account = await Account.query()
       .where('id', params.accountId)
       .where('user_id', user.id)
       .firstOrFail()
 
-    // Optional status filter from query string, defaults to LIVE
-    const statusFilter = request.input('status', 'LIVE')
-    const forceRefresh = request.input('refresh') === 'true' || request.input('force') === 'true'
+    const result = await SyncMeeshoAdsAccountJob.dispatchIfNotRunning({
+      accountId: account.id,
+      userId: user.id,
+    })
 
-    const cacheKey = `${CACHE_PREFIX.adsCampaigns}${account.id}:${statusFilter}`
-    const redisCache = cache.use('redisOnly')
-
-    // 1. If force refresh, invalidate existing Redis cache and locks
-    if (forceRefresh) {
-      try {
-        await redisCache.delete({ key: cacheKey })
-        await redis.del(`ads_sync_queued:${account.id}:${statusFilter}`)
-        await redis.del(`ads_sync_running:${account.id}:${statusFilter}`)
-      } catch {}
-    } else {
-      // Check Redis cache for existing complete data
-      try {
-        const cached = await redisCache.get<CampaignsData>({ key: cacheKey })
-        if (cached && cached.campaigns && cached.campaigns.length > 0 && cached.isComplete) {
-          return response.ok({
-            data: cached,
-            cached: true,
-          })
-        }
-      } catch {
-        // Cache read failure shouldn't block execution
-      }
-    }
-
-    try {
-      // Get account name for live user feedback
-      const supplierData = await SessionManager.getSupplierData(account.id.toString()).catch(
-        () => null
-      )
-      const accountName = supplierData?.name || account.email || `Account ${account.id}`
-
-      // 1. Check if partial data already exists in Redis (e.g. user reloaded mid-sync)
-      const partial = !forceRefresh
-        ? await redisCache.get<CampaignsData>({ key: cacheKey }).catch(() => null)
-        : null
-
-      let startPage = 1
-      let totalCount = 0
-      let initialData: CampaignsData = { campaigns: [], totalCount: 0, isComplete: false }
-
-      if (partial && partial.campaigns && partial.campaigns.length > 0) {
-        startPage = Math.floor(partial.campaigns.length / PAGE_SIZE) + 1
-        totalCount = partial.totalCount
-        initialData = partial
-
-        // Broadcast existing campaigns immediately to client
-        Ws.broadcast(`accounts/${user.id}`, {
-          type: 'ads_fetch_progress',
-          accountId: account.id,
-          accountName,
-          currentRecords: partial.campaigns.length,
-          totalRecords: partial.totalCount,
-          newCampaigns: partial.campaigns,
-        })
-      }
-
-      // 2. Dispatch 100% of fetching to AdonisJS queue (starts from Page 1 or resumes from partial)
-      await SyncAdsCampaignsJob.dispatchSync({
-        userId: user.id,
-        accountId: account.id,
-        accountName,
-        statusFilter,
-        totalCount,
-        startPage,
-      })
-
+    if (!result.queued) {
       return response.ok({
-        data: initialData,
-        cached: false,
-        syncing: true,
-      })
-    } catch (error: any) {
-      // 4. Stale cache fallback if available from Redis
-      try {
-        const staleCached = await redisCache.get<CampaignsData>({ key: cacheKey })
-        if (staleCached) {
-          return response.ok({
-            data: staleCached,
-            stale: true,
-            warning: 'Meesho rate limited or error occurred. Displaying previously cached data.',
-          })
-        }
-      } catch {}
-
-      if (error instanceof ApiError) {
-        const is403 = error.status === 403
-        return response.status(is403 ? 403 : error.status || 500).send({
-          error: is403
-            ? 'Meesho temporarily blocked or rate-limited the request (HTTP 403). Please wait a few minutes before trying again.'
-            : error.message || 'Failed to fetch campaigns from Meesho',
-          status: error.status || 500,
-          accountId: account.id,
-        })
-      }
-
-      if (error instanceof SessionError) {
-        return response.status(401).send({
-          error: `Meesho session expired for account ${account.id}. Please re-login.`,
-          status: 401,
-          accountId: account.id,
-        })
-      }
-
-      return response.status(500).send({
-        error: error.message || 'An unexpected error occurred while fetching campaigns',
-        status: 500,
-        accountId: account.id,
+        queued: false,
+        reason: result.reason || 'already_running',
+        message: 'A sync is already running for this account',
       })
     }
+
+    return response.ok({
+      queued: true,
+      message: 'Background sync started',
+    })
   }
 
   /**
@@ -269,29 +464,16 @@ export default class AdsCampaignsController {
         payload
       )
 
-      // Evict paused campaign from Redis cache for this account
-      const cacheKey = `${CACHE_PREFIX.adsCampaigns}${targetAccountId}:LIVE`
-      const redisCache = cache.use('redisOnly')
+      // Evict paused campaign from PostgreSQL cache for this account
       try {
-        const cached = await redisCache.get<CampaignsData>({ key: cacheKey })
-        if (cached && cached.campaigns) {
-          const updatedCampaigns = cached.campaigns.filter(
-            (c) => Number(c.campaign_id) !== Number(campaignId)
-          )
-          await redisCache.set({
-            key: cacheKey,
-            value: {
-              ...cached,
-              campaigns: updatedCampaigns,
-              totalCount: Math.max(0, (cached.totalCount || 0) - 1),
-            },
-            ttl: 600,
-          })
-        }
-      } catch (cacheErr) {
+        await MeeshoCampaign.query()
+          .where('account_id', targetAccountId)
+          .where('campaign_id', campaignId)
+          .update({ status: 'PAUSED' })
+      } catch (dbErr) {
         console.warn(
-          `[AdsCampaignsController] Failed to evict paused campaign ${campaignId} from Redis cache:`,
-          cacheErr
+          `[AdsCampaignsController] Failed to update PostgreSQL status for campaign ${campaignId}:`,
+          dbErr
         )
       }
 

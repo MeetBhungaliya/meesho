@@ -73,6 +73,54 @@ export class AdAccountConfigSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
+export class AdsSyncRunSchema extends BaseModel {
+  static $columns = [
+    'accountId',
+    'completedAt',
+    'createdAt',
+    'errorMessage',
+    'failedRecords',
+    'id',
+    'pagesProcessed',
+    'processedRecords',
+    'startedAt',
+    'status',
+    'syncRunId',
+    'totalPages',
+    'totalRecords',
+    'updatedAt',
+  ] as const
+  $columns = AdsSyncRunSchema.$columns
+  @column()
+  declare accountId: number
+  @column.dateTime()
+  declare completedAt: DateTime | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare errorMessage: string | null
+  @column()
+  declare failedRecords: number | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare pagesProcessed: number | null
+  @column()
+  declare processedRecords: number | null
+  @column.dateTime()
+  declare startedAt: DateTime | null
+  @column()
+  declare status: string
+  @column()
+  declare syncRunId: string
+  @column()
+  declare totalPages: number | null
+  @column()
+  declare totalRecords: number | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
 export class AuthAccessTokenSchema extends BaseModel {
   static $columns = [
     'abilities',
@@ -140,6 +188,111 @@ export class DashboardActivitySchema extends BaseModel {
   declare updatedAt: DateTime | null
   @column()
   declare userId: number
+}
+
+export class MeeshoCampaignSchema extends BaseModel {
+  static $columns = [
+    'accountId',
+    'bidType',
+    'budgetType',
+    'budgetUtilised',
+    'campaignId',
+    'campaignName',
+    'campaignSrc',
+    'campaignType',
+    'catalogCount',
+    'catalogId',
+    'conversionRate',
+    'cpc',
+    'createdAt',
+    'derivedBidType',
+    'id',
+    'isGmvMaxSmartCampaign',
+    'isMigrating',
+    'isSmartCampaign',
+    'isSmartCampaignRestartAllowed',
+    'lastSeenAt',
+    'lastSeenSyncId',
+    'orderCount',
+    'revenue',
+    'roi',
+    'startDate',
+    'status',
+    'syncStatus',
+    'tillBudgetLasts',
+    'totalBudget',
+    'totalClicks',
+    'totalViews',
+    'updatedAt',
+    'vgFlag',
+  ] as const
+  $columns = MeeshoCampaignSchema.$columns
+  @column()
+  declare accountId: number
+  @column()
+  declare bidType: string | null
+  @column()
+  declare budgetType: string | null
+  @column()
+  declare budgetUtilised: string | null
+  @column()
+  declare campaignId: bigint | number
+  @column()
+  declare campaignName: string
+  @column()
+  declare campaignSrc: string | null
+  @column()
+  declare campaignType: string | null
+  @column()
+  declare catalogCount: number | null
+  @column()
+  declare catalogId: bigint | number | null
+  @column()
+  declare conversionRate: string | null
+  @column()
+  declare cpc: string | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare derivedBidType: string | null
+  @column({ isPrimary: true })
+  declare id: bigint | number
+  @column()
+  declare isGmvMaxSmartCampaign: boolean | null
+  @column()
+  declare isMigrating: boolean | null
+  @column()
+  declare isSmartCampaign: boolean | null
+  @column()
+  declare isSmartCampaignRestartAllowed: boolean | null
+  @column.dateTime()
+  declare lastSeenAt: DateTime | null
+  @column()
+  declare lastSeenSyncId: string | null
+  @column()
+  declare orderCount: number | null
+  @column()
+  declare revenue: string | null
+  @column()
+  declare roi: string | null
+  @column.dateTime()
+  declare startDate: DateTime | null
+  @column()
+  declare status: string
+  @column()
+  declare syncStatus: string
+  @column()
+  declare tillBudgetLasts: boolean | null
+  @column()
+  declare totalBudget: string | null
+  @column()
+  declare totalClicks: bigint | number | null
+  @column()
+  declare totalViews: bigint | number | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare vgFlag: boolean | null
 }
 
 export class ProductSchema extends BaseModel {

@@ -67,6 +67,7 @@ export class MeeshoApiClient {
         const res = await fetch(url, {
           method: options.method || 'POST',
           headers: this.buildHeaders(options),
+          signal: options.signal,
           body:
             options.body instanceof FormData
               ? options.body
@@ -93,6 +94,7 @@ export class MeeshoApiClient {
           const retryRes = await fetch(url, {
             method: options.method || 'POST',
             headers: this.buildHeaders(options),
+            signal: options.signal,
             body:
               options.body instanceof FormData
                 ? options.body

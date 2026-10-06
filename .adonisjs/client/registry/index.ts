@@ -170,9 +170,15 @@ const routes = {
   },
   'ads_campaigns.index': {
     methods: ["GET","HEAD"],
-    pattern: '/accounts/ads/campaigns/:accountId',
-    tokens: [{"old":"/accounts/ads/campaigns/:accountId","type":0,"val":"accounts","end":""},{"old":"/accounts/ads/campaigns/:accountId","type":0,"val":"ads","end":""},{"old":"/accounts/ads/campaigns/:accountId","type":0,"val":"campaigns","end":""},{"old":"/accounts/ads/campaigns/:accountId","type":1,"val":"accountId","end":""}],
+    pattern: '/accounts/ads/campaigns',
+    tokens: [{"old":"/accounts/ads/campaigns","type":0,"val":"accounts","end":""},{"old":"/accounts/ads/campaigns","type":0,"val":"ads","end":""},{"old":"/accounts/ads/campaigns","type":0,"val":"campaigns","end":""}],
     types: placeholder as Registry['ads_campaigns.index']['types'],
+  },
+  'ads_campaigns.trigger_sync': {
+    methods: ["POST"],
+    pattern: '/accounts/ads/campaigns/:accountId/sync',
+    tokens: [{"old":"/accounts/ads/campaigns/:accountId/sync","type":0,"val":"accounts","end":""},{"old":"/accounts/ads/campaigns/:accountId/sync","type":0,"val":"ads","end":""},{"old":"/accounts/ads/campaigns/:accountId/sync","type":0,"val":"campaigns","end":""},{"old":"/accounts/ads/campaigns/:accountId/sync","type":1,"val":"accountId","end":""},{"old":"/accounts/ads/campaigns/:accountId/sync","type":0,"val":"sync","end":""}],
+    types: placeholder as Registry['ads_campaigns.trigger_sync']['types'],
   },
   'images.index': {
     methods: ["GET","HEAD"],

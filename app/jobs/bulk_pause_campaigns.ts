@@ -4,9 +4,7 @@ import Ws from '#services/ws'
 import { MeeshoApiClient } from '#services/external_api/client'
 import { ApiError } from '#services/external_api/errors'
 import { JobStateManager } from '#services/job_state_manager'
-import { CACHE_PREFIX } from '#services/external_api/constants'
-import cache from '@adonisjs/cache/services/main'
-import type { CampaignsData } from '#controllers/ads_campaigns_controller'
+import MeeshoCampaign from '#models/meesho_campaign'
 
 export interface BulkPauseCampaignItem {
   campaign_id: number
@@ -90,29 +88,16 @@ export default class BulkPauseCampaignsJob extends Job<BulkPauseCampaignsPayload
         successCount++
         console.log(`[BulkPauseCampaignsJob] Successfully paused campaign ${item.campaign_id}`)
 
-        // Evict paused campaign from Redis cache for this account
-        const cacheKey = `${CACHE_PREFIX.adsCampaigns}${accIdStr}:LIVE`
-        const redisCache = cache.use('redisOnly')
+        // Update paused campaign status in PostgreSQL
         try {
-          const cached = await redisCache.get<CampaignsData>({ key: cacheKey })
-          if (cached && cached.campaigns) {
-            const updated = cached.campaigns.filter(
-              (c) => Number(c.campaign_id) !== Number(item.campaign_id)
-            )
-            await redisCache.set({
-              key: cacheKey,
-              value: {
-                ...cached,
-                campaigns: updated,
-                totalCount: Math.max(0, (cached.totalCount || 0) - 1),
-              },
-              ttl: 600,
-            })
-          }
-        } catch (err) {
+          await MeeshoCampaign.query()
+            .where('account_id', accIdStr)
+            .where('campaign_id', item.campaign_id)
+            .update({ status: 'PAUSED' })
+        } catch (dbErr) {
           console.warn(
-            `[BulkPauseCampaignsJob] Failed to update Redis cache for account ${accIdStr}:`,
-            err
+            `[BulkPauseCampaignsJob] Failed to update PostgreSQL status for account ${accIdStr}:`,
+            dbErr
           )
         }
 

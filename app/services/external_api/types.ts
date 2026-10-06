@@ -20,6 +20,7 @@ export interface RequestOptions {
   headers?: Record<string, string>
   retries?: number
   skipAuth?: boolean
+  signal?: AbortSignal
 }
 
 export interface ApiResponse<T> {

@@ -31,7 +31,8 @@ export type ScannedRoutes = {
     'ads_campaigns.pause': { paramsTuple?: []; params?: {} }
     'ads_campaigns.edit_catalogs': { paramsTuple?: []; params?: {} }
     'ads_campaigns.bulk_pause': { paramsTuple?: []; params?: {} }
-    'ads_campaigns.index': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
+    'ads_campaigns.index': { paramsTuple?: []; params?: {} }
+    'ads_campaigns.trigger_sync': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'images.index': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'images.upload': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'images.retry': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
@@ -60,7 +61,7 @@ export type ScannedRoutes = {
     'dashboard.get_payments': { paramsTuple?: []; params?: {} }
     'dashboard.get_activities': { paramsTuple?: []; params?: {} }
     'accounts.retry_login': { paramsTuple?: [ParamValue?]; params?: {'accountId'?: ParamValue} }
-    'ads_campaigns.index': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
+    'ads_campaigns.index': { paramsTuple?: []; params?: {} }
     'images.index': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'products.analytics': { paramsTuple?: []; params?: {} }
     'products.categories': { paramsTuple?: []; params?: {} }
@@ -79,7 +80,7 @@ export type ScannedRoutes = {
     'dashboard.get_payments': { paramsTuple?: []; params?: {} }
     'dashboard.get_activities': { paramsTuple?: []; params?: {} }
     'accounts.retry_login': { paramsTuple?: [ParamValue?]; params?: {'accountId'?: ParamValue} }
-    'ads_campaigns.index': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
+    'ads_campaigns.index': { paramsTuple?: []; params?: {} }
     'images.index': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'products.analytics': { paramsTuple?: []; params?: {} }
     'products.categories': { paramsTuple?: []; params?: {} }
@@ -106,6 +107,7 @@ export type ScannedRoutes = {
     'ads_campaigns.pause': { paramsTuple?: []; params?: {} }
     'ads_campaigns.edit_catalogs': { paramsTuple?: []; params?: {} }
     'ads_campaigns.bulk_pause': { paramsTuple?: []; params?: {} }
+    'ads_campaigns.trigger_sync': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'images.upload': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'images.retry': { paramsTuple: [ParamValue]; params: {'accountId': ParamValue} }
     'products.store': { paramsTuple?: []; params?: {} }

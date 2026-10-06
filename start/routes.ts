@@ -39,7 +39,9 @@ router
         router.post('/ads/campaigns/pause', [AdsCampaignsController, 'pause'])
         router.post('/ads/campaigns/edit-catalogs', [AdsCampaignsController, 'editCatalogs'])
         router.post('/ads/campaigns/bulk-pause', [AdsCampaignsController, 'bulkPause'])
-        router.get('/ads/campaigns/:accountId', [AdsCampaignsController, 'index'])
+        router.get('/ads/campaigns', [AdsCampaignsController, 'index'])
+        // Trigger background Meesho Ads sync (PostgreSQL-backed, non-blocking)
+        router.post('/ads/campaigns/:accountId/sync', [AdsCampaignsController, 'triggerSync'])
       })
       .prefix('accounts')
 
