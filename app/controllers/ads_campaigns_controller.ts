@@ -219,9 +219,8 @@ export default class AdsCampaignsController {
       let nextCursor: string | null = null
       if (hasMore) {
         const lastRecord = recordsToReturn[recordsToReturn.length - 1]
-        // @ts-ignore - dynamic access
         const val =
-          lastRecord[sortColumn.replace(/_([a-z])/g, (g) => g[1].toUpperCase())] ??
+          (lastRecord as any)[sortColumn.replace(/_([a-z])/g, (g) => g[1].toUpperCase())] ??
           lastRecord.$extras[sortColumn] ??
           lastRecord.serialize()[sortColumn.replace(/_([a-z])/g, (g) => g[1].toUpperCase())]
 
