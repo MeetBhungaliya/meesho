@@ -7,6 +7,7 @@ import Account from '#models/account'
 import { MeeshoApiClient } from '#services/external_api/client'
 import MeeshoCampaign, { SYNC_STATUS } from '#models/meesho_campaign'
 import logger from '@adonisjs/core/services/logger'
+import Ws from '#services/ws'
 
 export interface SanitizedCampaign {
   [key: string]: any
@@ -106,7 +107,7 @@ export default class AdsCampaignsController {
       return response.forbidden({ message: 'Unauthorized access to one or more accounts' })
     }
 
-    const statusFilter = request.input('status')
+    const statusFilter = request.input('status', 'LIVE')
     const search = request.input('search', '').trim()
     const sortBy = request.input('sortBy', 'avg_roi')
     const sortOrder = request.input('sortOrder', 'desc').toLowerCase() === 'asc' ? 'asc' : 'desc'
@@ -139,6 +140,7 @@ export default class AdsCampaignsController {
       orders: 'order_count',
       revenue: 'revenue',
       avg_roi: 'roi',
+      start_date: 'start_date',
     }
 
     const sortColumn = SORT_FIELD_MAP[sortBy] || 'roi'
@@ -150,13 +152,11 @@ export default class AdsCampaignsController {
 
       if (statusFilter) query.where('status', statusFilter.toUpperCase())
       if (search) {
-        // ILIKE for case-insensitive search
+        // ILIKE for case-insensitive search (campaign_id is bigint so cast to text)
         query.where((q) => {
-          q.where('campaign_name', 'ilike', `%${search}%`).orWhere(
-            'campaign_id',
-            'ilike',
-            `%${search}%`
-          )
+          q.where('campaign_name', 'ilike', `%${search}%`).orWhereRaw('campaign_id::text ILIKE ?', [
+            `%${search}%`,
+          ])
         })
       }
 
@@ -241,6 +241,8 @@ export default class AdsCampaignsController {
           cursorVal = lastRecord.revenue
         } else if (sortColumn === 'roi') {
           cursorVal = lastRecord.roi
+        } else if (sortColumn === 'start_date') {
+          cursorVal = lastRecord.startDate?.toISO() ?? null
         }
 
         // Handle numeric conversion just to be safe
@@ -251,7 +253,8 @@ export default class AdsCampaignsController {
         if (
           typeof cursorVal === 'string' &&
           !isNaN(Number(cursorVal)) &&
-          sortColumn !== 'campaign_name'
+          sortColumn !== 'campaign_name' &&
+          sortColumn !== 'start_date'
         ) {
           cursorVal = Number(cursorVal)
         }
@@ -279,6 +282,12 @@ export default class AdsCampaignsController {
         const aggQuery = MeeshoCampaign.query()
           .whereIn('account_id', accountIds)
           .where('sync_status', SYNC_STATUS.PRESENT)
+
+        if (statusFilter) {
+          aggQuery.where('status', statusFilter.toUpperCase())
+        }
+
+        aggQuery
           .clearSelect()
           .min('total_budget as min_budget')
           .max('total_budget as max_budget')
@@ -475,6 +484,12 @@ export default class AdsCampaignsController {
           dbErr
         )
       }
+
+      Ws.broadcast(`accounts/${user.id}`, {
+        type: 'campaign_paused',
+        accountId: targetAccountId,
+        campaignId: Number(campaignId),
+      })
 
       return response.ok({
         success: true,

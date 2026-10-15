@@ -55,7 +55,15 @@ export default class SyncMeeshoAdsAccountJob extends Job<SyncMeeshoAdsAccountPay
   }
 
   async execute(): Promise<void> {
-    const { accountId, userId, statusFilter } = this.payload
+    const { accountId, userId, statusFilter } = this.payload || {}
+
+    if (!accountId) {
+      logger.error(
+        { payload: this.payload },
+        '[SyncMeeshoAdsAccountJob] Aborted: Missing or invalid accountId in job payload'
+      )
+      return
+    }
 
     logger.info({ accountId, userId, statusFilter }, '[SyncMeeshoAdsAccountJob] Job started')
 
@@ -126,7 +134,15 @@ export default class SyncMeeshoAdsAccountJob extends Job<SyncMeeshoAdsAccountPay
   }
 
   async failed(error: Error): Promise<void> {
-    const { accountId, userId } = this.payload
+    const { accountId, userId } = this.payload || {}
+    if (!accountId) {
+      logger.error(
+        { payload: this.payload, error: error.message },
+        '[SyncMeeshoAdsAccountJob] Job failed with missing accountId in payload'
+      )
+      return
+    }
+
     logger.error(
       { accountId, userId, error: error.message },
       '[SyncMeeshoAdsAccountJob] Job permanently failed after exhausted retries'

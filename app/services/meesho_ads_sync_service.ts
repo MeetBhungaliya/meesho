@@ -265,6 +265,9 @@ export interface SyncResult {
  */
 export async function syncMeeshoAdsAccount(opts: SyncMeeshoAdsAccountOptions): Promise<SyncResult> {
   const { accountId, userId, statusFilter, signal } = opts
+  if (!accountId || typeof accountId !== 'number') {
+    throw new Error(`Valid numeric accountId is required for Meesho Ads sync, got: ${accountId}`)
+  }
   const startMs = Date.now()
   const syncRunId = randomUUID()
 
@@ -484,11 +487,12 @@ export async function syncMeeshoAdsAccount(opts: SyncMeeshoAdsAccountOptions): P
     if (!lastError && pagesProcessed > 0) {
       // Atomic transaction: mark missing + mark run SUCCESS
       await db.transaction(async (trx) => {
-        // Mark campaigns not seen in this sync as MISSING
+        // Mark campaigns not seen in this sync as MISSING (only for statuses that were synced)
         const missingCount = await trx
           .from('meesho_campaigns')
           .where('account_id', accountId)
           .where('sync_status', SYNC_STATUS.PRESENT)
+          .whereIn('status', statusesToFetch)
           .whereNot('last_seen_sync_id', syncRunId)
           .whereNotNull('last_seen_sync_id')
           .update({
