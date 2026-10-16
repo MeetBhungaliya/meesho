@@ -287,7 +287,7 @@ export default class AdsCampaignsController {
           aggQuery.where('status', statusFilter.toUpperCase())
         }
 
-        aggQuery
+        const aggRes = await aggQuery
           .clearSelect()
           .min('total_budget as min_budget')
           .max('total_budget as max_budget')
@@ -304,8 +304,6 @@ export default class AdsCampaignsController {
           .min('total_clicks as min_clicks')
           .max('total_clicks as max_clicks')
           .first()
-
-        const aggRes = await aggQuery
         if (aggRes) {
           aggregates = {
             budget: {
